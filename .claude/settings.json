@@ -27,6 +27,15 @@
             "command": "python \"D:/my-muti-agentic/.claude/hooks/path_guard.py\""
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"D:/my-muti-agentic/.claude/hooks/env_guard.py\""
+          }
+        ]
       }
     ],
     "PostToolUse": [

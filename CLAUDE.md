@@ -12,6 +12,8 @@
    - **Before / After** — show exact changes for any code or config edit
    - **STOP** — wait for explicit user approval ("yes") before executing any change. Never auto-execute after showing a plan.
 
+4. **Never commit or push `.env`** — `.env` (and any `.env.*` file except `.env.example`) must never be staged, committed, or pushed. Enforced by `env_guard.py`, which blocks force-adds and blocks commit/push while a `.env` file is staged.
+
 ---
 
 ## Project Purpose
@@ -22,6 +24,7 @@ A Claude Code configuration library for designing and prototyping multi-agent sy
 ## Hooks
 Project hooks are configured in `.claude/settings.json`.
 - **PreToolUse (Write/Edit/Read)**: `path_guard.py` — blocks access to files outside `D:\my-muti-agentic\`
+- **PreToolUse (Bash)**: `env_guard.py` — blocks git commands that would force-add, commit, or push a `.env`-style file
 - **PostToolUse (Write/Edit .py files)**: `syntax_check.py` — catches Python syntax errors immediately
 - See `.claude/settings.json` and `.claude/hooks/` for details
 
