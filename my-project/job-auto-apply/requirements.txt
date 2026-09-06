@@ -1,0 +1,27 @@
+# Web scraping
+beautifulsoup4==4.12.2
+requests==2.31.0
+
+# Browser automation (JobsDB auto-apply - login + form submission require a
+# real browser, not just requests/BeautifulSoup)
+selenium==4.15.2
+
+# Scheduling
+schedule==1.2.0
+
+# Secrets (.env file)
+python-dotenv==1.0.0
+
+# TUI control panel (tui_dashboard.py)
+textual==8.2.8
+
+# Resume PDF text extraction (job-vs-resume fit heuristic in the TUI)
+pypdf==5.1.0
+
+# Note: sqlite3 is built-in with Python, no need to install
+#
+# Removed (were listed but never actually imported/used by any script here,
+# and pandas==2.1.3 in particular has no prebuilt wheel for newer Python
+# versions like 3.14 - pip tried to compile it from source and failed
+# because no C/C++ compiler is installed, which is what broke setup):
+#   pandas, APScheduler, telebot, pyautogui

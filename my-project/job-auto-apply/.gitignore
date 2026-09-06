@@ -1,0 +1,16 @@
+job_applications.db
+job_applications.db-wal
+job_applications.db-shm
+*.log
+job_data_export.json
+dry_run_*.png
+__pycache__/
+*.pyc
+
+# Real secrets - never commit. .env.example (template, no secrets) is kept.
+.env
+.env.*
+!.env.example
+
+# Personal documents - never commit (real resume PDFs, contains PII)
+resumes/

@@ -1,0 +1,71 @@
+{
+  "search": {
+    "keywords": [
+      "Data Scientist",
+      "Data Analyst"
+    ],
+    "location": "Thailand",
+    "job_types": [
+      "full-time",
+      "remote"
+    ]
+  },
+  "filter": {
+    "min_salary": 0,
+    "max_salary": 999999,
+    "keywords": [
+      "Data Scientist",
+      "Data Analyst"
+    ],
+    "exclude_keywords": [
+      "junior",
+      "intern",
+      "part-time"
+    ],
+    "preferred_locations": [
+      "Bangkok",
+      "กรุงเทพ",
+      "Remote",
+      "ระยะไกล",
+      "Anywhere"
+    ],
+    "job_types": [
+      "full-time",
+      "remote"
+    ]
+  },
+  "notifications": {
+    "email": {
+      "enabled": false,
+      "smtp_server": "smtp.gmail.com",
+      "smtp_port": 587,
+      "from_email": "",
+      "password": "",
+      "to_email": "",
+      "_note": "Leave from_email/to_email/password blank and set GMAIL_USER / GMAIL_APP_PASS in a local .env file instead - see .env.example. config.json is the file people paste into chats, screenshots and repos, so it's the wrong place for a real email address or app password."
+    },
+    "telegram": {
+      "enabled": true,
+      "telegram_token": "",
+      "telegram_chat_id": "",
+      "_note": "Leave these blank and set TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID in .env instead - see .env.example. (Also: the original code read notifications.telegram_token at the top level, which doesn't exist here - it's nested under notifications.telegram - so Telegram alerts silently never fired even when this was filled in. Fixed in job_auto_apply.py.)"
+    }
+  },
+  "resume": {
+    "default_file": "resume.pdf",
+    "cover_letter_template": "cover_letter_template.txt"
+  },
+  "apply": {
+    "enabled": false,
+    "dry_run": true,
+    "max_applications_per_run": 5,
+    "headless": false,
+    "_note": "JobsDB auto-apply. enabled=false: this feature never runs at all (default). enabled=true + dry_run=true: walks the full apply flow (login, open job, open apply form) and stops right before the final Submit click - screenshots+logs what would have been submitted instead. enabled=true + dry_run=false: actually submits, capped at max_applications_per_run per run. Requires JOBDB_EMAIL / JOBDB_PASSWORD in .env - see .env.example."
+  },
+  "schedule": {
+    "enabled": true,
+    "interval_hours": 6,
+    "start_time": "09:00",
+    "end_time": "18:00"
+  }
+}
