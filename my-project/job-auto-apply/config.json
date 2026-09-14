@@ -36,7 +36,7 @@
   },
   "notifications": {
     "email": {
-      "enabled": false,
+      "enabled": true,
       "smtp_server": "smtp.gmail.com",
       "smtp_port": 587,
       "from_email": "",
@@ -56,11 +56,12 @@
     "cover_letter_template": "cover_letter_template.txt"
   },
   "apply": {
-    "enabled": false,
-    "dry_run": true,
+    "enabled": true,
+    "dry_run": false,
     "max_applications_per_run": 5,
+    "max_applications_per_day": 20,
     "headless": false,
-    "_note": "JobsDB auto-apply. enabled=false: this feature never runs at all (default). enabled=true + dry_run=true: walks the full apply flow (login, open job, open apply form) and stops right before the final Submit click - screenshots+logs what would have been submitted instead. enabled=true + dry_run=false: actually submits, capped at max_applications_per_run per run. Requires JOBDB_EMAIL / JOBDB_PASSWORD in .env - see .env.example."
+    "_note": "JobsDB auto-apply. enabled=false: this feature never runs at all (default). enabled=true + dry_run=true: walks the full apply flow (login, open job, open apply form) and stops right before the final Submit click - screenshots+logs what would have been submitted instead. enabled=true + dry_run=false: actually submits, capped at max_applications_per_run per run AND max_applications_per_day total (whichever is hit first - dry_run never counts toward the daily cap since nothing is actually submitted). Requires JOBDB_EMAIL in .env (login is passwordless - a one-time code is emailed to you) - see .env.example."
   },
   "schedule": {
     "enabled": true,

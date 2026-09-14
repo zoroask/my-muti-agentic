@@ -49,6 +49,7 @@ Never put procedural steps in an agent file. Never put persona/role definitions 
 | `/list-skills` | Show all available skills with usage |
 | `/agent-report` | Full audit of all agents |
 | `/review-agents` | Review all agents for quality and consistency |
+| `/audit-chain` | Delegate a task through Architect Advisor → Bug Fixer → PA Right-Hand Audit & Testing, looping on failure |
 
 ---
 

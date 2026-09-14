@@ -6,7 +6,7 @@ First ask the user: "Do you want to **ADD** a new agent or **UPDATE** an existin
 
 ## ADD — Add a new agent
 
-1. **Read** an existing `.claude/agents/<name>.md` (e.g. `pipeline-reviewer-agent.md`) as a template for frontmatter and structure
+1. **Read** an existing `.claude/agents/<name>.md` (e.g. `pipeline-reviewer-sub-agent.md`) as a template for frontmatter and structure
 2. **Ask** the user: agent name, role, when it should be invoked, what context/tools it needs
 3. **Create** `.claude/agents/<kebab-name>.md`:
    ```

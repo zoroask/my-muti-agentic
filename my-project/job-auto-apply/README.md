@@ -229,6 +229,7 @@ conn.close()
   "enabled": false,
   "dry_run": true,
   "max_applications_per_run": 5,
+  "max_applications_per_day": 20,
   "headless": false
 }
 ```
@@ -239,9 +240,14 @@ conn.close()
   (`dry_run_<job_id>.png`) และ log ไว้แทนว่าจะสมัครตำแหน่งไหนถ้าเป็นของจริง
 - `enabled: true` + `dry_run: false` (**โหมดจริง**) - submit ใบสมัครจริง จำกัดไม่เกิน
   `max_applications_per_run` ใบต่อการรันหนึ่งครั้ง (กันบั๊กสมัครรัวๆ โดยไม่ตั้งใจ)
+- `max_applications_per_day` caps total real submissions across all runs combined
+  in a calendar day (not just per run) - once reached, auto-apply is skipped for
+  the rest of the day regardless of how many runs the scheduler triggers. Only
+  counts real submissions (`applied`/`unconfirmed`); dry-run never consumes it.
 
-**ต้องมี** `JOBDB_EMAIL` / `JOBDB_PASSWORD` ใน `.env` (ดู `.env.example`) - ใช้ login
-เข้า JobsDB เพื่อสมัครผ่านระบบ Quick Apply ของเว็บเท่านั้น
+**ต้องมี** `JOBDB_EMAIL` ใน `.env` (ดู `.env.example`) - ใช้ login เข้า JobsDB แบบ
+passwordless (ระบบจะส่ง one-time code ไปที่อีเมล ให้กรอกโค้ดในหน้าต่างเบราว์เซอร์เอง)
+เพื่อสมัครผ่านระบบ Quick Apply ของเว็บเท่านั้น
 
 **ข้อจำกัดที่ควรรู้:**
 - สมัครได้เฉพาะงานที่ apply ผ่านหน้า JobsDB เอง (Quick Apply) เท่านั้น - งานที่ปุ่ม

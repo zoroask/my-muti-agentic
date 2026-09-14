@@ -18,6 +18,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 import time
 import json
 from datetime import datetime
@@ -125,32 +126,122 @@ class JobDatabase:
             logger.error(f"Error adding job: {e}")
             return False
 
-    def record_application(self, job_id: str, resume_version: str, cover_letter: str = ""):
-        """บันทึกการสมัครงาน"""
+    def record_application(self, job_id: str, resume_version: str, cover_letter: str = "", status: str = "applied", notes: str = ""):
+        """บันทึกการสมัครงาน
+
+        status accepts 'applied', 'dry_run', 'skipped_external', 'unconfirmed', or 'error' -
+        applied_date records when each outcome was persisted, covering all apply_to_job()
+        outcomes, not just successful applications. notes holds the dry-run screenshot
+        filename when one was saved (see JobsDBApplier.apply_to_job's dry_run branch).
+        """
         try:
             cursor = self.conn.cursor()
             cursor.execute('''
                 INSERT INTO applications
-                (job_id, resume_version, cover_letter, status)
-                VALUES (?, ?, ?, ?)
-            ''', (job_id, resume_version, cover_letter, 'applied'))
+                (job_id, resume_version, cover_letter, status, notes)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (job_id, resume_version, cover_letter, status, notes))
             self.conn.commit()
-            logger.info(f"Application recorded for job {job_id}")
+            logger.info(f"Application recorded for job {job_id} with status '{status}'")
             return True
         except Exception as e:
             logger.error(f"Error recording application: {e}")
             return False
 
-    def is_already_applied(self, job_id: str) -> bool:
-        """ตรวจสอบว่าสมัครงานนี้แล้วหรือไม่"""
+    def get_apply_run_stats(self) -> dict:
+        """ดึงสถิติการรัน auto-apply แยกตาม status (สำหรับ monitor bar ใน TUI)
+
+        Returns a dict with keys: 'applied', 'dry_run', 'skipped_external', 'unconfirmed',
+        'error', 'total', 'last_date' (ISO timestamp string or None if no rows exist yet).
+        """
         try:
             cursor = self.conn.cursor()
-            cursor.execute('SELECT id FROM applications WHERE job_id = ?', (job_id,))
+            cursor.execute("SELECT status, COUNT(*) FROM applications GROUP BY status")
+            counts = {row[0]: row[1] for row in cursor.fetchall()}
+            cursor.execute("SELECT MAX(applied_date) FROM applications")
+            last_date = cursor.fetchone()[0]
+            return {
+                'applied': counts.get('applied', 0),
+                'dry_run': counts.get('dry_run', 0),
+                'skipped_external': counts.get('skipped_external', 0),
+                'unconfirmed': counts.get('unconfirmed', 0),
+                'error': counts.get('error', 0),
+                'total': sum(counts.values()),
+                'last_date': last_date,
+            }
+        except Exception as e:
+            logger.error(f"Error getting apply run stats: {e}")
+            return {
+                'applied': 0, 'dry_run': 0, 'skipped_external': 0,
+                'unconfirmed': 0, 'error': 0, 'total': 0, 'last_date': None,
+            }
+
+    def is_already_applied(self, job_id: str) -> bool:
+        """Check whether this job has already been applied to (only counts
+        status='applied'/'unconfirmed' - unconfirmed may actually have
+        succeeded and just couldn't be verified, so it shouldn't be retried
+        either, risking a real duplicate submission. dry_run/error/
+        skipped_external/needs_manual_answer should not block retrying next
+        run - those are handled separately in filter_jobs())."""
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute(
+                "SELECT id FROM applications WHERE job_id = ? AND status IN ('applied', 'unconfirmed')",
+                (job_id,),
+            )
             result = cursor.fetchone()
             return result is not None
         except Exception as e:
             logger.error(f"Error checking application: {e}")
             return False
+
+    def has_job(self, job_id: str) -> bool:
+        """
+        เช็คว่ามีงานนี้ในฐานข้อมูลแล้วหรือยัง - เรียกก่อนดึง JD เต็มเพื่อไม่ให้เสีย
+        request ไปกับงานซ้ำที่ add_job() จะ reject (IntegrityError) อยู่แล้ว
+        """
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute('SELECT 1 FROM jobs WHERE job_id = ?', (job_id,))
+            return cursor.fetchone() is not None
+        except Exception as e:
+            logger.error(f"Error checking job existence: {e}")
+            return False
+
+    def has_recorded_status(self, job_id: str, status: str) -> bool:
+        """Check whether this job already has an applications row with the
+        given status - used to skip both re-navigating to the live job page
+        and re-inserting a duplicate row for an outcome that won't change
+        run to run (e.g. 'skipped_external', 'needs_manual_answer').
+        Deliberately not used for 'error', which may be transient and is
+        worth retrying."""
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute(
+                "SELECT id FROM applications WHERE job_id = ? AND status = ?",
+                (job_id, status),
+            )
+            return cursor.fetchone() is not None
+        except Exception as e:
+            logger.error(f"Error checking recorded status: {e}")
+            return False
+
+    def count_applications_today(self) -> int:
+        """Count real submissions (status applied/unconfirmed - both mean
+        Submit was actually clicked) recorded today, for the daily cap.
+        Uses UTC dates (SQLite's applied_date default is UTC) - correct as
+        long as the scheduler's run window stays within Bangkok 09:00-18:00,
+        which never crosses a UTC midnight boundary."""
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute(
+                "SELECT COUNT(*) FROM applications "
+                "WHERE status IN ('applied', 'unconfirmed') AND date(applied_date) = date('now')"
+            )
+            return cursor.fetchone()[0]
+        except Exception as e:
+            logger.error(f"Error counting today's applications: {e}")
+            return 0
 
     def get_statistics(self) -> Dict:
         """ดึงสถิติการสมัคร"""
@@ -246,22 +337,17 @@ class NotificationManager:
             'TELEGRAM_CHAT_ID', config.get('telegram', {}).get('telegram_chat_id', config.get('telegram_chat_id', ''))
         )
 
-    def send_email_notification(self, subject: str, body: str, job_data: Dict = None):
-        """ส่ง email notification"""
+    def _send_html_email(self, subject: str, html_body: str) -> bool:
+        """Shared SMTP send path for any HTML email - both new-job alerts and
+        application-outcome summaries use this."""
         if not self.email_config.get('enabled'):
             return False
-
         try:
             msg = MIMEMultipart()
             msg['From'] = self.email_config['from_email']
             msg['To'] = self.email_config['to_email']
             msg['Subject'] = subject
-
-            if job_data:
-                html_body = self._format_job_html(job_data)
-                msg.attach(MIMEText(html_body, 'html'))
-            else:
-                msg.attach(MIMEText(body, 'plain'))
+            msg.attach(MIMEText(html_body, 'html'))
 
             server = smtplib.SMTP(self.email_config['smtp_server'], self.email_config['smtp_port'], timeout=10)
             server.starttls()
@@ -274,6 +360,60 @@ class NotificationManager:
         except Exception as e:
             logger.error(f"Error sending email: {e}")
             return False
+
+    def send_email_notification(self, subject: str, body: str, job_data: Dict = None):
+        """ส่ง email notification"""
+        if job_data:
+            return self._send_html_email(subject, self._format_job_html(job_data))
+        if not self.email_config.get('enabled'):
+            return False
+        try:
+            msg = MIMEMultipart()
+            msg['From'] = self.email_config['from_email']
+            msg['To'] = self.email_config['to_email']
+            msg['Subject'] = subject
+            msg.attach(MIMEText(body, 'plain'))
+
+            server = smtplib.SMTP(self.email_config['smtp_server'], self.email_config['smtp_port'], timeout=10)
+            server.starttls()
+            server.login(self.email_config['from_email'], self.email_config['password'])
+            server.send_message(msg)
+            server.quit()
+
+            logger.info(f"Email notification sent: {subject}")
+            return True
+        except Exception as e:
+            logger.error(f"Error sending email: {e}")
+            return False
+
+    def send_application_email(self, job: Dict, status: str, applied_date: str, resume_version: str) -> bool:
+        """Send a summary email after an auto-apply attempt, for outcomes
+        that mean Submit was actually clicked ('applied' or 'unconfirmed')."""
+        status_label = {
+            'applied': 'Applied (confirmed)',
+            'unconfirmed': 'Submitted (unconfirmed - please verify manually)',
+        }.get(status, status)
+        emoji = '✅' if status == 'applied' else '⚠️'
+        subject = f"{emoji} {status_label}: {job.get('title', 'N/A')} at {job.get('company', 'N/A')}"
+        resume_name = os.path.basename(resume_version) if resume_version else 'N/A'
+        color = '#1D7A4C' if status == 'applied' else '#A56A05'
+        html = f"""
+        <html>
+            <body style="font-family: Arial, sans-serif;">
+                <h2 style="color:{color};">{status_label}</h2>
+                <p><strong>ตำแหน่ง:</strong> {escape(job.get('title', 'N/A'))}</p>
+                <p><strong>บริษัท:</strong> {escape(job.get('company', 'N/A'))}</p>
+                <p><strong>สถานที่:</strong> {escape(job.get('location', 'N/A'))}</p>
+                <p><strong>เงินเดือน:</strong> {escape(job.get('salary', 'N/A'))}</p>
+                <p><strong>แพลตฟอร์ม:</strong> {escape(job.get('job_board', 'N/A'))}</p>
+                <p><strong>สถานะ:</strong> {escape(status)}</p>
+                <p><strong>เวลาที่สมัคร:</strong> {escape(applied_date)}</p>
+                <p><strong>เรซูเม่ที่ใช้:</strong> {escape(resume_name)}</p>
+                <p><a href="{escape(job.get('job_url', '#'))}">ดูประกาศงาน</a></p>
+            </body>
+        </html>
+        """
+        return self._send_html_email(subject, html)
 
     def send_telegram_notification(self, message: str):
         """ส่ง Telegram notification"""
@@ -825,15 +965,16 @@ class JobsDBApplier:
             self.driver = None
 
     def login(self) -> bool:
-        """เข้าสู่ระบบ JobsDB ด้วย JOBDB_EMAIL / JOBDB_PASSWORD จาก .env"""
+        """Log into JobsDB using JOBDB_EMAIL from .env - passwordless, no
+        password step. Submitting the email immediately triggers an emailed
+        one-time code."""
         email = os.environ.get('JOBDB_EMAIL', '')
-        password = os.environ.get('JOBDB_PASSWORD', '')
-        if not email or not password:
-            logger.error("JOBDB_EMAIL / JOBDB_PASSWORD not set in .env - cannot log in to JobsDB")
+        if not email:
+            logger.error("JOBDB_EMAIL not set in .env - cannot log in to JobsDB")
             return False
 
         try:
-            self.driver.get(f"{self.BASE_URL}/th/login")
+            self.driver.get(f"{self.BASE_URL}/th/oauth/login?returnUrl=%2F")
             wait = WebDriverWait(self.driver, 15)
 
             email_field = wait.until(EC.presence_of_element_located((
@@ -841,18 +982,40 @@ class JobsDBApplier:
             )))
             email_field.send_keys(email)
 
-            password_field = self.driver.find_element(
-                By.CSS_SELECTOR, 'input[type="password"], input[name="password"]'
-            )
-            password_field.send_keys(password)
-
             submit_btn = self.driver.find_element(
                 By.CSS_SELECTOR, 'button[type="submit"]'
             )
             submit_btn.click()
 
-            # เข้าสู่ระบบสำเร็จเมื่อ URL ไม่มี "login" อีกต่อไป
-            wait.until(lambda d: 'login' not in d.current_url.lower())
+            # Passwordless flow: submitting the email always triggers an emailed
+            # one-time code next - wait for that step to render.
+            otp_wait = WebDriverWait(self.driver, 15)
+            otp_wait.until(lambda d: (
+                'verification-code' in d.current_url.lower()
+                or d.find_elements(By.CSS_SELECTOR, (
+                    'input[autocomplete="one-time-code"], '
+                    'input[inputmode="numeric"], '
+                    'input[name*="code" i], '
+                    'input[id*="code" i], '
+                    'input[placeholder*="code" i]'
+                ))
+                or any(phrase in d.page_source.lower() for phrase in (
+                    '6-digit', 'verification code', 'check your email',
+                    'รหัส 6 หลัก', 'กรอกรหัส', 'ตรวจสอบอีเมลของคุณ',
+                ))
+            ))
+
+            logger.info(
+                "One-time code sent to your email - check your inbox and type the "
+                "code into the browser window yourself; waiting up to 3 minutes for "
+                "you to finish (no console keypress needed - works the same whether "
+                "this is running in a console, the scheduler, or the TUI)"
+            )
+            try:
+                WebDriverWait(self.driver, 180).until(lambda d: 'login' not in d.current_url.lower())
+            except TimeoutException:
+                logger.error("Timed out waiting for OTP entry (3 min) - login not completed")
+                return False
             logger.info("✅ Logged into JobsDB")
             return True
         except Exception as e:
@@ -882,11 +1045,84 @@ class JobsDBApplier:
             logger.debug(f"Could not check apply type for {job_url}: {e}")
             return False
 
+    _WIZARD_MAX_STEPS = 5  # documents -> questions -> profile -> review, +1 buffer
+
+    def _has_unanswered_required_field(self) -> bool:
+        """Best-effort check for an unanswered required field on the current
+        apply-wizard step - used to detect the employer-questions step so we
+        never guess/skip an answer. Radio/checkbox inputs are handled
+        separately: a radio's 'value' attribute is a static HTML value
+        present whether or not it's selected, so it says nothing about
+        whether the question was answered - is_selected() is the real
+        signal, and radios sharing a 'name' form one group that's answered
+        as soon as any option in it is selected. Unverified against a real
+        job with required questions (none seen during testing) - may need
+        adjusting the first time one appears."""
+        try:
+            candidates = self.driver.find_elements(
+                By.CSS_SELECTOR, 'input[required], textarea[required], select[required]'
+            ) + [
+                el for el in self.driver.find_elements(By.CSS_SELECTOR, '[aria-required="true"]')
+                if el.tag_name in ('input', 'textarea')
+            ]
+            radio_group_answered = {}  # name -> True if any option in the group is selected
+            for el in candidates:
+                input_type = (el.get_attribute('type') or '').lower()
+                if input_type == 'radio':
+                    name = el.get_attribute('name') or el.id
+                    radio_group_answered[name] = radio_group_answered.get(name, False) or el.is_selected()
+                    continue
+                if input_type == 'checkbox':
+                    if not el.is_selected():
+                        return True
+                    continue
+                if not (el.get_attribute('value') or '').strip():
+                    return True
+            if any(not answered for answered in radio_group_answered.values()):
+                return True
+            return False
+        except Exception:
+            return False
+
+    def _advance_apply_wizard(self) -> str:
+        """
+        Step through the apply wizard (documents -> employer questions ->
+        profile -> review) by auto-clicking 'Continue' one step at a time,
+        except on a step with an unanswered required field - stops
+        immediately there rather than guessing an answer.
+
+        Returns: 'ready_to_submit' | 'needs_manual_answer' | 'error'
+        """
+        submit_xpath = (
+            "//button[@data-automation='review-submit-application' "
+            "or contains(., 'Submit application') or contains(., 'ส่งใบสมัคร')]"
+        )
+        continue_xpath = "//button[contains(., 'ดำเนินการต่อ')]"
+
+        for _ in range(self._WIZARD_MAX_STEPS):
+            if self.driver.find_elements(By.XPATH, submit_xpath):
+                return 'ready_to_submit'
+
+            if self._has_unanswered_required_field():
+                return 'needs_manual_answer'
+
+            try:
+                continue_btn = WebDriverWait(self.driver, 15).until(
+                    EC.element_to_be_clickable((By.XPATH, continue_xpath))
+                )
+            except TimeoutException:
+                return 'error'
+            continue_btn.click()
+            time.sleep(1.5)  # let the SPA render the next step before re-checking
+
+        return 'error'
+
     def apply_to_job(self, job: Dict) -> str:
         """
         สมัครงาน 1 ตำแหน่งผ่าน JobsDB Quick Apply
 
-        คืนค่า: 'applied' | 'dry_run' | 'skipped_external' | 'skipped_limit' | 'error'
+        คืนค่า: 'applied' | 'dry_run' | 'skipped_external' | 'skipped_limit' |
+        'needs_manual_answer' | 'error'
         """
         if self.applications_this_run >= self.max_applications:
             return 'skipped_limit'
@@ -899,8 +1135,21 @@ class JobsDBApplier:
             apply_link = self._get_apply_link()
             apply_link.click()
 
-            wait = WebDriverWait(self.driver, 20)
-            submit_btn = wait.until(EC.presence_of_element_located((
+            wizard_result = self._advance_apply_wizard()
+            if wizard_result == 'needs_manual_answer':
+                logger.info(
+                    f"⏭️  Skipping (employer has screening questions to answer yourself): "
+                    f"{job['title']} at {job['company']}"
+                )
+                return 'needs_manual_answer'
+            if wizard_result == 'error':
+                logger.error(
+                    f"Could not reach the review/submit step for {job['title']} at "
+                    f"{job['company']} - apply wizard steps may have changed"
+                )
+                return 'error'
+
+            submit_btn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((
                 By.XPATH,
                 "//button[@data-automation='review-submit-application' "
                 "or contains(., 'Submit application') or contains(., 'ส่งใบสมัคร')]"
@@ -912,6 +1161,7 @@ class JobsDBApplier:
                     self.driver.save_screenshot(screenshot_path)
                 except Exception:
                     screenshot_path = None
+                job['dry_run_screenshot'] = screenshot_path or ''
                 logger.info(
                     f"🧪 [DRY RUN] Would submit application for: {job['title']} at {job['company']}"
                     + (f" (screenshot: {screenshot_path})" if screenshot_path else "")
@@ -920,12 +1170,41 @@ class JobsDBApplier:
 
             submit_btn.click()
             self.applications_this_run += 1
-            logger.info(f"✅ Applied: {job['title']} at {job['company']}")
-            return 'applied'
+            if self._confirm_submission():
+                logger.info(f"✅ Applied (confirmed): {job['title']} at {job['company']}")
+                return 'applied'
+            logger.warning(
+                f"⚠️ Clicked Submit but could not confirm success for: {job['title']} at {job['company']} "
+                "- treating as unconfirmed rather than assuming it went through"
+            )
+            return 'unconfirmed'
 
         except Exception as e:
             logger.error(f"Error applying to {job['title']} at {job['company']} - stopping short, nothing submitted: {e}")
             return 'error'
+
+    def _confirm_submission(self, timeout: int = 10) -> bool:
+        """
+        Check whether Submit actually succeeded - verified live: the real
+        success page redirects to .../apply/success?token=... . The
+        previous check only looked for 'apply' not in the URL, which always
+        missed, since the success URL still has 'apply' in its path
+        (.../apply/success), so a genuinely successful application was
+        being recorded as unconfirmed.
+        """
+        wait = WebDriverWait(self.driver, timeout)
+        try:
+            wait.until(lambda d: (
+                '/apply/success' in d.current_url.lower()
+                or d.find_elements(
+                    By.XPATH,
+                    "//*[contains(., 'Application sent') or contains(., 'ส่งใบสมัครแล้ว') "
+                    "or contains(., 'successfully') or contains(., 'สำเร็จ')]"
+                )
+            ))
+            return True
+        except TimeoutException:
+            return False
 
 
 class JobApplicationBot:
@@ -987,7 +1266,14 @@ class JobApplicationBot:
             if self.db.is_already_applied(job['job_id']):
                 logger.debug(f"Already applied for {job['title']} at {job['company']}")
                 continue
-            
+
+            # skipped_external / needs_manual_answer are deterministic per job -
+            # re-checking them live every run just wastes a browser navigation
+            # and (pre-fix) inserted a duplicate applications row each time
+            if (self.db.has_recorded_status(job['job_id'], 'skipped_external')
+                    or self.db.has_recorded_status(job['job_id'], 'needs_manual_answer')):
+                continue
+
             # ตรวจสอบเงื่อนไข filter
             if self.filter.matches(job):
                 filtered_jobs.append(job)
@@ -998,6 +1284,13 @@ class JobApplicationBot:
     def process_jobs(self, filtered_jobs: List[Dict]):
         """ประมวลผลและบันทึกงานที่พบ"""
         for job in filtered_jobs:
+            if self.db.has_job(job['job_id']):
+                continue  # งานเก่า - add_job() จะ reject อยู่แล้ว ไม่ต้องเสีย request ดึง JD ซ้ำ
+
+            # ดึง JD เต็มตอนเจองานใหม่เลย (ครั้งเดียว) เก็บลง DB เพื่อให้ TUI แสดง
+            # match score ได้ทันทีโดยไม่ต้องดึงซ้ำตอนเปิดดู
+            job['description'] = fetch_job_description(job.get('job_url', ''), job.get('job_board', ''))
+
             # บันทึกในฐานข้อมูล
             if self.db.add_job(job):
                 logger.info(f"✅ New job found: {job['title']} at {job['company']}")
@@ -1033,8 +1326,22 @@ class JobApplicationBot:
             return
 
         dry_run = apply_config.get('dry_run', True)
-        max_apps = apply_config.get('max_applications_per_run', 5)
+        max_apps_per_run = apply_config.get('max_applications_per_run', 5)
+        max_apps_per_day = apply_config.get('max_applications_per_day', 20)
         headless = apply_config.get('headless', False)
+
+        if dry_run:
+            max_apps = max_apps_per_run
+        else:
+            applied_today = self.db.count_applications_today()
+            remaining_today = max_apps_per_day - applied_today
+            if remaining_today <= 0:
+                logger.info(
+                    f"Daily application cap reached ({applied_today}/{max_apps_per_day}) "
+                    "- skipping auto-apply for the rest of today"
+                )
+                return
+            max_apps = min(max_apps_per_run, remaining_today)
 
         mode_label = "DRY RUN - ยังไม่ submit จริง" if dry_run else "REAL - จะ submit ใบสมัครจริง"
         logger.info(f"Starting JobsDB auto-apply [{mode_label}], cap: {max_apps} ใบสมัคร/รอบ")
@@ -1046,13 +1353,26 @@ class JobApplicationBot:
                 logger.error("Aborting auto-apply: JobsDB login failed")
                 return
 
+            resume_version = os.environ.get('RESUME_PATH', '')
             for job in jobsdb_jobs:
                 result = applier.apply_to_job(job)
-                if result == 'applied':
-                    self.db.record_application(job['job_id'], resume_version=os.environ.get('RESUME_PATH', ''))
-                elif result == 'skipped_limit':
+                if result == 'skipped_limit':
                     logger.info(f"Reached max_applications_per_run ({max_apps}) - stopping")
                     break
+                # Persist every per-job outcome except skipped_limit (a run-level
+                # stop condition, not a per-job outcome to record). filter_jobs()
+                # already excludes jobs with a prior deterministic outcome
+                # (skipped_external/needs_manual_answer), so no duplicate-row
+                # guard is needed here.
+                self.db.record_application(
+                    job['job_id'], resume_version=resume_version, status=result,
+                    notes=job.get('dry_run_screenshot', ''),
+                )
+                if result == 'applied':
+                    self.notifier.send_application_email(
+                        job, status=result, applied_date=datetime.now().isoformat(sep=' ', timespec='seconds'),
+                        resume_version=resume_version,
+                    )
         finally:
             applier.stop()
 

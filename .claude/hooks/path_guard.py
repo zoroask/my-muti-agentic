@@ -7,6 +7,10 @@ import json
 import os
 
 PROJECT_ROOT = os.path.normpath("D:/my-muti-agentic")
+MEMORY_ROOT = os.path.normpath(
+    r"C:\Users\zoroa\.claude\projects\D--my-muti-agentic\memory"
+)
+ALLOWED_ROOTS = (PROJECT_ROOT, MEMORY_ROOT)
 
 
 def main():
@@ -26,10 +30,13 @@ def main():
     else:
         normalized = os.path.normpath(os.path.join(PROJECT_ROOT, file_path))
 
-    if not normalized.startswith(PROJECT_ROOT + os.sep):
+    if not any(
+        normalized == root or normalized.startswith(root + os.sep)
+        for root in ALLOWED_ROOTS
+    ):
         print(
             f"[path-guard] BLOCKED: '{file_path}' is outside the project root.\n"
-            f"  Allowed: {PROJECT_ROOT}\n"
+            f"  Allowed: {', '.join(ALLOWED_ROOTS)}\n"
             f"  Request explicit user permission before modifying files outside this project.",
             file=sys.stderr,
         )

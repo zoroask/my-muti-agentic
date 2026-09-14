@@ -6,7 +6,7 @@ A Claude Code configuration library for designing, prototyping, and reviewing mu
 
 ### `.claude/agents/` — Subagent personas
 AI personas with a defined role, project knowledge, and behavioral rules. Each runs as a Claude Code subagent with its own context window:
-- Pipeline design personas (`pipeline-planner-agent`, `pipeline-frontend-coder-agent`, `pipeline-backend-coder-agent`, `pipeline-reviewer-agent`) — model the stages of a generation pipeline
+- Pipeline design personas (`pipeline-planner-main-agent`, `pipeline-frontend-coder-sub-agent`, `pipeline-backend-coder-sub-agent`, `pipeline-reviewer-sub-agent`) — Planner drives the pipeline, calling the other three as sub-agents
 - Personal-assistant personas (`pa-*` prefixed) — architect advisor, bug fixer, code mentor, project manager, workflow monitor, audit & testing
 - General-purpose personas — architect advisor, backend/frontend coder, bug fixer, code mentor, monitor, planner, project manager, reviewer, workflow monitor, base-agent
 
@@ -30,6 +30,7 @@ Invoke by referencing them in conversation, e.g. "use the debug-agent skill".
 | `/list-skills` | Show all available skills with usage |
 | `/agent-report` | Full audit of all agents |
 | `/review-agents` | Review all agents for quality and consistency |
+| `/audit-chain` | Delegate a task through Architect Advisor → Bug Fixer → PA Right-Hand Audit & Testing, looping on failure |
 
 ### `.claude/hooks/` — Safety hooks
 - `path_guard.py` (PreToolUse: Write/Edit/Read) — blocks file access outside this project directory

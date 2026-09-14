@@ -46,6 +46,13 @@ State clearly in the system prompt:
 ### Step 3 — Verify discovery
 Any `.claude/agents/*.md` file is automatically available as a subagent — no separate registration step is needed.
 
+### Naming convention: main agent vs. sub agent
+Every persona (except `base-agent.md` and the retired `monitor-agent.md`) is filed as `<kebab-name>-main-agent.md` or `<kebab-name>-sub-agent.md`:
+- **Main agent** — coordinates a cluster and calls its sub-agents; declares this with a `**Role:** Main Agent — ...` line at the top of its body and a `## Sub-Agents You Can Call` section naming exactly who and when
+- **Sub agent** — invoked directly, or by a main agent, to do one focused job; declares this with a `**Role:** Sub Agent — ...` line
+
+The `name:` frontmatter field does not change with this convention — it's still the string every invocation and cross-reference actually routes on. See `base-agent.md`'s Persona Roster for the current main/sub split.
+
 ---
 
 ## Agent Design Principles
@@ -63,7 +70,8 @@ Any `.claude/agents/*.md` file is automatically available as a subagent — no s
 | Hook | Trigger | Action |
 |---|---|---|
 | `PreToolUse` (Write/Edit/Read) | Before any file is read, written, or edited | Runs `path_guard.py` — blocks access outside `D:\my-muti-agentic\` |
+| `PreToolUse` (Bash) | Before any Bash command runs | Runs `env_guard.py` — blocks git commands that would force-add, commit, or push a `.env`-style file |
 | `PostToolUse` (Write/Edit) | After any `.py` file is written or edited | Runs `syntax_check.py` to catch Python syntax errors |
 
-Hook scripts: `.claude/hooks/path_guard.py`, `.claude/hooks/syntax_check.py`
+Hook scripts: `.claude/hooks/path_guard.py`, `.claude/hooks/env_guard.py`, `.claude/hooks/syntax_check.py`
 Hook config: `.claude/settings.json`
