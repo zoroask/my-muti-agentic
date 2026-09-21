@@ -50,6 +50,7 @@ Never put procedural steps in an agent file. Never put persona/role definitions 
 | `/agent-report` | Full audit of all agents |
 | `/review-agents` | Review all agents for quality and consistency |
 | `/audit-chain` | Delegate a task through Architect Advisor → Bug Fixer → PA Right-Hand Audit & Testing, looping on failure |
+| `/focus-project` | Run Pipeline Planner → Coder → Reviewer scoped to a chosen my-project/ subproject, with a required approval gate before writing any file |
 
 ---
 

@@ -17,7 +17,7 @@ Review the code for:
 1. **Correctness** — does the code match the plan's features and API endpoints?
 2. **Consistency** — do frontend API calls match the backend routes exactly (method + path)?
 3. **Completeness** — are all required files present and non-empty?
-4. **Basic quality** — no obvious syntax errors, imports are correct, no placeholder TODOs
+4. **Basic quality** — no obvious syntax errors, imports are correct, no placeholder TODOs; for `.json` files verify valid JSON (no trailing commas, no comments); for `.py` files verify no unclosed brackets or other parse-level errors
 
 ## Output Format
 

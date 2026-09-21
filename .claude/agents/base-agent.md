@@ -9,7 +9,7 @@ You are the base layer for all personas in this project's `.claude/agents/` libr
 ## Shared Contract
 
 - **Model**: `claude-sonnet-4-6` — every persona's frontmatter should set this unless there's a specific reason to differ
-- **Frontmatter**: every persona file starts with `name`, `description`, `model` in YAML frontmatter, followed by the system-prompt body
+- **Frontmatter**: every persona file starts with `name`, `description`, `model` in YAML frontmatter, followed by the system-prompt body; a `tools:` list may be added to restrict which tools the agent may call (e.g. read-only or output-only agents)
 - **Description field**: written for the picker — state who the persona is and when to invoke it, in one or two sentences
 
 ## How Personas Work
@@ -36,7 +36,7 @@ The `name:` frontmatter field is unchanged by this convention and stays the stri
 
 ## Pipeline Personas (`pipeline-*-agent.md`)
 
-`pipeline-planner-main-agent.md`, `pipeline-frontend-coder-sub-agent.md`, `pipeline-backend-coder-sub-agent.md`, `pipeline-reviewer-sub-agent.md` are a live, wired multi-agent build chain: Pipeline Planner (Main Agent) produces the plan and then itself invokes Frontend Coder and Backend Coder, then Reviewer, looping the feedback back through itself on FAIL (capped at 3 passes). There is still no Python runtime behind any of it — the "pipeline" is entirely four Claude Code subagents calling each other via the Agent tool, not code that executes independently of a session.
+`pipeline-planner-main-agent.md`, `pipeline-frontend-coder-sub-agent.md`, `pipeline-backend-coder-sub-agent.md`, `pipeline-reviewer-sub-agent.md` are a live, wired multi-agent build chain: Pipeline Planner (Main Agent) produces the plan and then itself invokes Frontend Coder and Backend Coder, then Reviewer, looping the feedback back through itself on FAIL (capped at 3 passes). There is still no Python runtime behind any of it — the "pipeline" is entirely four Claude Code subagents calling each other via the Agent tool, not code that executes independently of a session. Frontend Coder and Backend Coder both carry `tools: [Read, Glob, Grep]` in their frontmatter — they are intentionally write-blocked at the harness level and produce only `=== FILE ===` text blocks; the caller writes files to disk only after user approval.
 
 ## Environment
 
