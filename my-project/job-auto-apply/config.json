@@ -35,15 +35,6 @@
     ]
   },
   "notifications": {
-    "email": {
-      "enabled": true,
-      "smtp_server": "smtp.gmail.com",
-      "smtp_port": 587,
-      "from_email": "",
-      "password": "",
-      "to_email": "",
-      "_note": "Leave from_email/to_email/password blank and set GMAIL_USER / GMAIL_APP_PASS in a local .env file instead - see .env.example. config.json is the file people paste into chats, screenshots and repos, so it's the wrong place for a real email address or app password."
-    },
     "telegram": {
       "enabled": true,
       "telegram_token": "",

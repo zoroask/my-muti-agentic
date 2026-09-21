@@ -13,8 +13,6 @@ Job Auto Apply - TUI Control Panel
     x = Stop  (หยุดระบบ)
     r = Run once (สั่งค้นหาทันทีหนึ่งรอบ โดยไม่เริ่ม/หยุดระบบต่อเนื่อง)
     i = Setup (รัน setup.py - ติดตั้ง dependencies, เช็ค Chrome/Python version)
-    e = Email On/Off (เปิด/ปิด email notification - แก้ config.json's
-        notifications.email.enabled แล้วบันทึกลงไฟล์ทันที)
     a = Auto-Apply On/Off (เปิด/ปิด auto-apply - แก้ config.json's
         apply.enabled แล้วบันทึกลงไฟล์ทันที; apply.dry_run ไม่เปลี่ยน)
     n = Next page / p = Prev page (เลื่อนหน้า job list - ไม่ query DB ใหม่
@@ -216,7 +214,6 @@ class JobAutoApplyDashboard(App):
         ("x", "stop_system", "Stop"),
         ("r", "run_once", "Run once"),
         ("i", "run_setup", "Setup"),
-        ("e", "toggle_email", "Email On/Off"),
         ("a", "toggle_auto_apply", "Auto-Apply On/Off"),
         ("n", "next_page", "Next page"),
         ("p", "prev_page", "Prev page"),
@@ -250,7 +247,6 @@ class JobAutoApplyDashboard(App):
             yield Button("Stop (x)", id="btn_stop", variant="error")
             yield Button("Run once (r)", id="btn_once", variant="primary")
             yield Button("Setup (i)", id="btn_setup", variant="default")
-            yield Button("Email: ... (e)", id="btn_email_toggle", variant="default")
             yield Button("Auto-Apply: ... (a)", id="btn_autoapply_toggle", variant="default")
             yield Button("Refresh (F5)", id="btn_refresh", variant="default")
         yield Static(id="stats_bar")
@@ -279,7 +275,6 @@ class JobAutoApplyDashboard(App):
         self.update_status_bar()
         self.refresh_stats()
         self.refresh_log()
-        self._update_email_button()
         self._update_autoapply_button()
         self.refresh_autoapply_bar()
         self.set_interval(2.0, self.refresh_tick)
@@ -509,26 +504,6 @@ class JobAutoApplyDashboard(App):
         log_view = self.query_one("#log_view", RichLog)
         log_view.write("[dashboard] triggered a one-off search run...")
 
-    def action_toggle_email(self) -> None:
-        email_cfg = self.config.setdefault("notifications", {}).setdefault("email", {})
-        email_cfg["enabled"] = not email_cfg.get("enabled", False)
-        try:
-            with open(CONFIG_PATH, "w", encoding="utf-8") as f:
-                json.dump(self.config, f, ensure_ascii=False, indent=2)
-                f.write("\n")
-        except OSError as e:
-            self.query_one("#log_view", RichLog).write(f"[dashboard] failed to save config.json: {e}")
-            return
-        self._update_email_button()
-        state = "ON" if email_cfg["enabled"] else "OFF"
-        self.query_one("#log_view", RichLog).write(f"[dashboard] Email notifications turned {state}")
-
-    def _update_email_button(self) -> None:
-        enabled = self.config.get("notifications", {}).get("email", {}).get("enabled", False)
-        btn = self.query_one("#btn_email_toggle", Button)
-        btn.label = f"Email: {'ON' if enabled else 'OFF'} (e)"
-        btn.variant = "success" if enabled else "error"
-
     def action_toggle_auto_apply(self) -> None:
         apply_cfg = self.config.setdefault("apply", {})
         apply_cfg["enabled"] = not apply_cfg.get("enabled", False)
@@ -606,8 +581,6 @@ class JobAutoApplyDashboard(App):
             self.action_stop_system()
         elif event.button.id == "btn_setup":
             self.action_run_setup()
-        elif event.button.id == "btn_email_toggle":
-            self.action_toggle_email()
         elif event.button.id == "btn_autoapply_toggle":
             self.action_toggle_auto_apply()
         elif event.button.id == "btn_refresh":

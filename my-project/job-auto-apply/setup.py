@@ -140,8 +140,7 @@ class JobSystemSetup:
                 print("\n📝 Important settings to configure:")
                 print("  1. Search keywords (job titles)")
                 print("  2. Location (preferred work location)")
-                print("  3. Email settings (for notifications)")
-                print("  4. Telegram settings (optional)")
+                print("  3. Telegram settings (optional)")
                 print("\nEdit config.json with your preferred editor")
     
     def create_directories(self):
@@ -197,24 +196,18 @@ class JobSystemSetup:
         print("   nano config.json")
         print("   (or use your favorite editor)")
         
-        print("\n2. Set up email notifications (Gmail):")
-        print("   - Go to: https://myaccount.google.com/apppasswords")
-        print("   - Create app password for Mail")
-        print("   - Copy .env.example to .env and put the password there")
-        print("     (NOT in config.json - that file is not for secrets)")
-
-        print("\n3. Set up Telegram notifications (optional):")
+        print("\n2. Set up Telegram notifications (optional):")
         print("   - Chat with @BotFather on Telegram")
         print("   - Create a bot and get token")
-        print("   - Add token and chat ID to .env, same as above")
+        print("   - Copy .env.example to .env and add TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID")
 
-        print("\n4. Run the system:")
+        print("\n3. Run the system:")
         print("   python tui_dashboard.py           # TUI control panel (Start/Stop + live monitor)")
         print("   python job_auto_apply.py          # One-time search")
         print("   python job_scheduler.py           # Continuous scheduler (no UI)")
         print("   python db_analyzer.py --all       # View statistics")
 
-        print("\n5. View documentation:")
+        print("\n4. View documentation:")
         print("   cat README.md")
         
         print("\n" + "=" * 60)

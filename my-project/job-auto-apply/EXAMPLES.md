@@ -22,7 +22,6 @@ nano config.json
 Key settings:
 - `search.keywords`: ตำแหน่งงานที่ต้องการ เช่น "Python Developer"
 - `search.location`: สถานที่ เช่น "Thailand", "Remote"
-- `notifications.email`: Email เพื่อรับแจ้งเตือน
 
 ### Step 3: Run
 ```bash
@@ -50,14 +49,6 @@ python job_scheduler.py
     "keywords": ["Python", "Django", "FastAPI"],
     "exclude_keywords": ["junior", "intern"],
     "preferred_locations": ["Bangkok", "Remote"]
-  },
-  "notifications": {
-    "email": {
-      "enabled": true,
-      "from_email": "your-email@gmail.com",
-      "to_email": "your-email@gmail.com",
-      "password": "your-app-password"
-    }
   }
 }
 ```
@@ -71,7 +62,6 @@ python job_auto_apply.py
 - ค้นหาตำแหน่ง Python Developer ที่ Bangkok
 - Scrape จากทุก job board
 - Filter เอาเฉพาะ Python + Django/FastAPI
-- ส่ง email เมื่อเจองานใหม่
 
 ---
 
@@ -332,56 +322,6 @@ conn.close()
 
 ---
 
-### Advanced Example 5: Scheduled Email Reports
-
-สร้าง script สำหรับ weekly report:
-
-**weekly_report.py:**
-```python
-from db_analyzer import DatabaseAnalyzer
-from datetime import datetime
-import smtplib
-from email.mime.text import MIMEText
-
-analyzer = DatabaseAnalyzer()
-
-# Get stats
-stats = analyzer.get_overall_stats()
-
-# Generate HTML report
-html_report = f"""
-<html>
-<body>
-    <h2>Weekly Job Application Report</h2>
-    <p>Report Date: {datetime.now().strftime('%Y-%m-%d')}</p>
-    
-    <h3>Summary</h3>
-    <ul>
-        <li>New Jobs Found: {stats['total_jobs_found']}</li>
-        <li>Total Applications: {stats['total_applications']}</li>
-        <li>Unique Companies: {stats['unique_companies']}</li>
-    </ul>
-</body>
-</html>
-"""
-
-# Send email
-msg = MIMEText(html_report, 'html')
-msg['Subject'] = f'Weekly Job Report - {datetime.now().strftime("%Y-%m-%d")}'
-msg['From'] = 'your-email@gmail.com'
-msg['To'] = 'your-email@gmail.com'
-
-# Send via SMTP...
-```
-
-**Add to crontab:**
-```bash
-# Every Sunday at 09:00
-0 9 * * 0 cd /path/to/job-app && python weekly_report.py
-```
-
----
-
 ## 🐛 Troubleshooting
 
 ### Issue 1: "Chrome not found"
@@ -400,17 +340,7 @@ driver = webdriver.Chrome(
 )
 ```
 
-### Issue 2: "SMTP authentication failed"
-
-**Solution:**
-1. Use Gmail App Password (not regular password)
-2. Enable "Less secure apps" in Gmail settings
-3. Check SMTP settings:
-   - Server: smtp.gmail.com
-   - Port: 587
-   - Use TLS
-
-### Issue 3: "LinkedIn 403 Forbidden"
+### Issue 2: "LinkedIn 403 Forbidden"
 
 **Solution:**
 ```json
@@ -422,7 +352,7 @@ driver = webdriver.Chrome(
 }
 ```
 
-### Issue 4: "Database locked"
+### Issue 3: "Database locked"
 
 **Solution:**
 ```bash

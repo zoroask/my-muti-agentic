@@ -11,9 +11,6 @@ import requests
 from html import escape
 import ast
 from bs4 import BeautifulSoup
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -319,101 +316,12 @@ class NotificationManager:
     """ส่งการแจ้งเตือนผ่านหลายช่องทาง"""
     
     def __init__(self, config: Dict):
-        self.email_config = dict(config.get('email', {}))
-        # Prefer real secrets from environment (.env) over whatever is sitting
-        # in config.json in plain text - see the _note in config.json's
-        # notifications.email block. GMAIL_USER doubles as from_email/to_email
-        # (self-notify: alerts get sent from your account to your account).
-        gmail_user = os.environ.get('GMAIL_USER', '')
-        if gmail_user:
-            self.email_config['from_email'] = gmail_user
-            self.email_config['to_email'] = gmail_user
-        self.email_config['password'] = os.environ.get('GMAIL_APP_PASS', self.email_config.get('password', ''))
-
         self.telegram_token = os.environ.get(
             'TELEGRAM_BOT_TOKEN', config.get('telegram', {}).get('telegram_token', config.get('telegram_token', ''))
         )
         self.telegram_chat_id = os.environ.get(
             'TELEGRAM_CHAT_ID', config.get('telegram', {}).get('telegram_chat_id', config.get('telegram_chat_id', ''))
         )
-
-    def _send_html_email(self, subject: str, html_body: str) -> bool:
-        """Shared SMTP send path for any HTML email - both new-job alerts and
-        application-outcome summaries use this."""
-        if not self.email_config.get('enabled'):
-            return False
-        try:
-            msg = MIMEMultipart()
-            msg['From'] = self.email_config['from_email']
-            msg['To'] = self.email_config['to_email']
-            msg['Subject'] = subject
-            msg.attach(MIMEText(html_body, 'html'))
-
-            server = smtplib.SMTP(self.email_config['smtp_server'], self.email_config['smtp_port'], timeout=10)
-            server.starttls()
-            server.login(self.email_config['from_email'], self.email_config['password'])
-            server.send_message(msg)
-            server.quit()
-
-            logger.info(f"Email notification sent: {subject}")
-            return True
-        except Exception as e:
-            logger.error(f"Error sending email: {e}")
-            return False
-
-    def send_email_notification(self, subject: str, body: str, job_data: Dict = None):
-        """ส่ง email notification"""
-        if job_data:
-            return self._send_html_email(subject, self._format_job_html(job_data))
-        if not self.email_config.get('enabled'):
-            return False
-        try:
-            msg = MIMEMultipart()
-            msg['From'] = self.email_config['from_email']
-            msg['To'] = self.email_config['to_email']
-            msg['Subject'] = subject
-            msg.attach(MIMEText(body, 'plain'))
-
-            server = smtplib.SMTP(self.email_config['smtp_server'], self.email_config['smtp_port'], timeout=10)
-            server.starttls()
-            server.login(self.email_config['from_email'], self.email_config['password'])
-            server.send_message(msg)
-            server.quit()
-
-            logger.info(f"Email notification sent: {subject}")
-            return True
-        except Exception as e:
-            logger.error(f"Error sending email: {e}")
-            return False
-
-    def send_application_email(self, job: Dict, status: str, applied_date: str, resume_version: str) -> bool:
-        """Send a summary email after an auto-apply attempt, for outcomes
-        that mean Submit was actually clicked ('applied' or 'unconfirmed')."""
-        status_label = {
-            'applied': 'Applied (confirmed)',
-            'unconfirmed': 'Submitted (unconfirmed - please verify manually)',
-        }.get(status, status)
-        emoji = '✅' if status == 'applied' else '⚠️'
-        subject = f"{emoji} {status_label}: {job.get('title', 'N/A')} at {job.get('company', 'N/A')}"
-        resume_name = os.path.basename(resume_version) if resume_version else 'N/A'
-        color = '#1D7A4C' if status == 'applied' else '#A56A05'
-        html = f"""
-        <html>
-            <body style="font-family: Arial, sans-serif;">
-                <h2 style="color:{color};">{status_label}</h2>
-                <p><strong>ตำแหน่ง:</strong> {escape(job.get('title', 'N/A'))}</p>
-                <p><strong>บริษัท:</strong> {escape(job.get('company', 'N/A'))}</p>
-                <p><strong>สถานที่:</strong> {escape(job.get('location', 'N/A'))}</p>
-                <p><strong>เงินเดือน:</strong> {escape(job.get('salary', 'N/A'))}</p>
-                <p><strong>แพลตฟอร์ม:</strong> {escape(job.get('job_board', 'N/A'))}</p>
-                <p><strong>สถานะ:</strong> {escape(status)}</p>
-                <p><strong>เวลาที่สมัคร:</strong> {escape(applied_date)}</p>
-                <p><strong>เรซูเม่ที่ใช้:</strong> {escape(resume_name)}</p>
-                <p><a href="{escape(job.get('job_url', '#'))}">ดูประกาศงาน</a></p>
-            </body>
-        </html>
-        """
-        return self._send_html_email(subject, html)
 
     def send_telegram_notification(self, message: str):
         """ส่ง Telegram notification"""
@@ -436,24 +344,6 @@ class NotificationManager:
             logger.error(f"Error sending Telegram notification: {e}")
 
         return False
-
-    @staticmethod
-    def _format_job_html(job_data: Dict) -> str:
-        """สร้าง HTML format สำหรับงาน"""
-        return f"""
-        <html>
-            <body style="font-family: Arial, sans-serif;">
-                <h2>✨ ตำแหน่งงานใหม่ที่ตรงกับเงื่อนไขของคุณ</h2>
-                <p><strong>ตำแหน่ง:</strong> {escape(job_data.get('title', 'N/A'))}</p>
-                <p><strong>บริษัท:</strong> {escape(job_data.get('company', 'N/A'))}</p>
-                <p><strong>เงินเดือน:</strong> {escape(job_data.get('salary', 'N/A'))}</p>
-                <p><strong>สถานที่:</strong> {escape(job_data.get('location', 'N/A'))}</p>
-                <p><strong>Platform:</strong> {escape(job_data.get('job_board', 'N/A'))}</p>
-                <p><a href="{escape(job_data.get('job_url', '#'))}">ดูรายละเอียดตำแหน่งงาน</a></p>
-            </body>
-        </html>
-        """
-
 
 def make_job_id(board: str, url_or_key: str) -> str:
     """
@@ -1296,9 +1186,6 @@ class JobApplicationBot:
                 logger.info(f"✅ New job found: {job['title']} at {job['company']}")
 
                 # ส่งการแจ้งเตือน
-                subject = f"🎯 {job['title']} at {job['company']}"
-                self.notifier.send_email_notification(subject, "", job)
-
                 message = f"""
 🎯 <b>New Job Match!</b>
 <b>Position:</b> {escape(job['title'])}
@@ -1368,11 +1255,6 @@ class JobApplicationBot:
                     job['job_id'], resume_version=resume_version, status=result,
                     notes=job.get('dry_run_screenshot', ''),
                 )
-                if result == 'applied':
-                    self.notifier.send_application_email(
-                        job, status=result, applied_date=datetime.now().isoformat(sep=' ', timespec='seconds'),
-                        resume_version=resume_version,
-                    )
         finally:
             applier.stop()
 

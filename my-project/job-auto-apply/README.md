@@ -7,7 +7,7 @@
 - 🔍 **Multi-Platform Scraping**: รองรับ Indeed, JobsDB (ตำแหน่งและสถานที่สำหรับ JobsDB ตั้งค่าแยกได้ผ่าน `JOB_APPLY` / `JOB_WHERE` ใน `.env`). JobThai ยังไม่ทำงาน - ดู [สถานะแต่ละแพลตฟอร์ม](#-สถานะแต่ละ-job-board) ด้านล่าง. LinkedIn ถูกถอดออกแล้ว (ติด anti-bot wall ถาวร, ดูรายละเอียดใน git history)
 - 🎯 **Smart Filtering**: กรองงานตามเงื่อนไข (เงินเดือน, ตำแหน่ง, สถานที่)
 - 🗄️ **Database Tracking**: บันทึกประวัติการสมัครและ apply แล้ว
-- 📬 **Multi-Channel Notifications**: ส่ง Email + Telegram แจ้งเตือนเมื่อเจองานใหม่
+- 📬 **Telegram Notifications**: ส่ง Telegram แจ้งเตือนเมื่อเจองานใหม่
 - ⏰ **Auto Scheduling**: รัน automatic ตามเวลาที่กำหนด
 - 📊 **Statistics**: ติดตามสถิติการสมัครงาน
 
@@ -57,33 +57,7 @@ pip install -r requirements.txt
 }
 ```
 
-### 3. ตั้งค่า Email Notifications
-
-เปิดใช้งานใน `config.json`:
-
-```json
-"notifications": {
-  "email": {
-    "enabled": true,
-    "smtp_server": "smtp.gmail.com",
-    "smtp_port": 587
-  }
-}
-```
-
-แล้วใส่บัญชี Gmail จริงใน `.env` (ห้ามใส่ email/password จริงใน `config.json` เพราะเป็นไฟล์ที่มักถูก commit/แชร์):
-
-```
-GMAIL_USER=your-email@gmail.com
-GMAIL_APP_PASS=your-app-password
-```
-
-**หมายเหตุ:** สำหรับ Gmail ต้องสร้าง "App Password" (ใช้แทน password ปกติไม่ได้):
-1. ไปที่ https://myaccount.google.com/apppasswords
-2. เลือก Mail และ Device
-3. สร้าง password และคัดลอกลงใน `GMAIL_APP_PASS` ใน `.env`
-
-### 4. ตั้งค่า Telegram Notifications
+### 3. ตั้งค่า Telegram Notifications
 
 ```json
 "notifications": {
@@ -100,7 +74,7 @@ GMAIL_APP_PASS=your-app-password
 2. Type `/newbot` และทำตามขั้นตอน
 3. คัดลอก token ลงใน config
 
-### 5. ตั้งค่า Schedule
+### 4. ตั้งค่า Schedule
 
 ```json
 "schedule": {
@@ -212,13 +186,9 @@ conn.close()
 
 ## 📧 Notifications
 
-### Email Alerts
-- ได้รับ email เมื่อเจองานใหม่ที่ตรงกับเงื่อนไข
-- เนื้อหาประกอบไปด้วย: ตำแหน่ง, บริษัท, เงินเดือน, สถานที่, link
-
 ### Telegram Alerts
 - ได้รับ message ใน Telegram เมื่อเจองานใหม่ที่ตรงกับเงื่อนไข
-- ข้อมูลเดียวกับ email แต่อยู่ใน Telegram
+- ข้อมูลประกอบไปด้วย: ตำแหน่ง, บริษัท, เงินเดือน, สถานที่, link
 
 ## 🤖 Auto-Apply (JobsDB) - Experimental
 
@@ -274,13 +244,6 @@ passwordless (ระบบจะส่ง one-time code ไปที่อีเ
   `job_auto_apply.py` แล้ว (ดูได้ใน git history ถ้าต้องการกู้คืนมาแก้ต่อ)
 
 ## 🔧 การแก้ไขปัญหา
-
-### Email notification ไม่ส่ง
-- ตรวจสอบ `GMAIL_USER` / `GMAIL_APP_PASS` ใน `.env`
-- ต้องเป็น Gmail App Password (16 ตัวอักษร จาก https://myaccount.google.com/apppasswords)
-  ไม่ใช่ password ปกติของบัญชี - ต้องเปิด 2-Step Verification ก่อนถึงจะสร้างได้
-- ถ้า error เป็น `534 ... Application-specific password required` แปลว่า
-  password ที่ใส่ไม่ใช่ App Password ตัวจริง
 
 ### Telegram notification ไม่ส่ง
 - ตรวจสอบ `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` ใน `.env`
