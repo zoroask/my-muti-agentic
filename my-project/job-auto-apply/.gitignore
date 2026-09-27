@@ -1,6 +1,7 @@
 job_applications.db
 job_applications.db-wal
 job_applications.db-shm
+job_applications.db*.bak-*
 *.log
 job_data_export.json
 dry_run_*.png
@@ -14,3 +15,4 @@ __pycache__/
 
 # Personal documents - never commit (real resume PDFs, contains PII)
 resumes/
+data/

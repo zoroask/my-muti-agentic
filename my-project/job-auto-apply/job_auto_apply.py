@@ -341,7 +341,8 @@ class NotificationManager:
                 logger.info("Telegram notification sent")
                 return True
         except Exception as e:
-            logger.error(f"Error sending Telegram notification: {e}")
+            safe_error = str(e).replace(self.telegram_token, "<redacted>")
+            logger.error(f"Error sending Telegram notification: {safe_error}")
 
         return False
 
