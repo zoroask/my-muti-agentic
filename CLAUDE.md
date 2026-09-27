@@ -2,12 +2,13 @@
 
 ## Strict Rules (Always Enforced)
 
-1. **English only** — All responses, comments, commit messages, and documentation must be written in English. No exceptions.
+1. **English only** — All responses, comments, commit messages, and documentation must be written in English. No exceptions, except Thai trigger keywords in `.claude/skills/README.md`, which exist only so Thai requests match a skill. Replies stay English regardless of the request language.
 
 2. **No modifications outside this project** — Never read, write, edit, or delete any file outside `D:\my-muti-agentic\` without explicit user permission. This includes system files, other projects, and global config files.
 
 3. **Response format** — Every response must begin with:
    - **Summary** — detail as bullet points explaining what and why
+   - **Workflow** — the flow of the thing being discussed, as a numbered or ASCII step diagram: what moves through which stage, in order. Show it whenever a request involves more than one stage, tool, or agent; write "N/A" for a single-step answer. This is the system's flow, not my task list — the task list belongs in Action plan.
    - **Action plan** — bullet list of steps to be taken
    - **Before / After** — show exact changes for any code or config edit
    - **STOP** — wait for explicit user approval ("yes") before executing any change. Never auto-execute after showing a plan.
@@ -17,7 +18,7 @@
 ---
 
 ## Project Purpose
-A Claude Code configuration library for designing and prototyping multi-agent system architectures. This project provides reusable subagent personas (`.claude/agents/*.md`), procedural skills (`.claude/skills/*.md`), and slash commands (`.claude/commands/*.md`) for building, reviewing, and iterating on multi-agent system designs directly inside Claude Code. There is no standalone runnable application — everything here executes inside a Claude Code session.
+A Claude Code configuration library for designing and prototyping multi-agent system architectures. This project provides reusable subagent personas (`.claude/agents/*.md`), procedural skills (`.claude/skills/*.md`), and slash commands (`.claude/commands/*.md`) for building, reviewing, and iterating on multi-agent system designs directly inside Claude Code. All model work executes inside a Claude Code session. `agent_runtime/` is a stdlib-only Python state machine that sequences those subagent invocations and enforces pass caps and approval gates as code — it never calls an LLM API itself, so it adds no cost.
 
 ---
 
@@ -51,6 +52,16 @@ Never put procedural steps in an agent file. Never put persona/role definitions 
 | `/review-agents` | Review all agents for quality and consistency |
 | `/audit-chain` | Delegate a task through Architect Advisor → Bug Fixer → PA Right-Hand Audit & Testing, looping on failure |
 | `/focus-project` | Run Pipeline Planner → Coder → Reviewer scoped to a chosen my-project/ subproject, with a required approval gate before writing any file |
+| `/run-agents` | Drive a chain through `agent_runtime/`, which enforces agent order, the 3-pass cap and approval gates in code |
+| `/full-audit-and-testing` | Audit and test every file in the project and write `audit-report.html` |
+| `/commit-push-github` | Commit and push to GitHub, gated on the audit and test suite |
+
+---
+
+## Skill Triggers
+At the start of every chat, and whenever a request matches a trigger below (English or Thai, or the same intent in other words), read the matching skill file in `.claude/skills/` before acting and follow it. Skills never override Rule 3. Reply in English whatever the trigger language.
+
+@.claude/skills/README.md
 
 ---
 
