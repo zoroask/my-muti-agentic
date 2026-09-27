@@ -2,25 +2,7 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python \"D:/my-muti-agentic/.claude/hooks/path_guard.py\""
-          }
-        ]
-      },
-      {
-        "matcher": "Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python \"D:/my-muti-agentic/.claude/hooks/path_guard.py\""
-          }
-        ]
-      },
-      {
-        "matcher": "Read",
+        "matcher": "Write|Edit|Read|NotebookEdit|Glob|Grep|Bash|PowerShell",
         "hooks": [
           {
             "type": "command",

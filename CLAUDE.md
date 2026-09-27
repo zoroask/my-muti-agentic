@@ -24,8 +24,8 @@ A Claude Code configuration library for designing and prototyping multi-agent sy
 
 ## Hooks
 Project hooks are configured in `.claude/settings.json`.
-- **PreToolUse (Write/Edit/Read)**: `path_guard.py` — blocks access to files outside `D:\my-muti-agentic\`
-- **PreToolUse (Bash)**: `env_guard.py` — blocks git commands that would force-add, commit, or push a `.env`-style file
+- **PreToolUse (Write/Edit/Read/NotebookEdit/Glob/Grep/Bash/PowerShell)**: `path_guard.py` — blocks paths outside `D:\my-muti-agentic\` (the memory directory is also allowed). Checks `file_path`, `notebook_path`, `path` and batch-edit targets. For Bash/PowerShell it catches only *literal* absolute paths — a variable or a `cd` defeats it, so treat that part as a speed bump, not containment.
+- **PreToolUse (Bash/PowerShell)**: `env_guard.py` — blocks git commands that would force-add, commit, or push a `.env`-style file, including a force-add of a directory that would sweep one in. Fails closed if git cannot be queried.
 - **PostToolUse (Write/Edit .py files)**: `syntax_check.py` — catches Python syntax errors immediately
 - See `.claude/settings.json` and `.claude/hooks/` for details
 

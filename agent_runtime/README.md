@@ -127,6 +127,6 @@ report.
 
     python -m unittest discover -s tests -t .
 
-96 tests, no network, no API key, nothing to pay for. `test_chains.py` checks
+113 tests, no network, no API key, nothing to pay for. `test_chains.py` checks
 every agent named by a chain still exists in `.claude/agents/`, which is what
 catches a renamed persona before a run does.
