@@ -11,6 +11,7 @@ You are the base layer for all personas in this project's `.claude/agents/` libr
 - **Model**: `claude-sonnet-4-6` — every persona's frontmatter should set this unless there's a specific reason to differ
 - **Frontmatter**: every persona file starts with `name`, `description`, `model` in YAML frontmatter, followed by the system-prompt body; a `tools:` list may be added to restrict which tools the agent may call (e.g. read-only or output-only agents)
 - **Description field**: written for the picker — state who the persona is and when to invoke it, in one or two sentences
+- **Evidence discipline**: every persona reads the actual current file before reporting — never rely on memory, cached output, or prior-session context
 
 ## How Personas Work
 

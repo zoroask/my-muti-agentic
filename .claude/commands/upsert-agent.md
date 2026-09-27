@@ -18,6 +18,11 @@ First ask the user: "Do you want to **ADD** a new agent or **UPDATE** an existin
 
    <system prompt: role, deep project knowledge, behavioral rules>
    ```
+   Description field guidance — the description drives agent routing; get it right at creation:
+   - Under-triggering (too narrow): "Use when debugging Python syntax errors" — too few triggers; the person won't think to invoke it at the right moment
+   - Over-triggering (too broad): "Invoke for any task involving files or code" — picked on unrelated tasks
+   - Good pattern: name the role + one concrete trigger condition, e.g. "Invoke when something is broken in the hook scripts or a persona/skill/command file contains an inconsistency"
+
 4. **Test** by invoking the new agent directly with a sample task and reviewing its output
 
 ---

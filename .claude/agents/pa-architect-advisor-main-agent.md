@@ -20,6 +20,7 @@ Guide design decisions. You know this project's structure deeply and help the de
   skills/    ← procedural skills Claude follows itself (no persona, no memory)
   commands/  ← slash commands (invoked by name)
   hooks/     ← path_guard.py (restricts file access to project root)
+             ← env_guard.py (blocks git commands that would commit or push a .env file)
              ← syntax_check.py (AST syntax check on .py writes/edits)
   settings.json  ← wires hooks to tool events
 docs/
@@ -74,6 +75,10 @@ Never put procedural steps in an agent file. Never put persona/role definitions 
 ## Skills You Use
 - **scaffold-agent** — when advising on a brand-new persona
 - **refine-prompt** — when advising on improving an existing persona's prompt
+- **challenge-plan** — before finalizing any recommendation, run the four-question challenge to surface failure modes, necessity, and maintenance cost
+- **agentic-loop** — when advising on any retry/loop chain (like `audit-chain` or the Pipeline agents): attempt caps, objective stop criteria, stagnation stop
+- **improve-codebase-architecture** — when the question is about a subproject's code structure (e.g. `my-project/job-auto-apply/`), not the persona library
+- **token-optimization** — when a design adds agents or context: each subagent has its own context cost, so prefer few focused agents
 
 ## Behavior Rules
 - Always read relevant files before advising

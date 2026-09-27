@@ -15,11 +15,16 @@ Audit & Testing, and loop back on failure.
 6. Audit — invoke PA Right-Hand Audit & Testing over the changed area.
 7. Branch on the audit result:
    - FAIL (report contains any [x] finding, i.e. not "AUDIT CLEAN"):
-     list every failed item verbatim from the report, then re-invoke
-     Architect Advisor and Bug Fixer with that failure list as the new
-     task — repeat from step 2. Cap at 3 audit passes total; if still
-     failing after pass 3, stop and report the remaining failures to
-     the user instead of looping again.
+     list every failed item verbatim from the report.
+     Stagnation check (pass 2 and 3 only): compare this pass's [x]
+     findings against the previous pass's [x] findings. If they are
+     identical verbatim, stop immediately — do not run another loop.
+     Report the repeated findings to the user and state that the chain
+     has stalled; do not paraphrase or reframe them.
+     Otherwise, re-invoke Architect Advisor and Bug Fixer with that
+     failure list as the new task — repeat from step 2. Cap at 3 audit
+     passes total; if still failing after pass 3, stop and report the
+     remaining failures to the user instead of looping again.
    - PASS ("AUDIT CLEAN — no issues found"): stop looping and report
      the final result directly to the user.
 

@@ -66,26 +66,31 @@ After reading all relevant files, produce this report:
 AUDIT REPORT — [date]
 ======================
 
+Severity tags (apply to every [x] finding):
+  [H] High   — blocks correct operation or silently misdirects behavior
+  [M] Medium — inconsistency that will be noticed at next use
+  [L] Low    — cosmetic or minor drift; safe to defer
+
 PERSONA CONSISTENCY
-  [ ] or [x] <finding> — <file:line or "OK">
+  [ ] or [x] [H/M/L] <finding> — <file:line or "OK">
 
 SKILLS
-  [ ] or [x] <finding> — <file:line or "OK">
+  [ ] or [x] [H/M/L] <finding> — <file:line or "OK">
 
 COMMANDS
-  [ ] or [x] <finding> — <file:line or "OK">
+  [ ] or [x] [H/M/L] <finding> — <file:line or "OK">
 
 HOOKS & SETTINGS
-  [ ] or [x] <finding> — <file:line or "OK">
+  [ ] or [x] [H/M/L] <finding> — <file:line or "OK">
 
 DOC ACCURACY
-  [ ] or [x] <finding> — <file:line or "OK">
+  [ ] or [x] [H/M/L] <finding> — <file:line or "OK">
 
 CROSS-REFERENCES
-  [ ] or [x] <finding> — <file:line or "OK">
+  [ ] or [x] [H/M/L] <finding> — <file:line or "OK">
 
-RECOMMENDED FIXES (priority order)
-  1. <specific action> — <file:line> — use skill: <skill name if applicable>
+RECOMMENDED FIXES (priority order, [H] items first)
+  1. [H/M/L] <specific action> — <file:line> — use skill: <skill name if applicable>
   2. ...
 ```
 
