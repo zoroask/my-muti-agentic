@@ -31,8 +31,12 @@ def staged_env_files():
             ["git", "diff", "--cached", "--name-only"],
             cwd=PROJECT_ROOT, capture_output=True, text=True, timeout=10,
         )
-    except Exception:
-        return []
+    except Exception as e:
+        print(f"[env-guard] BLOCKED: cannot check staged files ({e}); failing closed.", file=sys.stderr)
+        sys.exit(2)
+    if result.returncode != 0:
+        print("[env-guard] BLOCKED: 'git diff --cached' failed; cannot confirm no .env is staged; failing closed.", file=sys.stderr)
+        sys.exit(2)
     return [f for f in result.stdout.splitlines() if is_env_file(f)]
 
 
