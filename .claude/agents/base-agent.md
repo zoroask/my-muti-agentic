@@ -27,12 +27,20 @@ The `name:` frontmatter field is unchanged by this convention and stays the stri
 
 ## Persona Roster (design/documentation personas)
 
-- **Project Manager** (`project-manager-main-agent.md`) / **PA Project Manager** (`pa-project-manager-main-agent.md`) — Main Agent: status, priorities, next actions; calls Workflow Monitor and Bug Fixer
-- **Workflow Monitor** (`workflow-monitor-sub-agent.md`) / **PA Workflow Monitor** (`pa-workflow-monitor-sub-agent.md`) — Sub Agent: status dashboard for this repo's content
-- **Code Mentor** (`code-mentor-sub-agent.md`) / **PA Code Mentor** (`pa-code-mentor-sub-agent.md`) — Sub Agent: explains and teaches this project's content
-- **Bug Fixer** (`bug-fixer-sub-agent.md`) / **PA Bug Fixer** (`pa-bug-fixer-sub-agent.md`) — Sub Agent: debugs the surviving `.claude/hooks/*.py` scripts and persona/skill/command content inconsistencies
-- **Architect Advisor** (`architect-advisor-main-agent.md`) / **PA Architect Advisor** (`pa-architect-advisor-main-agent.md`) — Main Agent: design advice for this persona/skill/command library; calls Code Mentor, Bug Fixer, PA Right-Hand Audit & Testing
-- **PA Right-Hand Audit & Testing** (`pa-right-hand-audit-testing-sub-agent.md`) — Sub Agent: full-project audit across agents, skills, commands, hooks, and docs; callable by any main agent in either cluster
+- **Project Manager** (`project-manager-main-agent.md`) — Main Agent: status, priorities, next actions; calls Workflow Monitor and Bug Fixer
+- **Workflow Monitor** (`workflow-monitor-sub-agent.md`) — Sub Agent: status dashboard for this repo's content
+- **Code Mentor** (`code-mentor-sub-agent.md`) — Sub Agent: explains and teaches this project's content
+- **Bug Fixer** (`bug-fixer-sub-agent.md`) — Sub Agent: debugs the surviving `.claude/hooks/*.py` scripts and persona/skill/command content inconsistencies
+- **Python Automation Lead** (`python-automation-lead-main-agent.md`) — Main Agent: splits multi-area automation tasks; calls the five automation specialists below
+- **API Automation Coder** (`automation-api-sub-agent.md`) — Sub Agent: scripts that call REST/GraphQL APIs
+- **Scraping Automation Coder** (`automation-scraping-sub-agent.md`) — Sub Agent: scripts that extract data from web pages
+- **Scheduled Jobs Coder** (`automation-scheduler-sub-agent.md`) — Sub Agent: runs finished scripts on a Windows schedule
+- **Desktop Automation Coder** (`automation-desktop-sub-agent.md`) — Sub Agent: scripts that control Windows desktop apps
+- **Files & Excel Automation Coder** (`automation-files-sub-agent.md`) — Sub Agent: file, CSV and Excel automation scripts
+- **Automation Reviewer** (`automation-reviewer-sub-agent.md`) — Sub Agent: read-only PASS/FAIL review of automation scripts; its findings feed the fix loop (max 3 rounds)
+  All automation agents follow the `python-automation-standards` skill and write scripts to `my-project/<subproject>/`.
+- **Architect Advisor** (`architect-advisor-main-agent.md`) — Main Agent: design advice for this persona/skill/command library; calls Code Mentor, Bug Fixer, PA Right-Hand Audit & Testing
+- **PA Right-Hand Audit & Testing** (`pa-right-hand-audit-testing-sub-agent.md`) — Sub Agent: full-project audit across agents, skills, commands, hooks, and docs; callable by Architect Advisor and Project Manager
 - **Monitor** — retired; see `monitor-agent.md`
 
 ## Pipeline Personas (`pipeline-*-agent.md`)

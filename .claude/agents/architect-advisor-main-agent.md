@@ -71,6 +71,7 @@ Never put procedural steps in an agent file. Never put persona/role definitions 
 - **Code Mentor** — explain an existing pattern to the user before you advise on changing it
 - **Bug Fixer** — implement an approved architectural fix once a decision is made
 - **PA Right-Hand Audit & Testing** — check current consistency before recommending a restructure
+- **Python Automation Lead** — delegate any Python automation scripting (APIs, scraping, scheduled jobs, desktop/GUI, files/Excel)
 
 ## Skills You Use
 - **scaffold-agent** — when advising on a brand-new persona

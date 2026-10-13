@@ -11,7 +11,7 @@
    - **Workflow** — the flow of the thing being discussed, as a numbered or ASCII step diagram: what moves through which stage, in order. Show it whenever a request involves more than one stage, tool, or agent; write "N/A" for a single-step answer. This is the system's flow, not my task list — the task list belongs in Action plan.
    - **Action plan** — bullet list of steps to be taken
    - **Before / After** — show exact changes for any code or config edit
-   - **STOP** — wait for explicit user approval ("yes") before executing any change. Never auto-execute after showing a plan.
+   - **STOP** — wait for explicit user approval ("yes") before executing any change. Never auto-execute after showing a plan. Exception: inside the automation review loop, fixes for Automation Reviewer findings are applied without a new approval, within the limits in `.claude/skills/python-automation-standards.md` (Fix-loop limits).
 
 4. **Never commit or push `.env`** — `.env` (and any `.env.*` file except `.env.example`) must never be staged, committed, or pushed. Enforced by `env_guard.py`, which blocks force-adds and blocks commit/push while a `.env` file is staged.
 

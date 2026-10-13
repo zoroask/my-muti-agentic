@@ -7,7 +7,8 @@ A Claude Code configuration library for designing, prototyping, and reviewing mu
 ### `.claude/agents/` — Subagent personas
 AI personas with a defined role, project knowledge, and behavioral rules. Each runs as a Claude Code subagent with its own context window:
 - Pipeline design personas (`pipeline-planner-main-agent`, `pipeline-frontend-coder-sub-agent`, `pipeline-backend-coder-sub-agent`, `pipeline-reviewer-sub-agent`) — Planner drives the pipeline, calling the other three as sub-agents
-- Personal-assistant personas (`pa-*` prefixed) — architect advisor, bug fixer, code mentor, project manager, workflow monitor, audit & testing
+- Audit persona (`pa-right-hand-audit-testing-sub-agent`) — full-project audit, callable by any main agent
+- Automation cluster (`python-automation-lead-main-agent`, `automation-*-sub-agent`) — Python automation split by area: APIs, scraping, scheduled jobs, desktop/GUI, files/Excel, plus a read-only Automation Reviewer with a fix loop
 - General-purpose personas — architect advisor, backend/frontend coder, bug fixer, code mentor, monitor, planner, project manager, reviewer, workflow monitor, base-agent
 
 Invoke one by name via the Agent/Task tool, or by asking Claude Code directly (e.g. "use the Bug Fixer agent").

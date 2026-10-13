@@ -25,3 +25,4 @@ Reusable prompt skills for this project.
 | `improve-codebase-architecture.md` | Find shallow modules and propose deepening refactors | "improve architecture", "refactor opportunities" / "ปรับโครงสร้างโค้ด", "หาจุดรีแฟกเตอร์" |
 | `agentic-loop.md` | Observe-decide-act-verify loop with attempt caps and stagnation stop | "keep trying until CI passes", "fix the failing CI" / "แก้จนกว่า CI จะผ่าน", "ลองซ้ำจนผ่าน" |
 | `verification-rigoureuse.md` | Sourced, certainty-labelled factual answers | "verify this", "cite sources", "is this true" / "ตรวจสอบข้อเท็จจริง", "อ้างอิงแหล่งที่มา", "จริงไหม" |
+| `python-automation-standards.md` | Shared rules for Python automation scripts (location, approval flow, script checklist) | "automation script", "write a python bot", "automate this task" / "สคริปต์อัตโนมัติ", "เขียนบอท python", "ทำงานอัตโนมัติ" |
