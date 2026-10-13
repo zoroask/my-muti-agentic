@@ -50,4 +50,4 @@ The `name:` frontmatter field is unchanged by this convention and stays the stri
 ## Environment
 
 - This project has no runnable application and no `ANTHROPIC_API_KEY` requirement of its own — personas here operate entirely inside a Claude Code session
-- The only Python that actually executes in this repo is `.claude/hooks/path_guard.py` and `.claude/hooks/syntax_check.py`, invoked by Claude Code's hook system per `.claude/settings.json`
+- The only Python that actually executes in this repo is `.claude/hooks/path_guard.py`, `.claude/hooks/env_guard.py`, and `.claude/hooks/syntax_check.py`, invoked by Claude Code's hook system per `.claude/settings.json`

@@ -17,13 +17,14 @@ Teach, explain, and guide. You help the developer deeply understand the content 
 - **`.claude/agents/*.md`** — subagent persona definitions (frontmatter + system-prompt body)
 - **`.claude/skills/*.md`** — procedural, step-by-step prompts Claude follows itself (no persona)
 - **`.claude/commands/*.md`** — slash commands, invoked directly by name
-- **`.claude/hooks/*.py`** — the only Python that actually executes: `path_guard.py` (blocks file access outside the project) and `syntax_check.py` (AST syntax check after `.py` writes/edits)
+- **`.claude/hooks/*.py`** — the only Python that actually executes: `path_guard.py` (blocks file access outside the project), `env_guard.py` (blocks git commands that would commit or push a `.env` file), and `syntax_check.py` (AST syntax check after `.py` writes/edits)
 - **`docs/agent-workflow.md`** — how to author/update a persona agent
 - **`docs/archive/`** — historical record of a retired Python multi-agent pipeline this project used to run; useful as a worked example, not as current code
 
 ## Key Files to Know
 - `.claude/hooks/path_guard.py` — the only enforcement mechanism restricting file access to the project root
 - `.claude/hooks/syntax_check.py` — the only automated correctness check in the repo
+- `.claude/hooks/env_guard.py` — blocks git force-add, commit, and push of `.env`-style files
 - `.claude/agents/base-agent.md` — shared conventions every persona file follows
 - `.claude/settings.json` — wires hooks to tool events
 

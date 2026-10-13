@@ -45,8 +45,9 @@ audit and test suite.
 - Changes that were already uncommitted when the session started are not in
   scope unless the user includes them — nobody reviewed them here.
 - `references/` is vendored third-party code. Never commit it incidentally.
-- `env_guard.py` is wired to the Bash tool only. Git run through the PowerShell
-  tool bypasses it, so step 3 is a real check, not a formality.
+- `env_guard.py` is wired to both the Bash and PowerShell tools. Step 3 is still
+  a real check: belt-and-suspenders is the right posture for a hard Rule-4
+  obligation.
 - Never rewrite a file's text with `Get-Content | Set-Content` on Windows
   PowerShell: a BOM-less UTF-8 file is read as ANSI and every non-ASCII
   character is corrupted. Use the editing tools instead.

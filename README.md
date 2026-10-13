@@ -32,9 +32,14 @@ Invoke by referencing them in conversation, e.g. "use the debug-agent skill".
 | `/agent-report` | Full audit of all agents |
 | `/review-agents` | Review all agents for quality and consistency |
 | `/audit-chain` | Delegate a task through Architect Advisor → Bug Fixer → PA Right-Hand Audit & Testing, looping on failure |
+| `/focus-project` | Run Pipeline Planner → Coder → Reviewer scoped to a chosen my-project/ subproject, with a required approval gate before writing any file |
+| `/run-agents` | Drive a chain through `agent_runtime/`, which enforces agent order, the 3-pass cap and approval gates in code |
+| `/full-audit-and-testing` | Audit and test every file in the project and write `audit-report.html` |
+| `/commit-push-github` | Commit and push to GitHub, gated on the audit and test suite |
 
 ### `.claude/hooks/` — Safety hooks
-- `path_guard.py` (PreToolUse: Write/Edit/Read) — blocks file access outside this project directory
+- `path_guard.py` (PreToolUse: Write/Edit/Read/NotebookEdit/Glob/Grep/Bash/PowerShell) — blocks file access outside this project directory
+- `env_guard.py` (PreToolUse: Bash/PowerShell) — blocks git commands that would force-add, commit, or push a `.env`-style file
 - `syntax_check.py` (PostToolUse: Write/Edit) — checks Python syntax on any `.py` file written or edited
 
 ## Usage

@@ -21,6 +21,7 @@ List all available skills in `.claude/skills/` with their purpose and how to inv
 | Improve Codebase Architecture | `improve-codebase-architecture.md` | Find shallow modules, propose deepening refactors | "use the improve-codebase-architecture skill" |
 | Agentic Loop | `agentic-loop.md` | Observe-decide-act-verify loop with attempt caps | "use the agentic-loop skill" |
 | Rigorous Verification | `verification-rigoureuse.md` | Sourced, certainty-labelled factual answers | "use the verification-rigoureuse skill" |
+| Python Automation Standards | `python-automation-standards.md` | Shared rules for Python automation scripts (location, approval flow, script checklist) | "use the python-automation-standards skill" |
 
 ## Skills vs Agents
 

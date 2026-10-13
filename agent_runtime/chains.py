@@ -70,7 +70,7 @@ AUDIT = Chain(
             agents=("PA Right-Hand Audit & Testing",),
             instruction=(
                 "Audit the changed area. Report findings as [x] (failed) and "
-                "[ ] (passed) bullets, or exactly 'AUDIT CLEAN - no issues found'."
+                "[ ] (passed) bullets, or exactly 'AUDIT CLEAN — no issues found'."
             ),
             verdict="audit",
         ),
