@@ -5,7 +5,7 @@ conditions; `state.py` walks them and Claude Code performs each step.
 
 The two chains mirror the existing slash commands so both surfaces behave the
 same way: `audit` mirrors `.claude/commands/audit-chain.md`, and `pipeline`
-mirrors the Pipeline Planner orchestration used by `/focus-project`.
+mirrors the Web App Lead orchestration used by `/focus-project`.
 """
 
 from __future__ import annotations
@@ -85,18 +85,18 @@ PIPELINE = Chain(
     final_gate="Write the generated files to disk",
     steps=(
         Step(
-            agents=("Pipeline Planner",),
+            agents=("Web App Lead",),
             instruction="Produce the project plan as valid JSON only, per your schema.",
         ),
         Step(
-            agents=("Pipeline Frontend Coder", "Pipeline Backend Coder"),
+            agents=("Web App Frontend Coder", "Web App Backend Coder"),
             instruction=(
                 "Generate your half of the project from the plan above, as "
                 "=== FILE === blocks. You have no write tools: output only."
             ),
         ),
         Step(
-            agents=("Pipeline Reviewer",),
+            agents=("Web App Reviewer",),
             instruction=(
                 "Review both file sets against the plan. Return JSON with a "
                 '"status" of "PASS" or "FAIL", plus frontend_feedback and '

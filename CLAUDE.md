@@ -51,7 +51,7 @@ Never put procedural steps in an agent file. Never put persona/role definitions 
 | `/agent-report` | Full audit of all agents |
 | `/review-agents` | Review all agents for quality and consistency |
 | `/audit-chain` | Delegate a task through Architect Advisor → Bug Fixer → PA Right-Hand Audit & Testing, looping on failure |
-| `/focus-project` | Run Pipeline Planner → Coder → Reviewer scoped to a chosen my-project/ subproject, with a required approval gate before writing any file |
+| `/focus-project` | Web App cluster: run Web App Lead → Coder → Reviewer scoped to a chosen my-project/ subproject, with a required approval gate before writing any file |
 | `/run-agents` | Drive a chain through `agent_runtime/`, which enforces agent order, the 3-pass cap and approval gates in code |
 | `/full-audit-and-testing` | Audit and test every file in the project and write `audit-report.html` |
 | `/commit-push-github` | Commit and push to GitHub, gated on the audit and test suite |

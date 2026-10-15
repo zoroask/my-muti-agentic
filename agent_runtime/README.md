@@ -63,9 +63,9 @@ Every command prints `KEY=value` lines, with long text wrapped in `<<<` /
                               ^                                       |
                               +---------------- FAIL, max 3 passes ----+
 
-`pipeline` — mirrors the Pipeline Planner orchestration behind `/focus-project`:
+`pipeline` — mirrors the Web App Lead orchestration behind `/focus-project`:
 
-    Pipeline Planner -> Frontend Coder + Backend Coder -> Pipeline Reviewer
+    Web App Lead -> Frontend Coder + Backend Coder -> Web App Reviewer
                                   ^         (parallel)             |
                                   +------- FAIL, max 3 passes -----+
                                                                    |

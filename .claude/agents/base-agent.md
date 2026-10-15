@@ -43,9 +43,11 @@ The `name:` frontmatter field is unchanged by this convention and stays the stri
 - **PA Right-Hand Audit & Testing** (`pa-right-hand-audit-testing-sub-agent.md`) — Sub Agent: full-project audit across agents, skills, commands, hooks, and docs; callable by Architect Advisor and Project Manager
 - **Monitor** — retired; see `monitor-agent.md`
 
-## Pipeline Personas (`pipeline-*-agent.md`)
+## Web App Cluster — Pipeline Personas (`pipeline-*-agent.md`)
 
-`pipeline-planner-main-agent.md`, `pipeline-frontend-coder-sub-agent.md`, `pipeline-backend-coder-sub-agent.md`, `pipeline-reviewer-sub-agent.md` are a live, wired multi-agent build chain: Pipeline Planner (Main Agent) produces the plan and then itself invokes Frontend Coder and Backend Coder, then Reviewer, looping the feedback back through itself on FAIL (capped at 3 passes). There is still no Python runtime behind any of it — the "pipeline" is entirely four Claude Code subagents calling each other via the Agent tool, not code that executes independently of a session. Frontend Coder and Backend Coder both carry `tools: [Read, Glob, Grep]` in their frontmatter — they are intentionally write-blocked at the harness level and produce only `=== FILE ===` text blocks; the caller writes files to disk only after user approval.
+Builds new web apps (React/HTML/CSS frontend + FastAPI backend) in `my-project/<subproject>/`. Web App Lead is delegated to by Architect Advisor or invoked directly. Distinct from the Automation cluster, which writes stand-alone Python scripts.
+
+`pipeline-planner-main-agent.md`, `pipeline-frontend-coder-sub-agent.md`, `pipeline-backend-coder-sub-agent.md`, `pipeline-reviewer-sub-agent.md` are a live, wired multi-agent build chain: Web App Lead (Main Agent) produces the plan and then itself invokes Frontend Coder and Backend Coder, then Reviewer, looping the feedback back through itself on FAIL (capped at 3 passes). There is still no Python runtime behind any of it — the "pipeline" is entirely four Claude Code subagents calling each other via the Agent tool, not code that executes independently of a session. Frontend Coder and Backend Coder both carry `tools: [Read, Glob, Grep]` in their frontmatter — they are intentionally write-blocked at the harness level and produce only `=== FILE ===` text blocks; the caller writes files to disk only after user approval.
 
 ## Environment
 

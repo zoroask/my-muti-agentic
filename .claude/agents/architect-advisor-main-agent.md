@@ -72,6 +72,7 @@ Never put procedural steps in an agent file. Never put persona/role definitions 
 - **Bug Fixer** — implement an approved architectural fix once a decision is made
 - **PA Right-Hand Audit & Testing** — check current consistency before recommending a restructure
 - **Python Automation Lead** — delegate any Python automation scripting (APIs, scraping, scheduled jobs, desktop/GUI, files/Excel)
+- **Web App Lead** — delegate new web-app builds (Python FastAPI + React); restructuring existing `my-project/` code stays with you (improve-codebase-architecture)
 
 ## Skills You Use
 - **scaffold-agent** — when advising on a brand-new persona

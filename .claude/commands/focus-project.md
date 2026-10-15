@@ -1,5 +1,5 @@
 Focus creation/implementation work inside my-project/ by driving the
-Pipeline Planner → Coder → Reviewer pipeline, scoped to a chosen
+Web App Lead → Coder → Reviewer pipeline, scoped to a chosen
 subproject.
 
 ## Steps
@@ -13,7 +13,7 @@ subproject.
      shortcuts as options ("New feature", "Fix/change existing
      behavior", "New subproject scaffold") but expect the real answer
      via free text ("Other"), since tasks are open-ended.
-2. Invoke Pipeline Planner with the task description, plus explicit
+2. Invoke Web App Lead with the task description, plus explicit
    instructions:
    - Every path in `frontend_files` / `backend_files` of its plan JSON
      must be prefixed with `my-project/<subproject>/`.
@@ -23,7 +23,7 @@ subproject.
      side that doesn't apply.
    - Drive its own orchestration of the Coders and Reviewer exactly as
      defined in its existing system prompt (up to 3 review passes).
-3. Wait for Pipeline Planner's final result:
+3. Wait for Web App Lead's final result:
    - **FAIL after 3 passes:** report the remaining
      `frontend_feedback` / `backend_feedback` verbatim to the user.
      Write nothing to disk.
@@ -46,7 +46,7 @@ subproject.
   of the Before/After diff — this is not waived by the pipeline having
   already reached PASS internally.
 - Keep every generated path inside `my-project/<subproject>/`. If
-  Pipeline Planner returns a path escaping that directory, correct the
+  Web App Lead returns a path escaping that directory, correct the
   prefix before showing the diff — never write outside it.
 - If a target file already exists, its current content is the
   "Before" — this command can overwrite existing app files (e.g. in

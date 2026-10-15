@@ -6,7 +6,7 @@ A Claude Code configuration library for designing, prototyping, and reviewing mu
 
 ### `.claude/agents/` — Subagent personas
 AI personas with a defined role, project knowledge, and behavioral rules. Each runs as a Claude Code subagent with its own context window:
-- Pipeline design personas (`pipeline-planner-main-agent`, `pipeline-frontend-coder-sub-agent`, `pipeline-backend-coder-sub-agent`, `pipeline-reviewer-sub-agent`) — Planner drives the pipeline, calling the other three as sub-agents
+- Web App cluster (`pipeline-planner-main-agent`, `pipeline-frontend-coder-sub-agent`, `pipeline-backend-coder-sub-agent`, `pipeline-reviewer-sub-agent`) — builds new web apps (React + FastAPI) in `my-project/<subproject>/`; Web App Lead drives the pipeline, calling the other three as sub-agents
 - Audit persona (`pa-right-hand-audit-testing-sub-agent`) — full-project audit, callable by any main agent
 - Automation cluster (`python-automation-lead-main-agent`, `automation-*-sub-agent`) — Python automation split by area: APIs, scraping, scheduled jobs, desktop/GUI, files/Excel, plus a read-only Automation Reviewer with a fix loop
 - General-purpose personas — architect advisor, backend/frontend coder, bug fixer, code mentor, monitor, planner, project manager, reviewer, workflow monitor, base-agent
@@ -32,7 +32,7 @@ Invoke by referencing them in conversation, e.g. "use the debug-agent skill".
 | `/agent-report` | Full audit of all agents |
 | `/review-agents` | Review all agents for quality and consistency |
 | `/audit-chain` | Delegate a task through Architect Advisor → Bug Fixer → PA Right-Hand Audit & Testing, looping on failure |
-| `/focus-project` | Run Pipeline Planner → Coder → Reviewer scoped to a chosen my-project/ subproject, with a required approval gate before writing any file |
+| `/focus-project` | Web App cluster: run Web App Lead → Coder → Reviewer scoped to a chosen my-project/ subproject, with a required approval gate before writing any file |
 | `/run-agents` | Drive a chain through `agent_runtime/`, which enforces agent order, the 3-pass cap and approval gates in code |
 | `/full-audit-and-testing` | Audit and test every file in the project and write `audit-report.html` |
 | `/commit-push-github` | Commit and push to GitHub, gated on the audit and test suite |
