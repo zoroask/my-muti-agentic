@@ -12,6 +12,7 @@
    - **Action plan** — bullet list of steps to be taken
    - **Before / After** — show exact changes for any code or config edit
    - **STOP** — wait for explicit user approval ("yes") before executing any change. Never auto-execute after showing a plan. Exception: inside the automation review loop, fixes for Automation Reviewer findings are applied without a new approval, within the limits in `.claude/skills/python-automation-standards.md` (Fix-loop limits).
+   - **Process** — requests with more than one stage, tool or agent follow `.claude/skills/core-process.md`; its stage 6 is this rule.
 
 4. **Never commit or push `.env`** — `.env` (and any `.env.*` file except `.env.example`) must never be staged, committed, or pushed. Enforced by `env_guard.py`, which blocks force-adds and blocks commit/push while a `.env` file is staged.
 
