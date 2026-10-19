@@ -1,0 +1,7 @@
+# generated (rebuild with: python tools/rebuild_all.py)
+knowledge/**/tcg.db
+knowledge/**/tcg.tmp
+__pycache__/
+*.pyc
+# temporary analysis drafts
+tmp*.json
