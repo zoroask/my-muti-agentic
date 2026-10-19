@@ -33,6 +33,7 @@ Invoke by referencing them in conversation, e.g. "use the debug-agent skill".
 | `/review-agents` | Review all agents for quality and consistency |
 | `/audit-chain` | Delegate a task through Architect Advisor → Bug Fixer → PA Right-Hand Audit & Testing, looping on failure |
 | `/focus-project` | Web App cluster: run Web App Lead → Coder → Reviewer scoped to a chosen my-project/ subproject, with a required approval gate before writing any file |
+| `/tcg` | TCG Coach cluster: Gundam Card Game prep (card search, deck review, meta, practice, event plan) via TCG Lead in my-project/tcg-coach, write-gated |
 | `/run-agents` | Drive a chain through `agent_runtime/`, which enforces agent order, the 3-pass cap and approval gates in code |
 | `/full-audit-and-testing` | Audit and test every file in the project and write `audit-report.html` |
 | `/commit-push-github` | Commit and push to GitHub, gated on the audit and test suite |
