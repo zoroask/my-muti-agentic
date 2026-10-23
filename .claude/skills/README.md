@@ -14,6 +14,7 @@ Reusable prompt skills for this project.
 | `challenge-plan.md` | Four-question adversarial challenge before committing to a recommendation | "review this plan", "is this over-engineered" / "ทบทวนแผนนี้", "ซับซ้อนเกินไปไหม" |
 | `token-optimization.md` | Proactive session setup to cut token cost (audit, cache, isolation, model/effort) | "reduce token cost", "context bloat", "slow session" / "ลด token", "ประหยัด token", "เซสชันช้า" |
 | `rescue-tokens.md` | Emergency response to rate limits or a nearly full context | "rate limit", "quota exceeded", "context almost full" / "ติด rate limit", "โควต้าหมด", "context ใกล้เต็ม" |
+| `caveman.md` | Terse reply mode that cuts output tokens, on until "stop caveman" (verbatim from github.com/JuliusBrussee/caveman, Apache-2.0) | "caveman mode", "be brief", "less tokens" / "ตอบสั้นๆ", "โหมดถ้ำ" |
 | `constrained-decoding.md` | Make machine-parsed outputs structurally valid via schemas, with reasoning separated from the answer | "valid JSON output", "structured output", "follow a schema" / "ให้ output เป็น JSON", "ตาม schema" |
 | `long-context-lost-in-the-middle.md` | Place critical facts at the start and end of long prompts | "long prompt", "RAG", "lost in the middle" / "prompt ยาว", "เอกสารหลายไฟล์", "ข้อมูลตกหล่นตรงกลาง" |
 | `maths-olympiad.md` | Parallel solve, isolated adversarial verification and calibrated abstention for olympiad problems | "olympiad problem", "prove this", "IMO/Putnam" / "โจทย์โอลิมปิกคณิต", "พิสูจน์" |
