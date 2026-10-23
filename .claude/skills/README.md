@@ -27,4 +27,5 @@ Reusable prompt skills for this project.
 | `agentic-loop.md` | Observe-decide-act-verify loop with attempt caps and stagnation stop | "keep trying until CI passes", "fix the failing CI" / "แก้จนกว่า CI จะผ่าน", "ลองซ้ำจนผ่าน" |
 | `verification-rigoureuse.md` | Sourced, certainty-labelled factual answers | "verify this", "cite sources", "is this true" / "ตรวจสอบข้อเท็จจริง", "อ้างอิงแหล่งที่มา", "จริงไหม" |
 | `python-automation-standards.md` | Shared rules for Python automation scripts (location, approval flow, script checklist) | "automation script", "write a python bot", "automate this task" / "สคริปต์อัตโนมัติ", "เขียนบอท python", "ทำงานอัตโนมัติ" |
+| `godot-game-standards.md` | Shared rules for Godot 4 pixel-art games (layout, ownership, pixel settings, original-work rule, review loop) | "make a game", "godot game", "pixel art game" / "สร้างเกม", "เกม godot", "เกมพิกเซล" |
 | `core-process.md` | Standard 10-stage path for multi-stage requests (history → skills → plan → design → STOP → assign → audit → summary → learn) | "plan this task", "full process", "multi-step task" / "ทำตามขั้นตอน", "วางแผนงานนี้", "งานหลายขั้นตอน" |
