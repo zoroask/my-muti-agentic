@@ -26,7 +26,7 @@ Use what you find; do not re-litigate settled decisions without saying why.
 - Long task (likely to outlive the context window): save the plan to a file in the working area or to memory so it survives compaction
 
 ## Stage 5 — Design
-Turn the plan into concrete changes: exact files, diffs or new file text, and which sub-agent does what. Use the owning design agent when one exists — Architect Advisor (this library), Python Automation Lead (automation), Web App Lead (`my-project/` app builds).
+Turn the plan into concrete changes: exact files, diffs or new file text, and which sub-agent does what. Use the owning design agent when one exists — Architect Advisor (this library), Project Manager → Python Automation Lead (automation), Web App Lead (`my-project/` app builds) or Game Lead (Godot games).
 
 ## Stage 6 — Respond to the user (Rule 3)
 Summary → Workflow → Action plan → Before/After → **STOP**. Wait for an explicit "yes". Nothing is changed before this point.
@@ -36,17 +36,22 @@ Route by kind of work:
 
 | Work | Goes to |
 |---|---|
-| Python automation | Python Automation Lead (or one specialist directly for a single-area task) |
-| Web app build in `my-project/` (Web App cluster) | Web App Lead via `/focus-project` or `/run-agents pipeline` |
+| Python automation | Project Manager → Python Automation Lead (or one specialist directly for a single-area task) |
+| Web app build in `my-project/` (Web App cluster) | Project Manager → Web App Lead via `/focus-project` or `/run-agents pipeline` |
+| Godot game in `my-project/` (Game cluster) | Project Manager → Game Lead |
 | Change to this library (agents, skills, commands, hooks) | `/audit-chain` or `/run-agents audit` |
-| Status and priorities | Project Manager |
+| Sub-project status and priorities | Project Manager |
+| Library status | Architect Advisor → Workflow Monitor |
+| Audit, testing, security | PA Right-Hand Audit & Testing (delegates defensive reviews to Security Lead) |
+| Security review, detection rules, or RE/CTF learning | Security Lead |
 | Explanation | Code Mentor |
+| Analyze or deconstruct how an existing app, site or package is built (REA) | Architect Advisor → REA Lead |
 
 Every delegation carries a four-part brief: **objective**, **output format**, **tools and sources to use**, **boundaries** (what not to touch). Use the fewest agents that fit — each extra agent costs a full context.
 
 ## Stage 8 — Audit and debug
 1. Runnable checks first: tests, `python -m py_compile`, `--dry-run`, `python -m agent_runtime validate`
-2. Then an independent reviewer in a fresh context: Automation Reviewer for scripts, PA Right-Hand Audit & Testing for this library
+2. Then an independent reviewer in a fresh context: Automation Reviewer for scripts, Web App Reviewer for web apps, Game Reviewer for games, PA Right-Hand Audit & Testing for this library and for security
 3. Only correctness, security or requirement gaps block; style preferences are optional
 4. Fix and re-check, at most 3 rounds; stop early if the same findings repeat (**agentic-loop** skill)
 

@@ -7,8 +7,10 @@ A Claude Code configuration library for designing, prototyping, and reviewing mu
 ### `.claude/agents/` — Subagent personas
 AI personas with a defined role, project knowledge, and behavioral rules. Each runs as a Claude Code subagent with its own context window:
 - Web App cluster (`pipeline-planner-main-agent`, `pipeline-frontend-coder-sub-agent`, `pipeline-backend-coder-sub-agent`, `pipeline-reviewer-sub-agent`) — builds new web apps (React + FastAPI) in `my-project/<subproject>/`; Web App Lead drives the pipeline, calling the other three as sub-agents
-- Audit persona (`pa-right-hand-audit-testing-sub-agent`) — full-project audit, callable by any main agent
+- Audit & Testing Core (`pa-right-hand-audit-testing-main-agent`) — main agent for audits and internal/external security testing; delegates sub-project reviews to Automation Reviewer and Web App Reviewer
 - Automation cluster (`python-automation-lead-main-agent`, `automation-*-sub-agent`) — Python automation split by area: APIs, scraping, scheduled jobs, desktop/GUI, files/Excel, plus a read-only Automation Reviewer with a fix loop
+- Security Learning cluster (`security-lead-main-agent`, `security-*-sub-agent`) — defensive-security and reverse-engineering learning agents behind a single Security Lead front door: RE tutor, CTF study buddy, YARA rule writer, malware report reader, code vulnerability reviewer, dependency/supply-chain checker, secrets scanner; authorization-gated and defensive-only (see the `security-learning-standards` skill)
+- Game cluster (`game-lead-main-agent`, `game-*-sub-agent`) — Godot 4 top-down pixel-art games, built one milestone at a time: systems, world/tilemap, pixel art, UI, plus a read-only Game Reviewer with a fix loop
 - General-purpose personas — architect advisor, backend/frontend coder, bug fixer, code mentor, monitor, planner, project manager, reviewer, workflow monitor, base-agent
 
 Invoke one by name via the Agent/Task tool, or by asking Claude Code directly (e.g. "use the Bug Fixer agent").

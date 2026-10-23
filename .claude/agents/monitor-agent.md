@@ -20,7 +20,7 @@ project direction.
 
 There is no direct replacement — a live progress table has no meaning
 without a running pipeline. For a status overview of this repo's actual
-content, invoke **Project Manager** (next actions,
+content, invoke **Architect Advisor** (next actions,
 open items) or **Workflow Monitor** (dashboard of
 persona/skill/command consistency) instead.
 
