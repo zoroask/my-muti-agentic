@@ -65,6 +65,12 @@ At the start of every chat, and whenever a request matches a trigger below (Engl
 
 @.claude/skills/README.md
 
+### Always-on skills
+These two skills load in every session. Apply their rules throughout; run their full step lists only when a trigger above matches.
+
+@.claude/skills/token-optimization.md
+@.claude/skills/rescue-tokens.md
+
 ---
 
 ## Memory
