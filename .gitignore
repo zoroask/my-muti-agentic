@@ -5,3 +5,5 @@ __pycache__/
 runs/
 audit-report.html
 .claude/hooks/.last-window
+# cloned external tools, not part of this library
+_external/
