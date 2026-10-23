@@ -1,12 +1,12 @@
 {
  "meta": {
-  "decklists": 149,
+  "decklists": 153,
   "period": [
    "2026-10-01",
    "2026-10-18"
   ],
   "kinds": {
-   "tournament": 149
+   "tournament": 153
   },
   "low_confidence": false,
   "sources": [
@@ -16,629 +16,639 @@
  },
  "cards": {
   "GD01-118": {
-   "decks": 76,
-   "share": 0.51,
+   "decks": 77,
+   "share": 0.503,
    "avg_copies": 3.92
   },
   "GD05-081": {
-   "decks": 64,
-   "share": 0.43,
+   "decks": 66,
+   "share": 0.431,
    "avg_copies": 3.67
   },
   "GD05-002": {
-   "decks": 63,
-   "share": 0.423,
+   "decks": 65,
+   "share": 0.425,
    "avg_copies": 3.86
   },
   "GD01-100": {
-   "decks": 58,
-   "share": 0.389,
-   "avg_copies": 1.95
+   "decks": 59,
+   "share": 0.386,
+   "avg_copies": 1.93
   },
   "GD01-086": {
-   "decks": 56,
-   "share": 0.376,
-   "avg_copies": 3.59
+   "decks": 58,
+   "share": 0.379,
+   "avg_copies": 3.6
   },
   "GD04-068": {
-   "decks": 56,
-   "share": 0.376,
-   "avg_copies": 3.04
+   "decks": 58,
+   "share": 0.379,
+   "avg_copies": 3.05
   },
   "GD02-079": {
-   "decks": 50,
-   "share": 0.336,
-   "avg_copies": 3.56
+   "decks": 52,
+   "share": 0.34,
+   "avg_copies": 3.52
   },
   "ST04-010": {
-   "decks": 48,
-   "share": 0.322,
-   "avg_copies": 3.73
+   "decks": 50,
+   "share": 0.327,
+   "avg_copies": 3.74
   },
   "ST04-001": {
-   "decks": 47,
-   "share": 0.315,
-   "avg_copies": 3.47
+   "decks": 49,
+   "share": 0.32,
+   "avg_copies": 3.49
   },
   "ST01-010": {
-   "decks": 46,
-   "share": 0.309,
-   "avg_copies": 3.37
+   "decks": 48,
+   "share": 0.314,
+   "avg_copies": 3.38
   },
   "GD05-110": {
-   "decks": 44,
-   "share": 0.295,
-   "avg_copies": 3.86
+   "decks": 45,
+   "share": 0.294,
+   "avg_copies": 3.84
   },
   "GD03-056": {
-   "decks": 40,
+   "decks": 41,
    "share": 0.268,
    "avg_copies": 4.0
   },
   "GD05-111": {
-   "decks": 38,
+   "decks": 39,
    "share": 0.255,
-   "avg_copies": 3.26
+   "avg_copies": 3.23
   },
   "ST01-001": {
-   "decks": 38,
+   "decks": 39,
    "share": 0.255,
-   "avg_copies": 2.97
+   "avg_copies": 2.95
   },
   "GD04-077": {
-   "decks": 37,
+   "decks": 38,
    "share": 0.248,
-   "avg_copies": 2.08
+   "avg_copies": 2.13
   },
   "ST01-014": {
-   "decks": 36,
+   "decks": 37,
    "share": 0.242,
    "avg_copies": 1.89
   },
   "ST05-010": {
-   "decks": 31,
-   "share": 0.208,
+   "decks": 32,
+   "share": 0.209,
    "avg_copies": 3.84
   },
   "GD05-005": {
    "decks": 31,
-   "share": 0.208,
+   "share": 0.203,
    "avg_copies": 2.65
   },
   "ST03-008": {
    "decks": 30,
-   "share": 0.201,
+   "share": 0.196,
    "avg_copies": 3.93
   },
   "GD01-066": {
-   "decks": 28,
-   "share": 0.188,
-   "avg_copies": 2.75
-  },
-  "GD01-073": {
-   "decks": 28,
-   "share": 0.188,
-   "avg_copies": 2.46
+   "decks": 30,
+   "share": 0.196,
+   "avg_copies": 2.77
   },
   "ST11-009": {
-   "decks": 27,
-   "share": 0.181,
+   "decks": 29,
+   "share": 0.19,
    "avg_copies": 4.0
   },
-  "ST03-013": {
-   "decks": 27,
-   "share": 0.181,
-   "avg_copies": 3.52
+  "GD01-073": {
+   "decks": 29,
+   "share": 0.19,
+   "avg_copies": 2.48
   },
   "GD01-128": {
-   "decks": 27,
-   "share": 0.181,
-   "avg_copies": 3.22
+   "decks": 28,
+   "share": 0.183,
+   "avg_copies": 3.25
+  },
+  "GD02-129": {
+   "decks": 28,
+   "share": 0.183,
+   "avg_copies": 2.93
   },
   "GD02-054": {
-   "decks": 26,
-   "share": 0.174,
+   "decks": 27,
+   "share": 0.176,
    "avg_copies": 4.0
   },
   "GD05-050": {
-   "decks": 26,
-   "share": 0.174,
-   "avg_copies": 3.65
+   "decks": 27,
+   "share": 0.176,
+   "avg_copies": 3.67
   },
-  "GD02-129": {
+  "ST03-013": {
+   "decks": 27,
+   "share": 0.176,
+   "avg_copies": 3.52
+  },
+  "GD05-010": {
    "decks": 26,
-   "share": 0.174,
-   "avg_copies": 3.0
+   "share": 0.17,
+   "avg_copies": 2.69
   },
   "ST03-006": {
    "decks": 25,
-   "share": 0.168,
+   "share": 0.163,
    "avg_copies": 4.0
   },
   "GD04-016": {
    "decks": 25,
-   "share": 0.168,
+   "share": 0.163,
    "avg_copies": 3.76
-  },
-  "GD05-010": {
-   "decks": 25,
-   "share": 0.168,
-   "avg_copies": 2.68
   },
   "ST13-012": {
    "decks": 24,
-   "share": 0.161,
+   "share": 0.157,
    "avg_copies": 3.42
   },
   "GD01-030": {
    "decks": 23,
-   "share": 0.154,
+   "share": 0.15,
    "avg_copies": 3.48
   },
   "ST13-006": {
    "decks": 23,
-   "share": 0.154,
+   "share": 0.15,
    "avg_copies": 3.43
   },
   "GD04-017": {
    "decks": 22,
-   "share": 0.148,
+   "share": 0.144,
    "avg_copies": 3.5
   },
   "GD04-003": {
    "decks": 20,
-   "share": 0.134,
+   "share": 0.131,
    "avg_copies": 4.0
   },
   "GD04-081": {
    "decks": 20,
-   "share": 0.134,
+   "share": 0.131,
    "avg_copies": 4.0
   },
   "GD04-121": {
    "decks": 20,
-   "share": 0.134,
+   "share": 0.131,
    "avg_copies": 4.0
   },
   "GD04-006": {
    "decks": 20,
-   "share": 0.134,
+   "share": 0.131,
    "avg_copies": 3.55
   },
   "GD01-008": {
    "decks": 18,
-   "share": 0.121,
+   "share": 0.118,
    "avg_copies": 3.67
   },
   "GD05-033": {
    "decks": 18,
-   "share": 0.121,
+   "share": 0.118,
    "avg_copies": 3.5
   },
   "GD05-097": {
    "decks": 17,
-   "share": 0.114,
+   "share": 0.111,
    "avg_copies": 4.0
   },
   "GD05-069": {
    "decks": 17,
-   "share": 0.114,
+   "share": 0.111,
    "avg_copies": 3.94
   },
   "GD05-066": {
    "decks": 17,
-   "share": 0.114,
+   "share": 0.111,
    "avg_copies": 3.94
   },
   "ST03-011": {
    "decks": 17,
-   "share": 0.114,
+   "share": 0.111,
    "avg_copies": 3.82
   },
   "GD05-072": {
    "decks": 17,
-   "share": 0.114,
+   "share": 0.111,
    "avg_copies": 3.65
   },
   "GD05-089": {
    "decks": 17,
-   "share": 0.114,
+   "share": 0.111,
    "avg_copies": 3.47
   },
   "GD05-121": {
    "decks": 17,
-   "share": 0.114,
+   "share": 0.111,
    "avg_copies": 3.35
   },
   "GD05-015": {
    "decks": 17,
-   "share": 0.114,
+   "share": 0.111,
    "avg_copies": 2.88
   },
   "GD05-093": {
    "decks": 17,
-   "share": 0.114,
+   "share": 0.111,
    "avg_copies": 2.88
   },
   "GD05-129": {
    "decks": 17,
-   "share": 0.114,
+   "share": 0.111,
    "avg_copies": 2.53
   },
   "GD05-120": {
    "decks": 17,
-   "share": 0.114,
+   "share": 0.111,
    "avg_copies": 2.41
   },
   "GD01-068": {
    "decks": 17,
-   "share": 0.114,
+   "share": 0.111,
    "avg_copies": 1.94
   },
   "GD03-109": {
    "decks": 16,
-   "share": 0.107,
+   "share": 0.105,
    "avg_copies": 3.56
   },
   "ST05-006": {
    "decks": 16,
-   "share": 0.107,
+   "share": 0.105,
    "avg_copies": 3.56
   },
   "GD01-065": {
    "decks": 16,
-   "share": 0.107,
+   "share": 0.105,
    "avg_copies": 2.12
   },
   "ST02-016": {
    "decks": 16,
-   "share": 0.107,
+   "share": 0.105,
    "avg_copies": 1.94
+  },
+  "ST04-012": {
+   "decks": 16,
+   "share": 0.105,
+   "avg_copies": 1.5
+  },
+  "GD01-044": {
+   "decks": 15,
+   "share": 0.098,
+   "avg_copies": 4.0
+  },
+  "GD01-093": {
+   "decks": 15,
+   "share": 0.098,
+   "avg_copies": 4.0
   },
   "ST13-011": {
    "decks": 15,
-   "share": 0.101,
+   "share": 0.098,
    "avg_copies": 3.07
   },
   "ST03-016": {
    "decks": 15,
-   "share": 0.101,
+   "share": 0.098,
    "avg_copies": 2.67
-  },
-  "ST04-012": {
-   "decks": 15,
-   "share": 0.101,
-   "avg_copies": 1.53
   },
   "GD03-035": {
    "decks": 15,
-   "share": 0.101,
+   "share": 0.098,
    "avg_copies": 1.2
+  },
+  "ST11-007": {
+   "decks": 14,
+   "share": 0.092,
+   "avg_copies": 3.86
   },
   "ST13-001": {
    "decks": 14,
-   "share": 0.094,
+   "share": 0.092,
    "avg_copies": 3.43
-  },
-  "GD01-044": {
-   "decks": 13,
-   "share": 0.087,
-   "avg_copies": 4.0
-  },
-  "GD01-093": {
-   "decks": 13,
-   "share": 0.087,
-   "avg_copies": 4.0
-  },
-  "ST11-007": {
-   "decks": 13,
-   "share": 0.087,
-   "avg_copies": 3.85
   },
   "GD02-055": {
    "decks": 13,
-   "share": 0.087,
+   "share": 0.085,
    "avg_copies": 3.62
   },
   "GD01-026": {
    "decks": 13,
-   "share": 0.087,
+   "share": 0.085,
    "avg_copies": 2.69
   },
   "GD05-060": {
    "decks": 13,
-   "share": 0.087,
+   "share": 0.085,
    "avg_copies": 1.69
   },
   "GD03-001": {
-   "decks": 12,
-   "share": 0.081,
-   "avg_copies": 1.25
+   "decks": 13,
+   "share": 0.085,
+   "avg_copies": 1.23
   },
   "GD01-035": {
    "decks": 11,
-   "share": 0.074,
+   "share": 0.072,
    "avg_copies": 4.0
   },
   "GD01-018": {
    "decks": 11,
-   "share": 0.074,
+   "share": 0.072,
    "avg_copies": 3.64
+  },
+  "ST12-012": {
+   "decks": 11,
+   "share": 0.072,
+   "avg_copies": 3.36
+  },
+  "ST12-006": {
+   "decks": 11,
+   "share": 0.072,
+   "avg_copies": 3.18
   },
   "GD05-036": {
    "decks": 11,
-   "share": 0.074,
+   "share": 0.072,
    "avg_copies": 1.09
   },
   "GD05-062": {
    "decks": 10,
-   "share": 0.067,
+   "share": 0.065,
    "avg_copies": 4.0
   },
   "GD02-126": {
    "decks": 10,
-   "share": 0.067,
+   "share": 0.065,
    "avg_copies": 3.0
   },
-  "ST12-012": {
+  "ST11-016": {
    "decks": 9,
-   "share": 0.06,
-   "avg_copies": 3.56
-  },
-  "ST12-006": {
-   "decks": 9,
-   "share": 0.06,
-   "avg_copies": 3.22
+   "share": 0.059,
+   "avg_copies": 2.44
   },
   "GD05-049": {
    "decks": 9,
-   "share": 0.06,
+   "share": 0.059,
    "avg_copies": 2.22
   },
   "GD04-033": {
    "decks": 8,
-   "share": 0.054,
+   "share": 0.052,
    "avg_copies": 3.62
   },
   "ST03-010": {
    "decks": 8,
-   "share": 0.054,
+   "share": 0.052,
    "avg_copies": 3.5
   },
-  "ST11-016": {
+  "GD01-051": {
    "decks": 8,
-   "share": 0.054,
-   "avg_copies": 2.5
+   "share": 0.052,
+   "avg_copies": 3.38
   },
   "GD05-114": {
    "decks": 8,
-   "share": 0.054,
+   "share": 0.052,
    "avg_copies": 1.62
   },
   "GD01-076": {
    "decks": 7,
-   "share": 0.047,
+   "share": 0.046,
    "avg_copies": 2.57
   },
   "GD01-126": {
    "decks": 7,
-   "share": 0.047,
+   "share": 0.046,
    "avg_copies": 2.43
   },
   "GD01-023": {
    "decks": 7,
-   "share": 0.047,
+   "share": 0.046,
    "avg_copies": 1.43
+  },
+  "ST11-008": {
+   "decks": 6,
+   "share": 0.039,
+   "avg_copies": 4.0
   },
   "GD05-029": {
    "decks": 6,
-   "share": 0.04,
+   "share": 0.039,
    "avg_copies": 4.0
   },
   "GD05-085": {
    "decks": 6,
-   "share": 0.04,
+   "share": 0.039,
    "avg_copies": 4.0
   },
   "GD05-014": {
    "decks": 6,
-   "share": 0.04,
+   "share": 0.039,
    "avg_copies": 3.67
   },
   "ST05-004": {
    "decks": 6,
-   "share": 0.04,
+   "share": 0.039,
    "avg_copies": 3.67
   },
   "GD05-019": {
    "decks": 6,
-   "share": 0.04,
+   "share": 0.039,
    "avg_copies": 3.5
   },
-  "GD01-051": {
+  "ST13-008": {
    "decks": 6,
-   "share": 0.04,
-   "avg_copies": 3.17
+   "share": 0.039,
+   "avg_copies": 3.5
   },
   "ST04-011": {
    "decks": 6,
-   "share": 0.04,
+   "share": 0.039,
    "avg_copies": 3.0
   },
   "GD05-125": {
    "decks": 6,
-   "share": 0.04,
+   "share": 0.039,
    "avg_copies": 3.0
   },
   "ST01-011": {
    "decks": 6,
-   "share": 0.04,
+   "share": 0.039,
    "avg_copies": 2.67
   },
   "GD01-067": {
    "decks": 6,
-   "share": 0.04,
+   "share": 0.039,
    "avg_copies": 2.17
   },
   "GD04-109": {
    "decks": 6,
-   "share": 0.04,
+   "share": 0.039,
    "avg_copies": 2.0
   },
   "ST05-015": {
    "decks": 6,
-   "share": 0.04,
+   "share": 0.039,
    "avg_copies": 2.0
   },
   "GD04-066": {
    "decks": 6,
-   "share": 0.04,
+   "share": 0.039,
    "avg_copies": 1.0
   },
-  "ST11-008": {
+  "ST08-014": {
    "decks": 5,
-   "share": 0.034,
+   "share": 0.033,
    "avg_copies": 4.0
   },
   "GD05-027": {
    "decks": 5,
-   "share": 0.034,
+   "share": 0.033,
    "avg_copies": 4.0
   },
   "GD05-017": {
    "decks": 5,
-   "share": 0.034,
+   "share": 0.033,
    "avg_copies": 4.0
-  },
-  "ST13-008": {
-   "decks": 5,
-   "share": 0.034,
-   "avg_copies": 3.4
   },
   "GD03-050": {
    "decks": 5,
-   "share": 0.034,
+   "share": 0.033,
    "avg_copies": 3.0
   },
   "GD01-111": {
    "decks": 5,
-   "share": 0.034,
+   "share": 0.033,
    "avg_copies": 2.6
   },
   "GD01-003": {
    "decks": 5,
-   "share": 0.034,
+   "share": 0.033,
    "avg_copies": 2.2
   },
   "GD05-020": {
    "decks": 5,
-   "share": 0.034,
+   "share": 0.033,
    "avg_copies": 1.8
+  },
+  "ST14-005": {
+   "decks": 5,
+   "share": 0.033,
+   "avg_copies": 1.2
   },
   "ST01-005": {
    "decks": 4,
-   "share": 0.027,
-   "avg_copies": 4.0
-  },
-  "ST08-014": {
-   "decks": 4,
-   "share": 0.027,
+   "share": 0.026,
    "avg_copies": 4.0
   },
   "GD01-016": {
    "decks": 4,
-   "share": 0.027,
+   "share": 0.026,
    "avg_copies": 4.0
   },
   "GD05-003": {
    "decks": 4,
-   "share": 0.027,
+   "share": 0.026,
    "avg_copies": 3.75
   },
   "ST03-007": {
    "decks": 4,
-   "share": 0.027,
+   "share": 0.026,
    "avg_copies": 3.75
   },
   "GD05-082": {
    "decks": 4,
-   "share": 0.027,
+   "share": 0.026,
    "avg_copies": 3.5
   },
   "GD05-004": {
    "decks": 4,
-   "share": 0.027,
+   "share": 0.026,
    "avg_copies": 3.25
   },
   "GD01-031": {
    "decks": 4,
-   "share": 0.027,
+   "share": 0.026,
    "avg_copies": 3.25
+  },
+  "GD04-101": {
+   "decks": 4,
+   "share": 0.026,
+   "avg_copies": 3.0
   },
   "ST13-009": {
    "decks": 4,
-   "share": 0.027,
+   "share": 0.026,
    "avg_copies": 3.0
   },
   "ST14-012": {
    "decks": 4,
-   "share": 0.027,
+   "share": 0.026,
    "avg_copies": 3.0
   },
   "ST04-006": {
    "decks": 4,
-   "share": 0.027,
+   "share": 0.026,
    "avg_copies": 2.5
   },
   "ST14-006": {
    "decks": 4,
-   "share": 0.027,
+   "share": 0.026,
    "avg_copies": 2.5
   },
   "GD01-056": {
    "decks": 4,
-   "share": 0.027,
+   "share": 0.026,
    "avg_copies": 2.5
   },
   "GD01-024": {
    "decks": 4,
-   "share": 0.027,
+   "share": 0.026,
    "avg_copies": 2.0
   },
   "GD01-071": {
    "decks": 4,
-   "share": 0.027,
+   "share": 0.026,
    "avg_copies": 1.75
   },
   "GD05-105": {
    "decks": 4,
-   "share": 0.027,
+   "share": 0.026,
+   "avg_copies": 1.75
+  },
+  "ST04-015": {
+   "decks": 4,
+   "share": 0.026,
    "avg_copies": 1.75
   },
   "GD05-068": {
    "decks": 4,
-   "share": 0.027,
+   "share": 0.026,
    "avg_copies": 1.25
   },
   "ST14-001": {
    "decks": 4,
-   "share": 0.027,
+   "share": 0.026,
    "avg_copies": 1.25
   },
   "ST09-009": {
    "decks": 4,
-   "share": 0.027,
+   "share": 0.026,
    "avg_copies": 1.25
   },
   "GD04-117": {
    "decks": 4,
-   "share": 0.027,
+   "share": 0.026,
    "avg_copies": 1.25
-  },
-  "ST14-005": {
-   "decks": 4,
-   "share": 0.027,
-   "avg_copies": 1.0
   },
   "GD05-016": {
    "decks": 3,
@@ -670,6 +680,11 @@
    "share": 0.02,
    "avg_copies": 3.67
   },
+  "GD03-063": {
+   "decks": 3,
+   "share": 0.02,
+   "avg_copies": 3.67
+  },
   "ST14-007": {
    "decks": 3,
    "share": 0.02,
@@ -684,11 +699,6 @@
    "decks": 3,
    "share": 0.02,
    "avg_copies": 3.33
-  },
-  "GD04-101": {
-   "decks": 3,
-   "share": 0.02,
-   "avg_copies": 2.67
   },
   "GD05-123": {
    "decks": 3,
@@ -710,10 +720,10 @@
    "share": 0.02,
    "avg_copies": 2.0
   },
-  "ST04-015": {
+  "ST11-013": {
    "decks": 3,
    "share": 0.02,
-   "avg_copies": 2.0
+   "avg_copies": 1.67
   },
   "ST09-001": {
    "decks": 2,
@@ -755,12 +765,17 @@
    "share": 0.013,
    "avg_copies": 4.0
   },
+  "ST12-004": {
+   "decks": 2,
+   "share": 0.013,
+   "avg_copies": 4.0
+  },
   "ST11-004": {
    "decks": 2,
    "share": 0.013,
    "avg_copies": 4.0
   },
-  "GD03-063": {
+  "ST07-009": {
    "decks": 2,
    "share": 0.013,
    "avg_copies": 3.5
@@ -861,11 +876,6 @@
    "avg_copies": 1.5
   },
   "GD03-010": {
-   "decks": 2,
-   "share": 0.013,
-   "avg_copies": 1.5
-  },
-  "ST11-013": {
    "decks": 2,
    "share": 0.013,
    "avg_copies": 1.5
@@ -975,17 +985,7 @@
    "share": 0.007,
    "avg_copies": 4.0
   },
-  "ST07-009": {
-   "decks": 1,
-   "share": 0.007,
-   "avg_copies": 4.0
-  },
   "ST07-015": {
-   "decks": 1,
-   "share": 0.007,
-   "avg_copies": 4.0
-  },
-  "ST12-004": {
    "decks": 1,
    "share": 0.007,
    "avg_copies": 4.0
@@ -1071,6 +1071,11 @@
    "avg_copies": 3.0
   },
   "GD05-028": {
+   "decks": 1,
+   "share": 0.007,
+   "avg_copies": 3.0
+  },
+  "GD04-038": {
    "decks": 1,
    "share": 0.007,
    "avg_copies": 3.0
@@ -1191,6 +1196,11 @@
    "avg_copies": 2.0
   },
   "GD01-123": {
+   "decks": 1,
+   "share": 0.007,
+   "avg_copies": 2.0
+  },
+  "ST11-006": {
    "decks": 1,
    "share": 0.007,
    "avg_copies": 2.0
