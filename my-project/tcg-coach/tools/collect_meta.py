@@ -9,6 +9,7 @@ Approved sources (named by the user, robots.txt checked 2026-10-19):
   topdecks - https://tcgtopdecks-hq.com/gundamcardgame-decks/          (reads one set page, one request)
 Saves decklist facts only (cards + counts, event, date, placement, players, archetype label, colors).
 Player names are never saved. Lists already stored (same date + cards) are skipped; new ones are appended to meta/decklists.jsonl.
+Only rows dated within LOOKBACK_DAYS of the newest stored list from that source are read; --all-dates reads every row.
 Then run: python tools/rebuild_all.py
 """
 from __future__ import annotations
@@ -19,7 +20,7 @@ import json
 import re
 import sys
 from collections import Counter
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -28,6 +29,7 @@ import common  # noqa: E402
 EGMAN_API = "https://deckbuilder.egmanevents.com/api/tournaments/gundam"
 EGMAN_PAGE = "https://deckbuilder.egmanevents.com/gundam/tournaments"
 TOPDECKS = "https://tcgtopdecks-hq.com/{page}/"
+LOOKBACK_DAYS = 14  # results sites post late, so re-read this many days before the newest stored list
 
 
 def slug(s: str) -> str:
@@ -46,6 +48,14 @@ def existing_lists() -> set:
         for d in iter_decklists():
             _EXISTING.add((d["meta"].get("date"), frozenset(d["main"].items())))
     return _EXISTING
+
+
+def since_date(prefix: str) -> str:
+    """Oldest date worth reading from one source: its newest stored list minus LOOKBACK_DAYS ('' = read all)."""
+    from card_usage import iter_decklists
+    dates = [d["meta"].get("date", "") for d in iter_decklists() if d["file"][11:].startswith(prefix + "-")]
+    newest = common.parse_date(max(dates)) if dates else None
+    return (newest - timedelta(days=LOOKBACK_DAYS)).isoformat() if newest else ""
 
 
 def write_list(prefix: str, date: str, event_slug: str, n: int, header: list[str], pairs: list[tuple[str, int]]) -> bool:
@@ -88,10 +98,13 @@ def egman_rows(data: list[dict], set_group: str) -> list[dict]:
     return rows
 
 
-def collect_egman(set_group: str) -> int:
+def collect_egman(set_group: str, since: str = "") -> tuple[int, int]:
+    """Returns (new lists written, rows skipped as older than since)."""
     data = json.loads(common.http_get(EGMAN_API))
+    rows = egman_rows(data, set_group)
+    fresh = [r for r in rows if r["date"] >= since]
     written, n = 0, Counter()
-    for r in sorted(egman_rows(data, set_group), key=lambda r: (r["date"], r["event"], r["place"] or 0)):
+    for r in sorted(fresh, key=lambda r: (r["date"], r["event"], r["place"] or 0)):
         s = slug(r["event"])
         n[(r["date"], s)] += 1
         rec = f" ({r['w']}-{r['l']})" if r["w"] is not None else ""
@@ -99,7 +112,7 @@ def collect_egman(set_group: str) -> int:
                   "# kind: tournament", f"# name: {r['label']}", f"# colors: {'-'.join(r['colors'])}",
                   f"# placement: {r['place']}{rec}", f"# players: {r['players'] or 'n/a'}", f"# rounds: {r['rounds'] or 'n/a'}"]
         written += write_list("egman", r["date"], s, n[(r["date"], s)], header, r["pairs"])
-    return written
+    return written, len(rows) - len(fresh)
 
 
 def topdecks_rows(page_html: str) -> list[dict]:
@@ -122,17 +135,20 @@ def topdecks_rows(page_html: str) -> list[dict]:
     return rows
 
 
-def collect_topdecks(page: str) -> int:
+def collect_topdecks(page: str, since: str = "") -> tuple[int, int]:
+    """Returns (new lists written, rows skipped as older than since)."""
     url = TOPDECKS.format(page=page)
+    rows = topdecks_rows(common.http_get(url))
+    fresh = [r for r in rows if r["date"] >= since]
     written, n = 0, Counter()
-    for r in sorted(topdecks_rows(common.http_get(url)), key=lambda r: (r["date"], r["tour"], r["host"])):
+    for r in sorted(fresh, key=lambda r: (r["date"], r["tour"], r["host"])):
         s = slug(f"{r['tour']}-{r['host']}")
         n[(r["date"], s)] += 1
         header = [f"# source: {url}", f"# date: {r['date']}", f"# event: {r['tour']} ({r['host']}) - {r['region']}",
                   "# kind: tournament", f"# name: {r['label']}", f"# colors: {r['colors']}", f"# placement: {r['place']}",
                   f"# players: {r['players'] or 'n/a'}"]
         written += write_list("topdecks", r["date"], s, n[(r["date"], s)], header, r["pairs"])
-    return written
+    return written, len(rows) - len(fresh)
 
 
 def main() -> int:
@@ -141,11 +157,14 @@ def main() -> int:
     ap.add_argument("--source", choices=["egman", "topdecks", "all"], required=True)
     ap.add_argument("--set-group", default="GD05", help="Egman set group (format), e.g. GD05; '' for all")
     ap.add_argument("--page", default="gundam-cg-decks-gd-05-freedom-ascension", help="TopDecks HQ set page slug")
+    ap.add_argument("--all-dates", action="store_true", help="read every row, not only rows near the newest stored list")
     args = ap.parse_args()
-    if args.source in ("egman", "all"):
-        print(f"Egman: {collect_egman(args.set_group)} new decklist(s)")
-    if args.source in ("topdecks", "all"):
-        print(f"TopDecks HQ: {collect_topdecks(args.page)} new decklist(s)")
+    for prefix, label, collect, arg in (("egman", "Egman", collect_egman, args.set_group),
+                                        ("topdecks", "TopDecks HQ", collect_topdecks, args.page)):
+        if args.source in (prefix, "all"):
+            since = "" if args.all_dates else since_date(prefix)
+            written, skipped = collect(arg, since)
+            print(f"{label}: {written} new decklist(s); {skipped} row(s) older than {since or '-'} skipped")
     print("Next: python tools/rebuild_all.py")
     return 0
 

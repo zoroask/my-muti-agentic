@@ -3,7 +3,8 @@
 Usage:
   python tools/refresh_cards.py                  # full refresh, all product groups (~25-45 min, throttled)
   python tools/refresh_cards.py --only GD06-002  # one or more cards
-  python tools/refresh_cards.py --new-only       # only card numbers not yet in cards.json (after a new set)
+  python tools/refresh_cards.py --new-only       # detail pages only for card numbers not yet in cards.json (after a new set);
+                                                 # stored cards still get new prints/groups from the list pages
 Same parsing and tag patterns as tools/scrape_official.js. Runs on your PC (needs internet).
 After a refresh run: export_sets.py, rag_index.py, build_db.py (or just: python tools/rebuild_all.py).
 """
@@ -44,6 +45,19 @@ def packages() -> dict[str, str]:
     return {**common.PACKAGES, **out} if out else dict(common.PACKAGES)
 
 
+def merge_prints(existing: dict, membership: dict, skip: set) -> list[str]:
+    """Add newly listed groups/prints (reprints) to stored cards that are not re-read. Returns the card numbers changed."""
+    changed = []
+    for no in sorted(membership.keys() & existing.keys() - skip):
+        card = existing[no]
+        groups = sorted(set(card.get("groups", [])) | membership[no]["groups"])
+        prints = sorted(set(card.get("prints", [])) | membership[no]["prints"])
+        if (groups, prints) != (card.get("groups"), card.get("prints")):
+            card["groups"], card["prints"] = groups, prints
+            changed.append(no)
+    return changed
+
+
 def main() -> int:
     common.utf8_stdout()
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -68,6 +82,9 @@ def main() -> int:
             print(f"list {code}: done", flush=True)
             time.sleep(DELAY)
     todo = [no for no in membership if not (args.new_only and no in existing)]
+    if args.new_only:
+        reprints = merge_prints(existing, membership, set(todo))
+        print(f"{len(reprints)} stored card(s) got new prints/groups (no detail page read)", flush=True)
     print(f"{len(todo)} detail pages to read", flush=True)
     changed = []
     for i, no in enumerate(todo, 1):

@@ -24,6 +24,7 @@ import deck_stats  # noqa: E402
 import log_stats  # noqa: E402
 import make_plan  # noqa: E402
 import rag_index  # noqa: E402
+import refresh_cards  # noqa: E402
 import search  # noqa: E402
 
 CARDS = {c["no"]: c for c in fixtures.CARDS}
@@ -191,6 +192,50 @@ class TestCollectMeta(unittest.TestCase):
         self.assertEqual(rows[0]["pairs"], [("GD01-001", 4), ("GD01-009", 3)])
         self.assertEqual((rows[0]["date"], rows[0]["players"], rows[0]["label"]), ("2026-10-17", "32", "BR Test"))
         self.assertNotIn("SECRET", json.dumps(rows))
+
+    def test_since_date_per_source(self):
+        with TempKB():
+            self.assertEqual(collect_meta.since_date("egman"), "")  # nothing stored yet: read everything
+            recs = [{"id": "2026-10-20-egman-a-01", "meta": {"date": "2026-10-20"}, "main": {}},
+                    {"id": "2026-10-01-egman-b-01", "meta": {"date": "2026-10-01"}, "main": {}},
+                    {"id": "2026-09-01-topdecks-c-01", "meta": {"date": "2026-09-01"}, "main": {}}]
+            common.DECKLISTS_JSONL.parent.mkdir(parents=True, exist_ok=True)
+            common.DECKLISTS_JSONL.write_text("\n".join(json.dumps(r) for r in recs), encoding="utf-8")
+            self.assertEqual(collect_meta.since_date("egman"), "2026-10-06")     # newest egman minus 14 days
+            self.assertEqual(collect_meta.since_date("topdecks"), "2026-08-18")  # each source has its own cutoff
+
+    def test_old_rows_skipped_and_reruns_add_nothing(self):
+        def event(day):
+            return {"set_group": "GD05", "start_date": day, "tournament_name": f"Event {day}", "event_type": "Store",
+                    "format": "GD05", "player_count": 8, "rounds": 3,
+                    "tournament_results": [{"placement": 1, "deck_type": "GD01-001",
+                                            "deck_list_url": [f"https://x/?deck=GD01-001:4,GD01-0{day[-2:]}:1"]}]}
+        feed = json.dumps([event("2026-09-01"), event("2026-10-15")])
+        saved_get = common.http_get
+        common.http_get = lambda url: feed
+        try:
+            with TempKB():
+                collect_meta._EXISTING = None
+                self.assertEqual(collect_meta.collect_egman("GD05", "2026-10-01"), (1, 1))
+                self.assertEqual(collect_meta.collect_egman("GD05", collect_meta.since_date("egman")), (0, 1))
+                self.assertEqual(collect_meta.collect_egman("GD05", ""), (1, 0))  # --all-dates still dedupes
+                self.assertEqual(len(common.DECKLISTS_JSONL.read_text(encoding="utf-8").splitlines()), 2)
+        finally:
+            common.http_get = saved_get
+            collect_meta._EXISTING = None
+
+
+class TestRefreshCards(unittest.TestCase):
+    def test_merge_prints_adds_reprints_only(self):
+        existing = {"GD01-001": {"no": "GD01-001", "groups": ["GD01"], "prints": ["GD01-001"]},
+                    "GD01-002": {"no": "GD01-002", "groups": ["GD01"], "prints": ["GD01-002"]}}
+        membership = {"GD01-001": {"groups": {"GD01", "PROMO"}, "prints": {"GD01-001", "GD01-001_p1"}},
+                      "GD01-002": {"groups": {"GD01"}, "prints": {"GD01-002"}},
+                      "GD06-001": {"groups": {"GD06"}, "prints": {"GD06-001"}}}
+        self.assertEqual(refresh_cards.merge_prints(existing, membership, {"GD06-001"}), ["GD01-001"])
+        self.assertEqual(existing["GD01-001"]["groups"], ["GD01", "PROMO"])
+        self.assertEqual(existing["GD01-001"]["prints"], ["GD01-001", "GD01-001_p1"])
+        self.assertNotIn("GD06-001", existing)  # new cards are left to the detail-page pass
 
 
 class TestAnalysisSchema(unittest.TestCase):
