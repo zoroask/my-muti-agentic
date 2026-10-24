@@ -65,6 +65,9 @@ def main() -> int:
             show(no.upper(), cards, analysis, not args.no_faq)
         except OSError as e:
             print(f"== {no}: could not reach the official site ({e}) ==")
+            if "CERTIFICATE_VERIFY_FAILED" in str(e):
+                print("   Hint: Windows may not have downloaded this site's root certificate yet. Open the site once "
+                      "in a browser or run: certutil -urlfetch -verify <saved .cer>, then retry. Never disable verification.")
     return 0
 
 

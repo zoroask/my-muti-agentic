@@ -66,6 +66,16 @@ needed by `fetch_card.py`, `verify_cards.py` and `refresh_cards.py`.
    `python tools/make_plan.py --event ... --date ... --deck ... --write` for `plans/<event>.md`.
 8. Practice → log games → repeat from step 3 until the event date.
 
+## Workflow 5: deck optimization and tuning
+1. `deck_check.py` → must be LEGAL.
+2. `deck_math.py decks/<deck>.txt` → joint odds, on-curve odds, goldfish metrics with CI.
+3. Lock the core (cards with high usage share or your own picks); Pilots that link to a locked Unit
+   are locked automatically. Everything else is flex.
+4. `deck_optimize.py decks/<deck>.txt --lock <core>` → ranked swaps, Δscore, sensitivity.
+5. Deck Analyst checks each swap with workflow 2 (live text) and the meta from workflow 3.
+6. Propose Before/After → STOP for "yes" → TCG Lead writes, re-runs `deck_check.py`.
+Theory and limits: `knowledge/gundam-gcg/deck-math.md`.
+
 ## Context layout
 Long prompts follow the **long-context-lost-in-the-middle** skill; `build_context.py` implements its
 A/B/C layout. Put the card text and hard constraints first, restate the question last.

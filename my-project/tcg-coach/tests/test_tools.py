@@ -20,6 +20,8 @@ import card_usage  # noqa: E402
 import collect_meta  # noqa: E402
 import common  # noqa: E402
 import deck_check  # noqa: E402
+import deck_math  # noqa: E402
+import deck_optimize  # noqa: E402
 import deck_stats  # noqa: E402
 import log_stats  # noqa: E402
 import make_plan  # noqa: E402
@@ -121,6 +123,103 @@ class TestDeckStats(unittest.TestCase):
         self.assertEqual(s["colors"]["Red"], 4)
         self.assertEqual(s["link_coverage"][0]["pilots_in_deck"], 4)  # "Test Pilot Ray" contains "Test Pilot"
         self.assertEqual(s["odds"][0]["copies"], 4)
+
+
+class TestDeckMath(unittest.TestCase):
+    def brute_joint(self, deck, groups, seen):
+        """Count every hand of a tiny deck: deck = list of labels, groups = [(label, min)]."""
+        from itertools import combinations
+        hands = list(combinations(range(len(deck)), seen))
+        ok = sum(all(sum(deck[i] == lab for i in h) >= need for lab, need in groups) for h in hands)
+        return ok / len(hands)
+
+    def test_tail_matches_single_card_odds(self):
+        self.assertAlmostEqual(deck_math.p_at_least(50, 4, 5), deck_stats.p_at_least_one(50, 4, 5))
+        self.assertAlmostEqual(deck_math.p_at_least(50, 4, 5, 2), 1 - (comb(46, 5) + 4 * comb(46, 4)) / comb(50, 5))
+
+    def test_joint_against_brute_force(self):
+        deck = ["A"] * 3 + ["B"] * 2 + ["x"] * 5
+        for seen in (3, 4, 6):
+            self.assertAlmostEqual(deck_math.p_joint(10, [(3, 1), (2, 1)], seen),
+                                   self.brute_joint(deck, [("A", 1), ("B", 1)], seen))
+        self.assertAlmostEqual(deck_math.p_joint(10, [(3, 2), (2, 1)], 5),
+                               self.brute_joint(deck, [("A", 2), ("B", 1)], 5))
+
+    def test_level_and_seen(self):
+        self.assertEqual(deck_math.level_on_turn(3, on_play=True), 3)
+        self.assertEqual(deck_math.level_on_turn(3, on_play=False), 4)
+        self.assertEqual(deck_math.level_on_turn(12, on_play=True, resource_size=10), 10)
+        self.assertEqual(deck_math.cards_seen(1, True), 6)
+        self.assertEqual(deck_math.cards_seen(1, True, skip_first_draw=True), 5)
+
+    def test_intervals_and_bo3(self):
+        lo, hi = deck_math.wilson_ci(50, 100)
+        self.assertAlmostEqual(lo, 0.4038, places=3)
+        self.assertAlmostEqual(hi, 0.5962, places=3)
+        self.assertEqual(deck_math.wilson_ci(0, 0), (0.0, 1.0))
+        self.assertAlmostEqual(deck_math.bo3(0.6), 0.648)
+        self.assertAlmostEqual(deck_math.bo3(0.5), 0.5)
+        self.assertAlmostEqual(deck_math.beta_smooth(3, 3), 5 / 7)
+        self.assertAlmostEqual(deck_math.meta_ev({"a": 2, "b": 2}, {"a": 0.6}), (0.648 + 0.5) / 2)
+
+    def test_simulation_is_repeatable(self):
+        main = legal_main()
+        a = deck_math.summarize(deck_math.simulate(main, CARDS, sims=300, seed=7), 6)
+        b = deck_math.summarize(deck_math.simulate(main, CARDS, sims=300, seed=7), 6)
+        self.assertEqual(a, b)
+        self.assertEqual(a["per_turn"][0]["p_played"], 0.0)  # level 1, no Lv1 cards in the fixture deck
+        self.assertTrue(all(0 <= r["spend_eff"] <= 1 for r in a["per_turn"]))
+
+    def test_link_pairs(self):
+        self.assertEqual(deck_math.link_pairs(legal_main(), CARDS), {"GD01-001": {"GD01-008"}})
+
+    def test_optimizer_stays_legal_and_respects_locks(self):
+        main = legal_main()
+        cards = {**CARDS, deck_optimize.BLANK: {"no": deck_optimize.BLANK, "name": "blank", "type": "BLANK"}}
+        scorer = deck_optimize.Scorer(cards, {}, deck_optimize.DEFAULT_WEIGHTS, 6, 4, True, False, 3, 10)
+        locked = {"GD01-001", "GD01-008"}
+        flex = sorted(no for no in main if no not in locked)
+        pool = sorted(set(main) | {"GD01-003", "GD01-004", "GD01-007", "GD01-010"})  # vanilla, banned, pair, 3rd color
+        final, steps = deck_optimize.optimize(main, {"R-001": 10}, cards, FORMAT, scorer, flex, pool, 2, 60, 1, 0.0)
+        self.assertTrue(deck_optimize.legal(final, {"R-001": 10}, cards, FORMAT))
+        self.assertEqual(sum(final.values()), 50)
+        for no in locked:
+            self.assertEqual(final[no], main[no])
+        self.assertFalse({"GD01-004", "GD01-007", "GD01-010", "GD01-003"} & set(final))
+
+    def test_locked_card_is_never_added(self):
+        # GD01-005 (Base) is at 2 of a max 4 copies and in the pool; locked, its count must not rise
+        main = legal_main()
+        cards = {**CARDS, deck_optimize.BLANK: {"no": deck_optimize.BLANK, "name": "blank", "type": "BLANK"}}
+        fmt = {**FORMAT, "banlist": {**FORMAT["banlist"], "restricted": {}}}
+        scorer = deck_optimize.Scorer(cards, {"GD01-005": {"share": 1.0}}, {**deck_optimize.DEFAULT_WEIGHTS, "usage": 50},
+                                      6, 4, True, False, 3, 10)
+        locked = frozenset({"GD01-005"})
+        pool = deck_optimize.build_pool(main, cards, {}, fmt, "colors", 5, False)
+        self.assertIn("GD01-005", pool)
+        final, _ = deck_optimize.optimize(main, {"R-001": 10}, cards, fmt, scorer, sorted(main), pool, 2, 40, 1, 0.0,
+                                          locked)
+        self.assertEqual(final["GD01-005"], 2)
+        unlocked, _ = deck_optimize.optimize(main, {"R-001": 10}, cards, fmt, scorer, sorted(main), pool, 2, 40, 1, 0.0)
+        self.assertGreater(unlocked["GD01-005"], 2)  # the test would catch the bug: without the lock it is added
+
+    def test_link_pilots_of_locked_units_are_locked(self):
+        main = legal_main()
+        self.assertEqual(deck_optimize.link_locks(main, CARDS, {"GD01-001"}), {"GD01-008"})
+        self.assertEqual(deck_optimize.link_locks(main, CARDS, {"GD01-009"}), set())
+        self.assertEqual(deck_optimize.link_locks(main, CARDS, {"GD01-001", "GD01-008"}), set())
+
+    def test_link_turn_defaults_to_last_turn(self):
+        s = deck_optimize.Scorer(CARDS, {}, deck_optimize.DEFAULT_WEIGHTS, 6, None, True, False, 3, 10)
+        self.assertEqual(s.link_turn, 6)
+        s = deck_optimize.Scorer(CARDS, {}, deck_optimize.DEFAULT_WEIGHTS, 6, 9, True, False, 3, 10)
+        self.assertEqual(s.link_turn, 6)
+
+    def test_paired_delta_of_same_deck_is_zero(self):
+        main = legal_main()
+        scorer = deck_optimize.Scorer(CARDS, {}, deck_optimize.DEFAULT_WEIGHTS, 6, 4, True, False, 3, 10)
+        d = deck_optimize.paired_delta(scorer, main, main, deck_math.shuffles(50, 50, 3))
+        self.assertEqual(d, (0.0, 0.0, 0.0))
 
 
 class TestLogStats(unittest.TestCase):

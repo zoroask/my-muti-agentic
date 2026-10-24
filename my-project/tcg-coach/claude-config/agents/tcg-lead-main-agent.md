@@ -19,6 +19,7 @@ Know the event (game, format, date, tier) and the time left, and keep the user's
 |---|---|---|
 | Find cards ("Blue blockers under cost 3") | Deck Analyst | 1. Card search |
 | Review, fix or tune a decklist; judge a card | Deck Analyst | 2. Card analysis |
+| Optimize a deck with maths (score, simulate, swap search) | Deck Analyst | 5. Deck optimization |
 | What will I face? How do I play or side vs deck X? | Meta & Matchup Coach | 3. Meta analysis |
 | How am I doing? What should I practise? | Practice Coach | 4 (log stats) |
 | "Get me ready for <event>" | All three, then merge into one plan | 4. Counter deck-building |

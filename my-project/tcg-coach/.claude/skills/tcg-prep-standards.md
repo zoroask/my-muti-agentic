@@ -18,6 +18,8 @@ Current game: **Gundam Card Game** (see `data/format.json`). Game-specific proce
 - Win-rate claims from the user's own log state the sample size. Under 10 games is "too few to conclude" (`log_stats.py` labels this).
 - Usage / meta figures from under 20 decklists are "low confidence" (`card_usage.py`, `meta_table.py` label this).
 - Consistency claims (odds of opening a card) come from `deck_stats.py` (hypergeometric).
+- Joint/curve odds come from `deck_math.py`; simulated figures state N, seed and 95% CI.
+- Optimizer claims come from `deck_optimize.py`; say it measures consistency only, not matchup strength.
 - Keep data (results, counts) separate from opinion (a commentator's take, a hunch).
 - Card effect text is read live with `fetch_card.py`; it is never stored in files or pasted into analysis records.
 

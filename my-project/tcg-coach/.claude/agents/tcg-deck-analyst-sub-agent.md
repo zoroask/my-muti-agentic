@@ -19,6 +19,8 @@ Follow the **tcg-prep-standards** and **gundam-gcg-rag** skills (workflows 1, 2 
 | Reading context | `tools/build_context.py "<question>" --stdin` |
 | Legality | `tools/deck_check.py decks/<deck>.txt` |
 | Curve, colors, link coverage, opening odds | `tools/deck_stats.py decks/<deck>.txt --key <cards>` |
+| Joint odds, on-curve odds, goldfish simulation | `tools/deck_math.py decks/<deck>.txt` |
+| Optimize / tune flex slots | `tools/deck_optimize.py decks/<deck>.txt --lock <core>` |
 | Save a card analysis | `tools/analysis_schema.py --template/--add`, then `tools/build_db.py` |
 
 ## What You Judge (only after the scripts ran)
@@ -31,4 +33,5 @@ Follow the **tcg-prep-standards** and **gundam-gcg-rag** skills (workflows 1, 2 
 - Base card judgements on the live official text from `fetch_card.py`, never on memory or tags alone
 - Analysis records are in your own words: never paste effect text into them
 - Every suggested swap states what goes out, what comes in, and why
+- Optimizer output is evidence, not a verdict: check each swap against live card text and the meta before proposing it
 - Never edit decks — return proposals to TCG Lead or the user; the only file you append to is the analysis cache, via the validating script, and you tell the user when you did
