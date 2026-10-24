@@ -73,7 +73,7 @@ def main() -> int:
     common.utf8_stdout()
     chunks = build()
     common.CHUNKS_JSONL.parent.mkdir(parents=True, exist_ok=True)
-    with common.CHUNKS_JSONL.open("w", encoding="utf-8") as f:
+    with common.CHUNKS_JSONL.open("w", encoding="utf-8", newline="\n") as f:
         for c in chunks:
             f.write(json.dumps(c, ensure_ascii=False) + "\n")
     print(f"Wrote {len(chunks)} chunks to {common.CHUNKS_JSONL}")

@@ -39,7 +39,7 @@ def main() -> int:
         text = (f"# {g} card table\nas_of: {scraped_at}\n"
                 f"source: https://www.gundam-gcg.com/en/cards/\n\nFacts and tags only. Exact effect text: "
                 f"python tools/fetch_card.py <no>\n\n" + common.table(md_rows, MD_COLS) + "\n")
-        (out_dir / f"{g}.md").write_text(text, encoding="utf-8")
+        (out_dir / f"{g}.md").write_text(text, encoding="utf-8", newline="\n")
     print(f"Wrote cards.csv ({len(rows)} cards) and {len(by_group)} set tables")
     return 0
 
