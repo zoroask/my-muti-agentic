@@ -1,0 +1,28 @@
+# name: BR Strike Freedom - Stardust Orb burn (GD06)
+# Built 2026-10-27 for a local BO1 Swiss on 2026-10-31; ban list 2026-09-25, rules 1.10.0.
+# Meta: 153 tournament lists 2026-10-01..10-18, all pre-GD06 - GD06 card value is untested.
+# Engine: Neo Lorrnoke counts as Mu La Flaga and is Orb -> links Akatsuki, turns on Gaia's Blocker;
+#   1-damage pings enable Akatsuki's bounce and Unsanctioned Ordnance.
+# Optimizer: -2 Ootori / +2 Neo's Windam, -1 Gaia / +1 Kira's Strike Rouge (delta +0.164, CI +0.140..+0.188, N=3000).
+# Live text read 2026-10-27 with fetch_card.py.
+
+# Main
+4 GD05-002 Strike Freedom Gundam
+3 GD06-002 Infinite Justice Gundam
+3 GD06-005 Akatsuki (Shiranui)
+2 GD06-015 Waldfeld's Gaia Gundam
+4 GD05-010 Kira's Strike Rouge
+4 GD04-016 Zoloat (League Militaire)
+3 GD06-016 Dom Trooper
+4 GD06-041 Neo Lorrnoke's Windam (Jet Striker)
+4 GD05-081 Kira Yamato
+3 GD06-082 Athrun Zala
+3 GD06-092 Neo Lorrnoke
+4 ST03-013 Close Combat
+3 GD05-110 Darkness Finger
+2 GD05-111 Airframe Seizure
+2 GD03-109 Improved Technique
+2 GD06-113 Unsanctioned Ordnance
+
+# Resource
+10 R-001
