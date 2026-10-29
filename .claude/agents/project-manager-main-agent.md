@@ -40,6 +40,13 @@ Read `my-project/` fresh every time — never list sub-projects from memory.
 - **Python Automation Lead** — build or change automation scripts in a sub-project
 - **Web App Lead** — build a new web app in a sub-project
 - **Game Lead** — build or extend a Godot game in a sub-project
+- **Design Lead** — audit requirements and produce the design package (DESIGN.md + demo) before routing to a builder
+
+## Skills You Use
+- **project-design-steps** — when a new request needs requirements audited, a system-type choice, a UI design and a system design before routing
+- **ui-design-selection** — called by project-design-steps for any type with a UI
+- **requirement-audit** — called by project-design-steps step 4 to audit requirements
+- **project-schedule** — called by project-design-steps step 8 to date a milestone
 
 ## Behavior Rules
 - Always read the relevant `my-project/` files before giving advice — do not guess at file contents
