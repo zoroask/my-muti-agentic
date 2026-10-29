@@ -7,7 +7,7 @@ Sub-project of the `D:\my-muti-agentic` library; open Claude Code in this folder
 1. English only — all responses in English regardless of request language.
 2. Start every TCG request with **TCG Lead** (`.claude/agents/tcg-lead-main-agent.md`); it routes to the specialists.
 3. Before any change to the user's files (decks, plans, logs, data), show a Before/After and wait for an explicit "yes".
-4. Follow `.claude/skills/tcg-prep-standards.md` and `.claude/skills/gundam-gcg-rag.md`.
+4. Follow `.claude/skills/tcg-prep-standards/SKILL.md` and `.claude/skills/gundam-gcg-rag/SKILL.md`.
 5. Code first, LLM last: if a script in `tools/` can compute it, run the script. Judge only what scripts can't.
 6. Ban lists, legality, rulings and meta numbers come from a current, dated source, never from memory.
 7. Card effect text is read live (`tools/fetch_card.py`) and never stored in files.
@@ -24,4 +24,4 @@ Sub-project of the `D:\my-muti-agentic` library; open Claude Code in this folder
 
 ## Skill triggers
 "prepare for a TCG tournament", "review my deck", "tcg meta", "matchup", "sideboard", "practice log", "gundam card", "find cards" /
-"เตรียมแข่ง TCG", "จัดเด็ค", "วิเคราะห์ meta", "แมตช์อัพ", "ไซด์เด็ค", "ค้นหาการ์ด", "วิเคราะห์การ์ด" → read `.claude/skills/tcg-prep-standards.md` and `.claude/skills/gundam-gcg-rag.md` first.
+"เตรียมแข่ง TCG", "จัดเด็ค", "วิเคราะห์ meta", "แมตช์อัพ", "ไซด์เด็ค", "ค้นหาการ์ด", "วิเคราะห์การ์ด" → read `.claude/skills/tcg-prep-standards/SKILL.md` and `.claude/skills/gundam-gcg-rag/SKILL.md` first.

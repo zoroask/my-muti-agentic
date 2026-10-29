@@ -6,7 +6,7 @@ my-project/tcg-coach/ from the library root. $ARGUMENTS is the request.
    options Card search, Deck review, Meta & matchups, Practice review,
    Get me ready for an event (free text via Other).
 2. Read fresh: `my-project/tcg-coach/.claude/agents/tcg-lead-main-agent.md`
-   and the skills `tcg-prep-standards.md` and `gundam-gcg-rag.md` in
+   and the skills `tcg-prep-standards/SKILL.md` and `gundam-gcg-rag/SKILL.md` in
    `my-project/tcg-coach/.claude/skills/`. If missing, tell the user to
    run `my-project/tcg-coach/install.bat` and stop.
 3. Act as TCG Lead: run the freshness check (gundam-gcg-rag Step 0) and

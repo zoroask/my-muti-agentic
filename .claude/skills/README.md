@@ -2,7 +2,7 @@
 
 Reusable prompt skills for this project.
 
-> Note: Claude Code does not auto-load this folder. Triggers below are surfaced at the start of every chat via the `@.claude/skills/README.md` import in `CLAUDE.md`, which tells Claude to read the matching skill file first. To also expose a skill as a slash command, copy or symlink the `.md` file into `.claude/commands/`.
+> Note: each skill lives at `.claude/skills/<name>/SKILL.md` with `name` and `description` frontmatter, so Claude Code discovers it natively and it can be invoked as `/<name>`. A row's `<name>.md` below refers to that folder. The table is also surfaced at the start of every chat via the `@.claude/skills/README.md` import in `CLAUDE.md`, which keeps the Thai triggers (frontmatter stays English-only).
 
 ## Available Skills
 
@@ -30,3 +30,7 @@ Reusable prompt skills for this project.
 | `godot-game-standards.md` | Shared rules for Godot 4 pixel-art games (layout, ownership, pixel settings, original-work rule, review loop) | "make a game", "godot game", "pixel art game" / "สร้างเกม", "เกม godot", "เกมพิกเซล" |
 | `security-learning-standards.md` | Shared rules for the Security Learning cluster (authorization/scope gate, defensive-only boundary, evidence, output) | "reverse engineering", "yara rule", "scan for secrets", "vulnerability review", "ctf" / "reverse engineering", "กฎ yara", "สแกนหา secret", "ตรวจช่องโหว่โค้ด", "ctf" |
 | `core-process.md` | Standard 10-stage path for multi-stage requests (history → skills → plan → design → STOP → assign → audit → summary → learn) | "plan this task", "full process", "multi-step task" / "ทำตามขั้นตอน", "วางแผนงานนี้", "งานหลายขั้นตอน" |
+| `project-design-steps.md` | Requirement intake → requirement audit (correctness, coverage, conflicts, questions) → system-type options (GUI/TUI/web/automation/other) → UI design → system design with diagrams, Start→Goal list and schedule → standalone demo → hand-off to the owning cluster | "design a system", "gather requirements", "which type of app should I build" / "ออกแบบระบบ", "รับ requirement", "ควรทำแอปแบบไหน" |
+| `ui-design-selection.md` | Detailed, round-by-round UI choices (style, theme, layout, fonts, navigation, components, accessibility, type-specific) recorded as a UI spec | "choose a UI style", "ui design", "design the interface" / "เลือกดีไซน์ UI", "ออกแบบหน้าจอ", "เลือกธีมสี" |
+| `requirement-audit.md` | Audit requirements for correctness, coverage and conflicts; gaps become questions; Pass / Blocked verdict (project-design-steps step 4) | "audit requirements", "check my requirements" / "ตรวจสอบความต้องการ", "ตรวจ requirement" |
+| `project-schedule.md` | Estimate and date a milestone's items with buffer, critical path, gantt and risks (project-design-steps step 8) | "estimate the schedule", "make a timeline" / "ประมาณเวลา", "ทำตารางเวลา" |
