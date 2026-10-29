@@ -47,8 +47,8 @@
     "cover_letter_template": "cover_letter_template.txt"
   },
   "apply": {
-    "enabled": true,
-    "dry_run": false,
+    "enabled": false,
+    "dry_run": true,
     "max_applications_per_run": 5,
     "max_applications_per_day": 20,
     "headless": false,
