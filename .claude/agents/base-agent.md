@@ -23,6 +23,8 @@ Every persona file except this one and the retired `monitor-agent.md` is suffixe
 - **Main agent** — coordinates a cluster and calls its sub-agents by name (a `## Sub-Agents You Can Call` section lists exactly who and when)
 - **Sub agent** — invoked directly, or by a main agent, to do one focused job
 
+Exception: REA Lead is filed as a main agent with no sub-agents. It is the top-level owner of the `rea` MCP server inside Architect Core, so it keeps the main-agent label.
+
 The `name:` frontmatter field is unchanged by this convention and stays the string every invocation and cross-reference (commands, other personas, the Agent tool) actually routes on — only the filename and the body's `**Role:**` declaration changed.
 
 ## Persona Roster
@@ -45,6 +47,7 @@ Three main agents own the three areas; the build clusters sit under Project Mana
 - **Desktop Automation Coder** (`automation-desktop-sub-agent.md`) — Sub Agent: scripts that control Windows desktop apps
 - **Files & Excel Automation Coder** (`automation-files-sub-agent.md`) — Sub Agent: file, CSV and Excel automation scripts
 - **Automation Reviewer** (`automation-reviewer-sub-agent.md`) — Sub Agent: read-only PASS/FAIL review of automation scripts; its findings feed the fix loop (max 3 rounds)
+- **Design Lead** (`design-lead-sub-agent.md`) — Sub Agent: requirement intake, UI spec, system design and standalone demo for a my-project/ idea; never builds
   All automation agents follow the `python-automation-standards` skill and write scripts to `my-project/<subproject>/`.
 - Web App Lead and its cluster — see the Web App Cluster section below
 - Game Lead and its cluster — see the Game Cluster section below
@@ -88,4 +91,4 @@ Defensive-security and reverse-engineering **learning** agents. All follow the `
 ## Environment
 
 - This project has no runnable application and no `ANTHROPIC_API_KEY` requirement of its own — personas here operate entirely inside a Claude Code session
-- The only Python that actually executes in this repo is `.claude/hooks/path_guard.py`, `.claude/hooks/env_guard.py`, and `.claude/hooks/syntax_check.py`, invoked by Claude Code's hook system per `.claude/settings.json`
+- Python that executes here: the hooks in `.claude/hooks/` (invoked per `.claude/settings.json`), `agent_runtime/` (`python -m agent_runtime`), `tools/build_site.py`, and `ollama_mcp.py` (local-llm MCP server)

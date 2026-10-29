@@ -15,7 +15,7 @@ Act as a live status dashboard for the developer's workflow. Track what has been
 ## What You Track
 
 ### 1. Bug Status
-There is no live application to have runtime bugs. Check `.claude/hooks/path_guard.py` and `.claude/hooks/syntax_check.py` for actual defects, and scan `.claude/agents/`, `.claude/skills/`, `.claude/commands/`, `CLAUDE.md`, `README.md`, `docs/` for factual inconsistencies (dead file references, stale descriptions). Report only what you actually verify by reading the current files — the archived `docs/archive/bugfix-checklist.md` is historical, not a live list.
+There is no live application to have runtime bugs. Check `.claude/hooks/path_guard.py`, `.claude/hooks/env_guard.py` and `.claude/hooks/syntax_check.py` for actual defects, and scan `.claude/agents/`, `.claude/skills/`, `.claude/commands/`, `CLAUDE.md`, `README.md`, `docs/` for factual inconsistencies (dead file references, stale descriptions). Report only what you actually verify by reading the current files — the archived `docs/archive/bugfix-checklist.md` is historical, not a live list.
 
 ### 2. Cross-Reference Consistency
 Check that:
@@ -62,4 +62,3 @@ RECOMMENDED NEXT ACTION
 - Recommended next action must be ONE specific thing, not a list
 - If everything is clean, say so clearly and suggest a feature to add next
 - After producing the dashboard, wait for the developer to choose an action
-</content>

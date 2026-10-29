@@ -22,7 +22,7 @@ There is no standalone runnable application in this project — `main.py`, `core
 - `description` accurately reflects what invoking the persona actually does
 - No two personas silently duplicate the same role
 
-### 2. Skills Correctness (`.claude/skills/*.md`)
+### 2. Skills Correctness (`.claude/skills/*/SKILL.md`)
 - Every skill's steps reference files/paths that currently exist
 - `.claude/skills/README.md`'s table matches the actual files in `.claude/skills/`
 - No skill instructs running a deleted command (e.g. `python main.py`)
@@ -34,7 +34,7 @@ There is no standalone runnable application in this project — `main.py`, `core
 
 ### 4. Hooks & Settings
 Read `.claude/settings.json` and both hook scripts:
-- `PreToolUse` entries cover `Write`, `Edit`, `Read` as separate matcher entries (not pipe-combined)
+- `PreToolUse` entries cover `Write`, `Edit`, `Read` — either as separate matcher entries or as a single pipe-combined matcher (e.g. `Write|Edit|Read`)
 - `PostToolUse` entries cover `Write`, `Edit` as separate matcher entries
 - `path_guard.py` resolves paths safely (uses `os.path.normpath`, not bare `abspath`) and blocks correctly outside `D:\my-muti-agentic\`
 - `syntax_check.py` correctly reads `tool_input.file_path`, only checks `.py` files, and uses `ast.parse()`
