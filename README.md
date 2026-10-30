@@ -54,12 +54,12 @@ Invoke by referencing them in conversation, e.g. "use the debug-agent skill".
 | `rea` | `.mcp.json` → `npx -y rea-agents@6.7.0 mcp` | Reverse-engineering analysis tools |
 | `local-llm` | `ollama_mcp.py` (not registered in `.mcp.json`) | `list_local_models`, `ask_local_llm`, `summarize_file_locally` |
 
-`ollama_mcp.py` env vars: `LLM_BACKEND` (ollama|openai), `LLM_BASE_URL` (default `http://localhost:11434` or `http://localhost:8000/v1`), `LLM_DEFAULT_MODEL`, `LLM_API_KEY`, `LLM_TIMEOUT`.
+`ollama_mcp.py` env vars: `LLM_BACKEND` (ollama|openai), `LLM_BASE_URL` (default `http://localhost:11434` or `http://localhost:8000/v1`), `LLM_DEFAULT_MODEL`, `LLM_API_KEY`, `LLM_TIMEOUT`, `LLM_ALLOWED_ROOT` (folder `summarize_file_locally` may read; default is the project root).
 
 ## Key paths
 - `agent_runtime/` — stdlib sequencer and audit: `python -m agent_runtime audit`
 - `tools/build_site.py` → `site/index.html` (Multi-Agent Library Overview)
-- `my-project/` — subprojects: `job-auto-apply`, `tcg-coach`, `web-show-pre-order-date`
+- `my-project/` — subprojects: `job-auto-apply`, `tcg-coach`, `token-usage-monitor`, `web-show-pre-order-date`
 - `path_guard.py` allows only the project root and the memory root (`PATH_GUARD_ROOT`, `PATH_GUARD_MEMORY` override for tests)
 
 ## Usage
