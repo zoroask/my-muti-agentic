@@ -25,6 +25,7 @@ CLUSTERS = [
     ("Automation", ("automation-", "python-automation-")),
     ("Security", ("security-",)),
     ("Design", ("design-",)),
+    ("DQA", ("dqa-",)),
     ("Routing", ("project-manager-", "rea-lead-")),
 ]
 CORE = "Library core"

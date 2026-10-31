@@ -11,6 +11,7 @@ AI personas with a defined role, project knowledge, and behavioral rules. Each r
 - Automation cluster (`python-automation-lead-main-agent`, `automation-*-sub-agent`) — Python automation split by area: APIs, scraping, scheduled jobs, desktop/GUI, files/Excel, plus a read-only Automation Reviewer with a fix loop
 - Security Learning cluster (`security-lead-main-agent`, `security-*-sub-agent`) — defensive-security and reverse-engineering learning agents behind a single Security Lead front door: RE tutor, CTF study buddy, YARA rule writer, malware report reader, code vulnerability reviewer, dependency/supply-chain checker, secrets scanner; authorization-gated and defensive-only (see the `security-learning-standards` skill)
 - Game cluster (`game-lead-main-agent`, `game-*-sub-agent`) — Godot 4 top-down pixel-art games, built one milestone at a time: systems, world/tilemap, pixel art, UI, plus a read-only Game Reviewer with a fix loop
+- DQA cluster (`dqa-data-qa-main-agent`, `dqa-data-quality-sub-agent`) — Data-QA-Agent routes to the Data Quality sub-agent for Bank of Thailand data quality work: validation rule design/review, data file checks and anomaly root-cause tracing, all numbers computed with code (see the `bot-data-quality` skill)
 - Design Lead (`design-lead-sub-agent`) — requirement audit, UI spec and design package via `/project-design`; read-only
 - REA Lead (`rea-lead-main-agent`) — drives the REA MCP server to analyse how existing software is built
 - General-purpose personas — architect advisor, bug fixer, code mentor, project manager, workflow monitor, base-agent, and the retired monitor
@@ -18,7 +19,7 @@ AI personas with a defined role, project knowledge, and behavioral rules. Each r
 Invoke one by name via the Agent/Task tool, or by asking Claude Code directly (e.g. "use the Bug Fixer agent").
 
 ### `.claude/skills/` — Procedures
-26 skills in `.claude/skills/<name>/SKILL.md`; run `/list-skills` for the full list with triggers.
+27 skills in `.claude/skills/<name>/SKILL.md`; run `/list-skills` for the full list with triggers.
 
 Invoke by referencing them in conversation, e.g. "use the debug-agent skill".
 
