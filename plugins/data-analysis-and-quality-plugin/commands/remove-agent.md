@@ -1,0 +1,11 @@
+Safely remove an agent definition.
+
+Steps:
+1. Ask the user which agent to remove
+2. Check `agents/base-agent.md` for any mention of this agent, and check other `.claude/commands/*.md` or `.claude/skills/*/SKILL.md` files for references to it by name
+3. Warn the user about downstream effects if other commands, skills, or agents reference this one
+4. Ask the user to confirm removal after seeing the impact
+5. On confirmation, make these changes:
+   - Delete `.claude/agents/<name>.md`
+   - Update `agents/base-agent.md` if the agent is listed there
+6. Confirm no remaining file references the removed agent by name

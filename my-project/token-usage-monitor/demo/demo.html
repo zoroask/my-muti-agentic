@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Token Usage Monitor — DEMO</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#0f172a;--sf:#1e293b;--sr:#334155;
+--tx:#f8fafc;--mu:#94a3b8;--ac:#3b82f6;--ach:#2563eb;
+--ok:#22c55e;--wn:#f59e0b;--er:#ef4444;--bd:#334155}
+body{background:var(--bg);color:var(--tx);font-family:Inter,system-ui,sans-serif;font-size:14px;min-height:100vh}
+#banner{background:var(--wn);color:#0f172a;text-align:center;padding:8px 16px;font-weight:700;font-size:13px;position:sticky;top:0;z-index:100}
+#app{max-width:1080px;margin:0 auto;padding:16px}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 0 10px;border-bottom:1px solid var(--bd);margin-bottom:12px}
+.hdr h1{font-size:18px;font-weight:700}
+.btn{background:var(--ac);color:#fff;border:none;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:13px;font-weight:500}
+.btn:hover{background:var(--ach)}
+.btn:focus-visible{outline:2px solid var(--tx);outline-offset:2px}
+.btn:disabled{opacity:.45;cursor:default}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--bd);margin-bottom:14px}
+.tab{padding:8px 16px;background:none;border:none;color:var(--mu);cursor:pointer;font-size:13px;border-bottom:2px solid transparent;transition:color .15s,border-color .15s}
+.tab:hover{color:var(--tx)}
+.tab.on{color:var(--ac);border-bottom-color:var(--ac)}
+.tab:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.fbar{display:flex;align-items:center;gap:10px;background:var(--sf);border:1px solid var(--bd);border-radius:6px;padding:9px 14px;margin-bottom:14px;flex-wrap:wrap}
+.fbar label{font-size:12px;color:var(--mu)}
+.fbar input{background:var(--sr);border:1px solid var(--bd);color:var(--tx);border-radius:4px;padding:4px 8px;font-size:13px}
+.fbar input:focus-visible{outline:2px solid var(--ac)}
+.fbar .note{font-size:11px;color:var(--mu);margin-left:auto}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:6px;padding:14px;box-shadow:0 2px 6px #00000040}
+.card .lbl{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.card .val{font-size:22px;font-weight:700}
+.card .sub{font-size:11px;color:var(--mu);margin-top:2px}
+.chart{background:var(--sf);border:1px solid var(--bd);border-radius:6px;padding:14px;margin-bottom:14px}
+.chart h3{font-size:12px;font-weight:600;color:var(--mu);margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em}
+.brow{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:12px}
+.brow .bn{width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tx)}
+.brow .bw{flex:1;background:var(--sr);border-radius:3px;height:14px;overflow:hidden}
+.brow .bf{height:100%;background:var(--ac);border-radius:3px}
+.brow .bv{width:68px;text-align:right;color:var(--mu)}
+.tbl{background:var(--sf);border:1px solid var(--bd);border-radius:6px;overflow:hidden;margin-bottom:14px}
+table{width:100%;border-collapse:collapse}
+th{background:var(--sr);padding:8px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--mu);text-align:left}
+td{padding:8px 12px;border-top:1px solid var(--bd);font-size:13px}
+tr:hover td{background:rgba(59,130,246,.06)}
+.nr{text-align:right;font-variant-numeric:tabular-nums;color:var(--mu)}
+.nm{font-weight:500}
+.bg{display:inline-block;padding:2px 7px;border-radius:10px;font-size:11px;font-weight:500}
+.ba{background:#1d4ed820;color:#93c5fd}
+.bs{background:#06644020;color:#6ee7b7}
+.bc{background:#92400e20;color:#fcd34d}
+.bm{background:#33415540;color:#94a3b8}
+.rpanel{background:var(--sf);border:1px solid var(--ac);border-radius:6px;padding:12px 14px;margin-bottom:14px;font-size:12px}
+.rpanel h4{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ac);margin-bottom:6px}
+.rpanel p{color:var(--mu);line-height:1.5;margin-top:4px}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.rtag{background:var(--sr);border:1px solid var(--bd);border-radius:10px;padding:2px 8px;font-size:11px;color:var(--tx)}
+.snav{display:flex;align-items:center;justify-content:space-between;background:var(--sf);border:1px solid var(--bd);border-radius:6px;padding:9px 14px;margin-bottom:14px}
+.snav .si{font-size:12px;color:var(--mu)}
+.snav .st{font-size:13px;font-weight:600;margin-top:2px}
+.snav .sb{display:flex;gap:8px}
+.sbtn{background:var(--sr);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:5px 12px;cursor:pointer;font-size:12px}
+.sbtn:hover{background:var(--bd)}
+.sbtn:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.sbtn:disabled{opacity:.4;cursor:default}
+.sc{display:none}
+.sc.on{display:block}
+.toast{position:fixed;bottom:24px;right:24px;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:500;box-shadow:0 4px 12px #00000060;display:none;z-index:200;max-width:320px;color:#fff}
+.tok{background:var(--ok)}
+.twn{background:var(--wn);color:#0f172a}
+@media(max-width:680px){.cards{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div id="banner">DEMO — sample data only, not the real system. No real tokens, files or credentials.</div>
+<div id="app">
+
+<div class="snav" role="navigation" aria-label="Demo steps">
+  <div>
+    <div class="si" id="slbl">Step 1 of 5</div>
+    <div class="st" id="stit">Overview — aggregate totals</div>
+  </div>
+  <div class="sb">
+    <button class="sbtn" id="bprev" onclick="go(-1)" disabled aria-label="Previous step">&#8592; Back</button>
+    <button class="sbtn" id="bnext" onclick="go(1)" aria-label="Next step">Next &#8594;</button>
+  </div>
+</div>
+
+<div class="hdr">
+  <h1>Token Usage Monitor</h1>
+  <button class="btn" id="rbtn" onclick="doRefresh()" aria-label="Refresh token data">&#8635; Refresh</button>
+</div>
+
+<div class="tabs" role="tablist">
+  <button class="tab on" role="tab" aria-selected="true"  id="t0" onclick="goTab(0)">Overview</button>
+  <button class="tab"    role="tab" aria-selected="false" id="t1" onclick="goTab(1)">By Agent</button>
+  <button class="tab"    role="tab" aria-selected="false" id="t2" onclick="goTab(2)">By Skill</button>
+  <button class="tab"    role="tab" aria-selected="false" id="t3" onclick="goTab(3)">By Command</button>
+</div>
+
+<div class="fbar" role="search" aria-label="Date range filter">
+  <label for="ds">From</label>
+  <input type="date" id="ds" value="2026-10-01" aria-label="Start date">
+  <label for="de">To</label>
+  <input type="date" id="de" value="2026-10-29" aria-label="End date">
+  <span class="note">R9 — date filter</span>
+</div>
+
+<!-- Screen 0: Overview -->
+<div class="sc on" id="s0">
+  <div class="rpanel">
+    <h4>Shown in this step</h4>
+    <div class="tags">
+      <span class="rtag">R1 all 4 token types</span>
+      <span class="rtag">R5 main session</span>
+      <span class="rtag">R9 date filter</span>
+    </div>
+    <p>Aggregate totals for all categories in the selected date range.</p>
+  </div>
+  <div class="cards">
+    <div class="card"><div class="lbl">Input Tokens</div><div class="val">1,599,567</div><div class="sub">all categories</div></div>
+    <div class="card"><div class="lbl">Output Tokens</div><div class="val">546,789</div><div class="sub">all categories</div></div>
+    <div class="card"><div class="lbl">Cache Read</div><div class="val">1,130,123</div><div class="sub">all categories</div></div>
+    <div class="card"><div class="lbl">Cache Write</div><div class="val">13,690</div><div class="sub">all categories</div></div>
+  </div>
+  <div class="chart">
+    <h3>Input token distribution (sample — R1)</h3>
+    <div class="brow"><span class="bn">web-app-lead</span><div class="bw"><div class="bf" style="width:66%"></div></div><span class="bv">450,000</span></div>
+    <div class="brow"><span class="bn">main session</span><div class="bw"><div class="bf" style="width:70%"></div></div><span class="bv">484,567</span></div>
+    <div class="brow"><span class="bn">design-lead</span><div class="bw"><div class="bf" style="width:43%"></div></div><span class="bv">300,000</span></div>
+    <div class="brow"><span class="bn">/focus-project</span><div class="bw"><div class="bf" style="width:35%"></div></div><span class="bv">240,000</span></div>
+    <div class="brow"><span class="bn">python-automation-stds</span><div class="bw"><div class="bf" style="width:18%"></div></div><span class="bv">125,000</span></div>
+  </div>
+  <div class="tbl">
+    <table aria-label="Token totals by category">
+      <thead><tr><th>Name</th><th>Category</th><th style="text-align:right">Input</th><th style="text-align:right">Output</th><th style="text-align:right">Cache R</th><th style="text-align:right">Cache W</th></tr></thead>
+      <tbody>
+        <tr><td class="nm">web-app-lead</td><td><span class="bg ba">agent</span></td><td class="nr">450,000</td><td class="nr">120,000</td><td class="nr">300,000</td><td class="nr">5,000</td></tr>
+        <tr><td class="nm">design-lead</td><td><span class="bg ba">agent</span></td><td class="nr">300,000</td><td class="nr">80,000</td><td class="nr">200,000</td><td class="nr">4,000</td></tr>
+        <tr><td class="nm">/focus-project</td><td><span class="bg bc">command</span></td><td class="nr">240,000</td><td class="nr">60,000</td><td class="nr">160,000</td><td class="nr">845</td></tr>
+        <tr><td class="nm">python-automation-standards</td><td><span class="bg bs">skill</span></td><td class="nr">125,000</td><td class="nr">30,000</td><td class="nr">80,000</td><td class="nr">500</td></tr>
+        <tr><td class="nm">main session</td><td><span class="bg bm">main session</span></td><td class="nr">484,567</td><td class="nr">256,789</td><td class="nr">390,123</td><td class="nr">3,345</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Screen 1: By Agent -->
+<div class="sc" id="s1">
+  <div class="rpanel">
+    <h4>Shown in this step</h4>
+    <div class="tags">
+      <span class="rtag">R2 split by agent</span>
+      <span class="rtag">R5 main session</span>
+      <span class="rtag">R9 date filter</span>
+    </div>
+    <p>Per-agent breakdown. "main session" captures unattributed turns (R5). Attribution is approximate (assumption A3).</p>
+  </div>
+  <div class="cards">
+    <div class="card"><div class="lbl">Input Tokens</div><div class="val">945,000</div><div class="sub">agents only</div></div>
+    <div class="card"><div class="lbl">Output Tokens</div><div class="val">252,000</div><div class="sub">agents only</div></div>
+    <div class="card"><div class="lbl">Cache Read</div><div class="val">630,000</div><div class="sub">agents only</div></div>
+    <div class="card"><div class="lbl">Cache Write</div><div class="val">11,500</div><div class="sub">agents only</div></div>
+  </div>
+  <div class="chart">
+    <h3>Input tokens by agent (sample — R2)</h3>
+    <div class="brow"><span class="bn">web-app-lead</span><div class="bw"><div class="bf" style="width:72%"></div></div><span class="bv">450,000</span></div>
+    <div class="brow"><span class="bn">design-lead</span><div class="bw"><div class="bf" style="width:48%"></div></div><span class="bv">300,000</span></div>
+    <div class="brow"><span class="bn">pa-right-hand</span><div class="bw"><div class="bf" style="width:31%"></div></div><span class="bv">195,000</span></div>
+  </div>
+  <div class="tbl">
+    <table aria-label="Token totals by agent">
+      <thead><tr><th>Agent</th><th style="text-align:right">Input</th><th style="text-align:right">Output</th><th style="text-align:right">Cache R</th><th style="text-align:right">Cache W</th></tr></thead>
+      <tbody>
+        <tr><td class="nm">web-app-lead</td><td class="nr">450,000</td><td class="nr">120,000</td><td class="nr">300,000</td><td class="nr">5,000</td></tr>
+        <tr><td class="nm">design-lead</td><td class="nr">300,000</td><td class="nr">80,000</td><td class="nr">200,000</td><td class="nr">4,000</td></tr>
+        <tr><td class="nm">pa-right-hand</td><td class="nr">195,000</td><td class="nr">52,000</td><td class="nr">130,000</td><td class="nr">2,500</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Screen 2: By Skill -->
+<div class="sc" id="s2">
+  <div class="rpanel">
+    <h4>Shown in this step</h4>
+    <div class="tags">
+      <span class="rtag">R3 split by skill</span>
+      <span class="rtag">R9 date filter</span>
+    </div>
+  </div>
+  <div class="cards">
+    <div class="card"><div class="lbl">Input Tokens</div><div class="val">210,000</div><div class="sub">skills only</div></div>
+    <div class="card"><div class="lbl">Output Tokens</div><div class="val">55,000</div><div class="sub">skills only</div></div>
+    <div class="card"><div class="lbl">Cache Read</div><div class="val">140,000</div><div class="sub">skills only</div></div>
+    <div class="card"><div class="lbl">Cache Write</div><div class="val">845</div><div class="sub">skills only</div></div>
+  </div>
+  <div class="chart">
+    <h3>Input tokens by skill (sample — R3)</h3>
+    <div class="brow"><span class="bn">python-automation-stds</span><div class="bw"><div class="bf" style="width:60%"></div></div><span class="bv">125,000</span></div>
+    <div class="brow"><span class="bn">project-design-steps</span><div class="bw"><div class="bf" style="width:41%"></div></div><span class="bv">85,000</span></div>
+  </div>
+  <div class="tbl">
+    <table aria-label="Token totals by skill">
+      <thead><tr><th>Skill</th><th style="text-align:right">Input</th><th style="text-align:right">Output</th><th style="text-align:right">Cache R</th><th style="text-align:right">Cache W</th></tr></thead>
+      <tbody>
+        <tr><td class="nm">python-automation-standards</td><td class="nr">125,000</td><td class="nr">30,000</td><td class="nr">80,000</td><td class="nr">500</td></tr>
+        <tr><td class="nm">project-design-steps</td><td class="nr">85,000</td><td class="nr">25,000</td><td class="nr">60,000</td><td class="nr">345</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Screen 3: By Command -->
+<div class="sc" id="s3">
+  <div class="rpanel">
+    <h4>Shown in this step</h4>
+    <div class="tags">
+      <span class="rtag">R4 split by command</span>
+      <span class="rtag">R9 date filter</span>
+    </div>
+  </div>
+  <div class="cards">
+    <div class="card"><div class="lbl">Input Tokens</div><div class="val">340,000</div><div class="sub">commands only</div></div>
+    <div class="card"><div class="lbl">Output Tokens</div><div class="val">85,000</div><div class="sub">commands only</div></div>
+    <div class="card"><div class="lbl">Cache Read</div><div class="val">220,000</div><div class="sub">commands only</div></div>
+    <div class="card"><div class="lbl">Cache Write</div><div class="val">1,200</div><div class="sub">commands only</div></div>
+  </div>
+  <div class="chart">
+    <h3>Input tokens by command (sample — R4)</h3>
+    <div class="brow"><span class="bn">/focus-project</span><div class="bw"><div class="bf" style="width:71%"></div></div><span class="bv">240,000</span></div>
+    <div class="brow"><span class="bn">/project-design</span><div class="bw"><div class="bf" style="width:29%"></div></div><span class="bv">100,000</span></div>
+  </div>
+  <div class="tbl">
+    <table aria-label="Token totals by command">
+      <thead><tr><th>Command</th><th style="text-align:right">Input</th><th style="text-align:right">Output</th><th style="text-align:right">Cache R</th><th style="text-align:right">Cache W</th></tr></thead>
+      <tbody>
+        <tr><td class="nm">/focus-project</td><td class="nr">240,000</td><td class="nr">60,000</td><td class="nr">160,000</td><td class="nr">845</td></tr>
+        <tr><td class="nm">/project-design</td><td class="nr">100,000</td><td class="nr">25,000</td><td class="nr">60,000</td><td class="nr">355</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Screen 4: Refresh + not-shown -->
+<div class="sc" id="s4">
+  <div class="rpanel">
+    <h4>Shown in this step</h4>
+    <div class="tags">
+      <span class="rtag">R11 manual Refresh</span>
+      <span class="rtag">R12 graceful error</span>
+    </div>
+    <p>Click Refresh above. First click: success toast (R11). Third click: partial-scan warning with a skipped-file notice (R12).</p>
+  </div>
+  <div class="tbl">
+    <table aria-label="Requirements not shown in this demo">
+      <thead><tr><th>Not shown in demo</th><th>Reason</th></tr></thead>
+      <tbody>
+        <tr><td>R6 — live .jsonl read</td><td style="color:var(--mu)">Demo has no filesystem access (static HTML)</td></tr>
+        <tr><td>R7 — SQLite inspection</td><td style="color:var(--mu)">No database in demo</td></tr>
+        <tr><td>R8 — network inspector</td><td style="color:var(--mu)">Verified via devtools on the real running app</td></tr>
+        <tr><td>R10 — tokens.db file</td><td style="color:var(--mu)">No filesystem in demo</td></tr>
+        <tr><td>R13 — offline Vite bundle</td><td style="color:var(--mu)">Demo itself is offline; real bundle is a separate Vite build</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+<div class="toast" id="toast" role="alert" aria-live="assertive"></div>
+<script>
+var steps=[
+  {t:"Overview — aggregate totals (R1, R5, R9)",tab:0,sc:0},
+  {t:"By Agent — per-agent breakdown (R2, R5, R9)",tab:1,sc:1},
+  {t:"By Skill — per-skill breakdown (R3, R9)",tab:2,sc:2},
+  {t:"By Command — per-command breakdown (R4, R9)",tab:3,sc:3},
+  {t:"Refresh action — manual re-scan (R11, R12)",tab:0,sc:4}
+];
+var cur=0,rc=0,tt=null;
+function render(){
+  var s=steps[cur];
+  document.getElementById('slbl').textContent='Step '+(cur+1)+' of '+steps.length;
+  document.getElementById('stit').textContent=s.t;
+  document.getElementById('bprev').disabled=(cur===0);
+  document.getElementById('bnext').disabled=(cur===steps.length-1);
+  for(var i=0;i<4;i++){
+    var el=document.getElementById('t'+i);
+    var on=i===s.tab;
+    el.className='tab'+(on?' on':'');
+    el.setAttribute('aria-selected',on?'true':'false');
+  }
+  for(var i=0;i<5;i++){
+    document.getElementById('s'+i).className='sc'+(i===s.sc?' on':'');
+  }
+}
+function go(d){cur=Math.max(0,Math.min(steps.length-1,cur+d));render();}
+function goTab(i){cur=i<4?i:0;render();}
+function toast(msg,cls){
+  var el=document.getElementById('toast');
+  el.textContent=msg;
+  el.className='toast '+cls;
+  el.style.display='block';
+  if(tt)clearTimeout(tt);
+  tt=setTimeout(function(){el.style.display='none';},3500);
+}
+function doRefresh(){
+  var b=document.getElementById('rbtn');
+  b.disabled=true;b.textContent='Scanning...';
+  setTimeout(function(){
+    b.disabled=false;b.textContent='↻ Refresh';
+    rc++;
+    if(rc%3===0){
+      toast('Partial scan: 4 sessions added. 1 file had a malformed line (skipped). R12','twn');
+    }else{
+      toast('Refresh complete: '+(rc*2)+' new sessions added. R11','tok');
+    }
+  },1100);
+}
+render();
+</script>
+</body>
+</html>

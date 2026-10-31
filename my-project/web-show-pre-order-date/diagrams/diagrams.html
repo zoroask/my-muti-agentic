@@ -1,0 +1,204 @@
+<title>Pre-Order Viewer Diagrams</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  /* Layout: single reading column, one panel per diagram, each diagram scrolls sideways on its own */
+  :root {
+    --bg: #f4f6fa; --surface: #ffffff; --fg: #141a2a; --muted: #5a6478;
+    --line: #d9dee8; --accent: #2f6fe4; --chip: #e6eefc;
+    --font-display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+    --font-body: "IBM Plex Sans", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #0f1117; --surface: #1a1d2e; --fg: #e2e8f0; --muted: #8a94a8;
+    --line: #2d3452; --accent: #6ea2ff; --chip: #1f2a48; color-scheme: dark } }
+  :root[data-theme="dark"] {
+    --bg: #0f1117; --surface: #1a1d2e; --fg: #e2e8f0; --muted: #8a94a8;
+    --line: #2d3452; --accent: #6ea2ff; --chip: #1f2a48; color-scheme: dark }
+  body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; }
+  .wrap { max-width: 920px; margin: 0 auto; display: grid; gap: 18px; }
+  header h1 { font-family: var(--font-display); font-weight: 700; font-size: 2rem; letter-spacing: 0.01em; margin: 0; text-wrap: balance; }
+  header p { color: var(--muted); margin: 4px 0 0; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .chip { background: var(--chip); color: var(--accent); font-family: var(--font-mono); font-size: 12px; padding: 2px 8px; border-radius: 4px; }
+  nav { display: flex; flex-wrap: wrap; gap: 6px; }
+  nav a { color: var(--accent); text-decoration: none; font-size: 13px; border: 1px solid var(--line); padding: 4px 10px; border-radius: 999px; }
+  nav a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  section { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; min-width: 0; }
+  section h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; margin: 0; letter-spacing: 0.02em; }
+  section h2 span { font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-weight: 400; margin-left: 6px; }
+  section p { color: var(--muted); margin: 2px 0 10px; font-size: 14px; }
+  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  pre.mermaid { margin: 0; background: transparent; min-width: 0; }
+  pre.tree { margin: 0; font-family: var(--font-mono); font-size: 14px; line-height: 1.65; color: var(--muted); }
+  pre.tree b { color: var(--fg); font-weight: 600; }
+  pre.tree i { font-style: normal; font-size: 12px; color: var(--muted); }
+  pre.tree em { font-style: normal; font-size: 11px; color: var(--accent); background: var(--chip); padding: 0 5px; border-radius: 3px; }
+  footer { color: var(--muted); font-size: 12px; }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono&family=IBM+Plex+Sans:wght@400;600&display=swap">
+
+<div class="wrap">
+  <header>
+    <h1>web-show-pre-order-date</h1>
+    <p>Design diagrams for the local Bandai Gundam pre-order viewer. Swipe a diagram sideways if it is wide.</p>
+    <div class="meta"><span class="chip">React :3000</span><span class="chip">FastAPI :8000</span><span class="chip">SQLite</span><span class="chip">JST → local time</span></div>
+  </header>
+
+  <nav aria-label="Diagrams">
+    <a href="#structure">Structure</a><a href="#flow">Working flow</a><a href="#logic">Logic</a><a href="#data">Data</a><a href="#deploy">Deploy</a><a href="#schedule">Schedule</a>
+  </nav>
+
+  <section id="structure">
+    <h2>Structure <span>§9</span></h2>
+    <p>Tree: what contains what. Each item has one parent. Calls between files are in Working flow.</p>
+    <div class="scroll"><pre class="tree"><b>web-show-pre-order-date</b>
+├── <b>Frontend</b> <i>React :3000</i>
+│   └── App.jsx <i>state + API calls</i>
+│       ├── ItemGrid.jsx <em>R1</em>
+│       │   └── ItemCard.jsx <em>R2 R3</em>
+│       ├── EntryForm.jsx <em>R5</em>
+│       └── Toast.jsx
+├── <b>Backend</b> <i>FastAPI :8000</i>
+│   └── main.py <i>CORS, startup</i>
+│       └── routes.py <i>REST handlers</i>
+│           ├── tz_convert.py <em>R2</em> <i>Phase 1</i>
+│           ├── scraper.py <em>R4</em> <i>Phase 2</i>
+│           └── database.py
+│               └── models.py
+├── <b>Data</b>
+│   └── preorders.db
+└── <b>External</b>
+    └── p-bandai.jp <i>Phase 2 only</i></pre></div>
+  </section>
+
+  <section id="flow">
+    <h2>Working flow <span>§10</span></h2>
+    <p>Page load, Refresh scrape, and manual entry, step by step.</p>
+    <div class="scroll"><pre class="mermaid">
+sequenceDiagram
+  actor User
+  participant FE as React
+  participant BE as FastAPI
+  participant SC as scraper.py
+  participant TZ as tz_convert.py
+  participant DB as SQLite
+  participant PB as p-bandai.jp
+  Note over FE,DB: Page load
+  User->>FE: open localhost:3000
+  FE->>BE: GET /api/items
+  BE->>DB: SELECT all
+  DB-->>BE: rows
+  BE-->>FE: items
+  FE-->>User: card grid
+  Note over FE,PB: Refresh (Phase 2, R4)
+  User->>FE: click Refresh
+  FE->>BE: POST /api/scrape
+  BE->>SC: scrape()
+  SC->>PB: GET listing page
+  PB-->>SC: HTML
+  SC-->>BE: items or error
+  BE->>TZ: JST to local
+  BE->>DB: upsert
+  BE-->>FE: count + errors
+  FE-->>User: toast + reload grid
+  Note over FE,DB: Manual entry (Phase 1, R5)
+  User->>FE: fill form, Save
+  FE->>BE: POST /api/items
+  BE->>TZ: JST to local
+  BE->>DB: INSERT
+  BE-->>FE: 201 item
+  FE-->>User: toast + reload grid
+</pre></div>
+  </section>
+
+  <section id="logic">
+    <h2>Logic flow <span>§11</span></h2>
+    <p>Every branch the app can take.</p>
+    <div class="scroll"><pre class="mermaid">
+flowchart TD
+  A[Open localhost:3000] --> B[GET /api/items]
+  B --> C{HTTP OK?}
+  C -->|No| D[Error: API not running]
+  C -->|Yes| E{Any items?}
+  E -->|0| F[Empty state]
+  E -->|1+| G[Card grid R1 R2 R3]
+  G --> H{User action}
+  H -->|Order| I[p-bandai.jp in new tab]
+  H -->|Refresh R4| J[POST /api/scrape]
+  J --> K{Scrape ok?}
+  K -->|Yes| L[Toast count or 0-item warning]
+  K -->|No| M[Toast error, keep items]
+  H -->|Add Item R5| N[Entry form]
+  N --> O{Valid?}
+  O -->|No| P[Inline field errors]
+  O -->|Yes| Q[POST /api/items]
+  Q --> R[Toast success]
+  L --> G
+  M --> G
+  R --> G
+</pre></div>
+  </section>
+
+  <section id="data">
+    <h2>Data model <span>§12</span></h2>
+    <p>One table. The JST source time is kept so it can be converted again.</p>
+    <div class="scroll"><pre class="mermaid">
+erDiagram
+  PREORDER_ITEM {
+    int id PK
+    string name
+    string price
+    string open_datetime_jst
+    string open_datetime_local
+    string link
+    string source
+    datetime created_at
+    datetime updated_at
+  }
+</pre></div>
+  </section>
+
+  <section id="deploy">
+    <h2>Deployment <span>§13</span></h2>
+    <p>Both processes run on your PC, started by run.bat.</p>
+    <div class="scroll"><pre class="mermaid">
+flowchart LR
+  React["React - npm start"] --> Browser["Browser :3000"]
+  Browser -->|"REST :8000"| FastAPI["FastAPI - uvicorn"]
+  FastAPI --> SQLite[("preorders.db")]
+  FastAPI -->|"scraper, Phase 2"| PBandai["p-bandai.jp"]
+</pre></div>
+  </section>
+
+  <section id="schedule">
+    <h2>Schedule <span>§6</span></h2>
+    <p>Hypothesis: 1 h/day, 5 days/week. Phase 2 has no start date until the ToS check is done.</p>
+    <div class="scroll"><pre class="mermaid">
+gantt
+  dateFormat YYYY-MM-DD
+  excludes weekends
+  section Phase 1
+    SG-01 Scaffold         :sg01, 2026-10-28, 1d
+    SG-02 DB model         :sg02, after sg01, 1d
+    SG-03 GET items        :sg03, after sg02, 1d
+    SG-03b JST to local    :sg03b, after sg03, 1d
+    SG-04 POST items       :sg04, after sg03b, 1d
+    SG-05 DELETE items     :sg05, after sg04, 1d
+    SG-06 Card grid        :sg06, after sg05, 2d
+    SG-07 Empty + loading  :sg07, after sg06, 1d
+    SG-08 Entry form       :sg08, after sg07, 2d
+    SG-09 Test             :sg09, after sg08, 1d
+    Buffer                 :crit, buf1, after sg09, 2d
+  section Phase 2 (after ToS check)
+    SG-10 Scraper          :sg10, after buf1, 2d
+    SG-11 POST scrape      :sg11, after sg10, 1d
+    SG-13 Refresh + toast  :sg13, after sg11, 1d
+    SG-14 Test             :sg14, after sg13, 1d
+    Buffer                 :crit, buf2, after sg14, 1d
+</pre></div>
+  </section>
+
+  <footer>Source: my-project/web-show-pre-order-date/DESIGN.md, 2026-10-28. Phase 1 ends 2026-11-16 (estimate).</footer>
+</div>

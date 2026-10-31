@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Usage Monitor - Diagrams</title>
+<style>
+  :root{--bg:#0f172a;--surface:#1e293b;--raised:#334155;--text:#f8fafc;--muted:#94a3b8;--accent:#3b82f6;--ok:#22c55e;--warn:#f59e0b}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;line-height:1.5}
+  header{padding:16px;border-bottom:1px solid var(--raised);background:var(--surface)}
+  h1{margin:0;font-size:18px}
+  header p{margin:4px 0 0;color:var(--muted);font-size:13px}
+  section{padding:16px;border-bottom:1px solid var(--raised)}
+  h2{margin:0 0 4px;font-size:16px;color:var(--accent)}
+  .cap{color:var(--muted);font-size:13px;margin:0 0 10px}
+  svg{width:100%;height:auto;display:block;background:var(--surface);border:1px solid var(--raised);border-radius:6px}
+  text{fill:var(--text);font-family:system-ui,sans-serif;font-size:12px}
+  .m{fill:var(--muted)}
+  .box{fill:var(--raised);stroke:var(--accent);stroke-width:1.5}
+  .store{fill:var(--raised);stroke:var(--ok);stroke-width:1.5}
+  .ro{fill:var(--raised);stroke:var(--warn);stroke-width:1.5}
+  .dec{fill:var(--raised);stroke:var(--accent);stroke-width:1.5}
+  .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+  .tb{fill:var(--bg);stroke:var(--raised)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Token Usage Monitor - Diagrams</h1>
+  <p>History view, not real-time. Data updates only when you click Refresh.</p>
+</header>
+
+<section>
+  <h2>1. Working flow</h2>
+  <p class="cap">Transcripts are read-only. Counts go to SQLite. The browser reads SQLite through FastAPI.</p>
+  <svg viewBox="0 0 360 440" role="img" aria-label="Working flow diagram">
+    <defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/></marker></defs>
+    <rect class="ro" x="80" y="12" width="200" height="50" rx="6"/>
+    <text x="180" y="33" text-anchor="middle">.jsonl transcripts</text>
+    <text class="m" x="180" y="50" text-anchor="middle">Claude Code writes, app reads only</text>
+    <path class="ln" d="M180 62 V92" marker-end="url(#a)"/>
+    <text class="m" x="190" y="82">on Refresh</text>
+    <rect class="box" x="80" y="94" width="200" height="50" rx="6"/>
+    <text x="180" y="115" text-anchor="middle">scanner.py</text>
+    <text class="m" x="180" y="132" text-anchor="middle">counts + attribution, no text</text>
+    <path class="ln" d="M180 144 V174" marker-end="url(#a)"/>
+    <rect class="store" x="80" y="176" width="200" height="50" rx="6"/>
+    <text x="180" y="197" text-anchor="middle">data/tokens.db</text>
+    <text class="m" x="180" y="214" text-anchor="middle">SQLite: session + turn</text>
+    <path class="ln" d="M180 226 V256" marker-end="url(#a)"/>
+    <text class="m" x="190" y="246">date-filtered SELECT</text>
+    <rect class="box" x="80" y="258" width="200" height="50" rx="6"/>
+    <text x="180" y="279" text-anchor="middle">FastAPI :8000</text>
+    <text class="m" x="180" y="296" text-anchor="middle">127.0.0.1 only</text>
+    <path class="ln" d="M180 308 V338" marker-end="url(#a)"/>
+    <text class="m" x="190" y="328">JSON</text>
+    <rect class="box" x="80" y="340" width="200" height="50" rx="6"/>
+    <text x="180" y="361" text-anchor="middle">React dashboard</text>
+    <text class="m" x="180" y="378" text-anchor="middle">cards, chart, table</text>
+    <text class="m" x="180" y="416" text-anchor="middle">No data leaves this PC. No LLM calls.</text>
+  </svg>
+</section>
+
+<section>
+  <h2>2. Refresh logic</h2>
+  <p class="cap">Unchanged files are skipped. Bad lines are logged and skipped.</p>
+  <svg viewBox="0 0 360 560" role="img" aria-label="Refresh logic diagram">
+    <defs><marker id="b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/></marker></defs>
+    <rect class="box" x="100" y="10" width="160" height="34" rx="17"/>
+    <text x="180" y="32" text-anchor="middle">Click Refresh</text>
+    <path class="ln" d="M180 44 V66" marker-end="url(#b)"/>
+    <rect class="box" x="80" y="68" width="200" height="38" rx="6"/>
+    <text x="180" y="91" text-anchor="middle">List .jsonl files</text>
+    <path class="ln" d="M180 106 V128" marker-end="url(#b)"/>
+    <polygon class="dec" points="180,130 290,166 180,202 70,166"/>
+    <text x="180" y="163" text-anchor="middle">Size or time</text>
+    <text x="180" y="178" text-anchor="middle">changed?</text>
+    <path class="ln" d="M290 166 H340 V520 H180" marker-end="url(#b)"/>
+    <text class="m" x="302" y="160">no: skip</text>
+    <path class="ln" d="M180 202 V228" marker-end="url(#b)"/>
+    <text class="m" x="190" y="220">yes</text>
+    <rect class="box" x="70" y="230" width="220" height="38" rx="6"/>
+    <text x="180" y="253" text-anchor="middle">Delete old turns of file</text>
+    <path class="ln" d="M180 268 V290" marker-end="url(#b)"/>
+    <rect class="box" x="70" y="292" width="220" height="38" rx="6"/>
+    <text x="180" y="315" text-anchor="middle">Read next line</text>
+    <path class="ln" d="M180 330 V352" marker-end="url(#b)"/>
+    <polygon class="dec" points="180,354 280,384 180,414 80,384"/>
+    <text x="180" y="388" text-anchor="middle">Valid JSON?</text>
+    <path class="ln" d="M80 384 H30 V311 H70" marker-end="url(#b)"/>
+    <text class="m" x="22" y="374">no: log</text>
+    <path class="ln" d="M180 414 V438" marker-end="url(#b)"/>
+    <text class="m" x="190" y="430">yes</text>
+    <rect class="store" x="50" y="440" width="260" height="46" rx="6"/>
+    <text x="180" y="460" text-anchor="middle">Classify: agent / skill /</text>
+    <text x="180" y="476" text-anchor="middle">command / main session, then INSERT</text>
+    <path class="ln" d="M180 486 V508" marker-end="url(#b)"/>
+    <rect class="box" x="90" y="510" width="180" height="34" rx="17"/>
+    <text x="180" y="532" text-anchor="middle">Return result + toast</text>
+  </svg>
+</section>
+
+<section>
+  <h2>3. Data model</h2>
+  <p class="cap">Two tables. No prompt or response text is stored.</p>
+  <svg viewBox="0 0 360 330" role="img" aria-label="Data model diagram">
+    <rect class="tb" x="10" y="10" width="340" height="106" rx="6"/>
+    <rect class="box" x="10" y="10" width="340" height="24" rx="6"/>
+    <text x="180" y="27" text-anchor="middle">session</text>
+    <text x="22" y="52">id (PK) - one per .jsonl file</text>
+    <text x="22" y="70">file_path</text>
+    <text x="22" y="88">scanned_at</text>
+    <text x="22" y="106">file_size, file_mtime</text>
+    <path class="ln" d="M180 116 V150"/>
+    <text class="m" x="190" y="138">1 to many</text>
+    <rect class="tb" x="10" y="152" width="340" height="168" rx="6"/>
+    <rect class="box" x="10" y="152" width="340" height="24" rx="6"/>
+    <text x="180" y="169" text-anchor="middle">turn</text>
+    <text x="22" y="194">id (PK)</text>
+    <text x="22" y="212">session_id (FK)</text>
+    <text x="22" y="230">timestamp</text>
+    <text x="22" y="248">attribution_type: agent / skill /</text>
+    <text x="22" y="264">  command / main_session</text>
+    <text x="22" y="282">attribution_name</text>
+    <text x="22" y="300">input / output / cache_read / cache_write tokens</text>
+  </svg>
+</section>
+
+<section>
+  <h2>4. Deployment</h2>
+  <p class="cap">Everything runs on your Windows PC. Nothing is public.</p>
+  <svg viewBox="0 0 360 300" role="img" aria-label="Deployment diagram">
+    <defs><marker id="d" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/></marker></defs>
+    <rect class="tb" x="8" y="8" width="344" height="284" rx="8"/>
+    <text class="m" x="20" y="28">Windows 11 - 127.0.0.1 only</text>
+    <rect class="box" x="24" y="44" width="140" height="56" rx="6"/>
+    <text x="94" y="68" text-anchor="middle">Browser</text>
+    <text class="m" x="94" y="86" text-anchor="middle">localhost:8000</text>
+    <rect class="box" x="196" y="44" width="140" height="56" rx="6"/>
+    <text x="266" y="68" text-anchor="middle">uvicorn + FastAPI</text>
+    <text class="m" x="266" y="86" text-anchor="middle">serves backend/dist</text>
+    <path class="ln" d="M164 72 H194" marker-end="url(#d)"/>
+    <path class="ln" d="M266 100 V138" marker-end="url(#d)"/>
+    <rect class="store" x="196" y="140" width="140" height="50" rx="6"/>
+    <text x="266" y="162" text-anchor="middle">data/tokens.db</text>
+    <text class="m" x="266" y="178" text-anchor="middle">SQLite</text>
+    <rect class="ro" x="24" y="210" width="312" height="62" rx="6"/>
+    <text x="180" y="232" text-anchor="middle">Transcript folder (read-only)</text>
+    <text class="m" x="180" y="250" text-anchor="middle">C:\Users\zoroa\.claude\projects\</text>
+    <text class="m" x="180" y="264" text-anchor="middle">D--my-muti-agentic\*.jsonl</text>
+    <path class="ln" d="M180 210 L230 192" marker-end="url(#d)"/>
+    <text class="m" x="100" y="200">scanner reads on Refresh</text>
+  </svg>
+</section>
+</body>
+</html>

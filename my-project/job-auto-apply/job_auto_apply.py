@@ -316,12 +316,9 @@ class NotificationManager:
     """ส่งการแจ้งเตือนผ่านหลายช่องทาง"""
     
     def __init__(self, config: Dict):
-        self.telegram_token = os.environ.get(
-            'TELEGRAM_BOT_TOKEN', config.get('telegram', {}).get('telegram_token', config.get('telegram_token', ''))
-        )
-        self.telegram_chat_id = os.environ.get(
-            'TELEGRAM_CHAT_ID', config.get('telegram', {}).get('telegram_chat_id', config.get('telegram_chat_id', ''))
-        )
+        # Secrets come from .env only; config.json is git-tracked
+        self.telegram_token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+        self.telegram_chat_id = os.environ.get('TELEGRAM_CHAT_ID', '')
 
     def send_telegram_notification(self, message: str):
         """ส่ง Telegram notification"""
@@ -400,7 +397,7 @@ def get_job_apply_titles() -> List[str]:
     try:
         parsed = ast.literal_eval(raw)
     except (ValueError, SyntaxError):
-        logger.warning(f"Could not parse JOB_APPLY from .env: {raw!r} - falling back to config.json search.keywords for JobsDB")
+        logger.warning("Could not parse JOB_APPLY from .env (value hidden, check .env syntax) - falling back to config.json search.keywords for JobsDB")
         return []
     if isinstance(parsed, (list, tuple)):
         return [str(item).strip() for item in parsed if str(item).strip()]

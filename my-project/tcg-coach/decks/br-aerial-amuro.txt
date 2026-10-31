@@ -1,0 +1,30 @@
+# name: BR Aerial - Amuro curve aggro
+# Goal: win by turn 6 with Units that survive 2 damage; Bases refill the board;
+# links: Aerial+Suletta, Gundam (ST01-001, GD01-013)+Amuro.
+# Reviewed 2026-10-19 against tournament lists since 2026-09-25, ban list 2026-09-25.
+# Changes from the user's list: -4 GD04-038 / +4 ST03-013, -2 GD01-100 / +2 GD05-110, +10 R-001;
+# then -2 GD03-001, -2 GD01-100, -2 ST08-014, -2 ST02-016 / +4 GD05-039, +4 GD05-091.
+# 2026-10-24 playtest: Chaos low impact, ran out of Units after removal.
+#   -4 GD05-039, -4 GD05-091, -2 ST03-013, -2 ST08-005 / +4 GD01-013, +4 ST13-009, +2 ST01-015, +2 GD01-128
+#   (live text read 2026-10-24).
+# Card roles are from DB tags only - verify live text with fetch_card.py.
+
+# Main
+4 ST01-005 GM
+4 GD01-008 Guntank
+2 ST03-013 Close Combat
+4 ST13-008 Gundam Throne Zwei
+2 ST08-005 Messer Type-F02 Minelayer
+4 GD01-018 ReZEL
+4 ST01-001 Gundam
+4 ST13-006 Gundam Aerial
+4 ST01-010 Amuro Ray
+4 ST13-012 Suletta Mercury
+2 GD05-110 Darkness Finger
+4 GD01-013 Gundam
+4 ST13-009 Gundam Pharact
+2 ST01-015 White Base
+2 GD01-128 Mining Asteroid Palau
+
+# Resource
+10 R-001

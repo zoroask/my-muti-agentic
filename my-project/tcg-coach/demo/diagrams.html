@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TCG Coach — Diagrams</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#0d1117;color:#c9d1d9;font-size:15px;line-height:1.5;padding:14px;max-width:720px;margin:0 auto}
+h1{font-size:20px;margin-bottom:4px}
+.sub{color:#8b949e;font-size:12px;margin-bottom:16px}
+h2{font-size:16px;margin:22px 0 8px;color:#3b82f6}
+.box{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px;margin-bottom:10px}
+.flow{display:flex;flex-direction:column;align-items:stretch;gap:0}
+.n{background:#21262d;border:1px solid #30363d;border-radius:6px;padding:8px 10px;text-align:center;font-size:13px}
+.n small{display:block;color:#8b949e;font-size:11px}
+.n.a{border-color:#3b82f6}
+.n.g{border-color:#22c55e}
+.n.w{border-color:#f59e0b}
+.n.r{border-color:#ef4444}
+.ar{text-align:center;color:#8b949e;font-size:14px;line-height:1.3}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.g{overflow-x:auto}
+.gt{min-width:520px}
+.gr{display:grid;grid-template-columns:44px 1fr;align-items:center;gap:6px;margin-bottom:4px;font-size:11px}
+.gb{height:16px;border-radius:3px;background:#3b82f6}
+.gb.o{background:#6b7280}
+.gb.f{background:#f59e0b}
+.gl{color:#8b949e}
+.note{font-size:12px;color:#8b949e;margin-top:6px}
+</style>
+</head>
+<body>
+<h1>TCG Coach — Diagrams</h1>
+<div class="sub">Design view &middot; 2026-10-31 (revised: agent cluster) &middot; sample design, offline</div>
+
+<h2>1. Architecture</h2>
+<div class="box"><div class="flow">
+<div class="n a">Claude Code session (chat)<small>User talks to TCG Lead or runs /tcg</small></div>
+<div class="ar">&darr; user message</div>
+<div class="n a">TCG Lead<small>Routes, merges, enforces the write gate</small></div>
+<div class="ar">&darr; routes</div>
+<div class="n a">Deck Analyst &middot; Meta Coach &middot; Practice Coach</div>
+<div class="ar">&darr; invoke &middot; judgment via local LLM</div>
+<div class="n g">tools/ scripts<small>23 Python scripts + scrape_official.js</small></div>
+<div class="ar">&darr; read / write inside tcg-coach only</div>
+<div class="n">Knowledge base files<small>cards.json, decklists.jsonl, card_analysis.jsonl, match-log.csv, format.json, plans/, decks/, tcg.db</small></div>
+<div class="ar">&darr; read-only HTTP (approved sources)</div>
+<div class="n w">gundam-gcg.com &middot; tcgtopdecks-hq.com &middot; egmanevents.com</div>
+</div>
+<div class="note">No HTTP API. No browser. No server. Everything runs in Claude Code.</div></div>
+
+<h2>2. Agent dispatch</h2>
+<div class="box"><div class="flow">
+<div class="n a">TCG Lead<small>Reads the request type</small></div>
+<div class="ar">&darr;</div>
+<div class="row3">
+<div class="n g">Deck Analyst<small>find cards &middot; review deck &middot; optimize</small></div>
+<div class="n g">Meta Coach<small>meta &middot; matchup &middot; sideboard</small></div>
+<div class="n g">Practice Coach<small>log stats &middot; drills</small></div>
+</div>
+<div class="ar">&darr; event prep: all three, then merge</div>
+<div class="n w">make_plan.py preview &rarr; write gate</div>
+</div></div>
+
+<h2>3. Card search flow (R1, R2, R14)</h2>
+<div class="box"><div class="flow">
+<div class="n">User asks in chat</div><div class="ar">&darr;</div>
+<div class="n w">tcg.db present?<small>No &rarr; rebuild_all.py (R10)</small></div><div class="ar">&darr; yes</div>
+<div class="n a">Deck Analyst: search.py</div><div class="ar">&darr;</div>
+<div class="n w">Meta fresh? <small>STALE &rarr; flag &middot; under 20 lists &rarr; LOW CONFIDENCE</small></div><div class="ar">&darr;</div>
+<div class="n g">Two-section list in chat<small>Played in meta, then other matches</small></div><div class="ar">&darr; user asks for a card</div>
+<div class="row2"><div class="n g">Cache fresh<small>Show analysis (R11: no effect text)</small></div><div class="n w">Stale or none<small>Run analysis workflow, local LLM</small></div></div>
+</div></div>
+
+<h2>4. Write gate (R8, R13)</h2>
+<div class="box"><div class="flow">
+<div class="n">User asks for a plan</div><div class="ar">&darr;</div>
+<div class="n a">TCG Lead: make_plan.py<small>preview, no write</small></div><div class="ar">&darr;</div>
+<div class="n w">Plan + Before/After in chat<small>Before: no file &middot; After: plans/x.md</small></div><div class="ar">&darr; STOP</div>
+<div class="row2"><div class="n r">Anything but "yes"<small>No write</small></div><div class="n g">"yes"<small>make_plan.py --write &rarr; "Plan saved"</small></div></div>
+</div></div>
+
+<h2>5. Schedule (estimate)</h2>
+<div class="box g"><div class="gt">
+<div class="gr"><span class="gl">A1</span><div class="gb" style="width:11%"></div></div>
+<div class="gr"><span class="gl">A2</span><div class="gb" style="width:22%;margin-left:11%"></div></div>
+<div class="gr"><span class="gl">A3</span><div class="gb" style="width:22%;margin-left:33%"></div></div>
+<div class="gr"><span class="gl">A4</span><div class="gb" style="width:11%;margin-left:55%"></div></div>
+<div class="gr"><span class="gl">A5</span><div class="gb" style="width:11%;margin-left:66%"></div></div>
+<div class="gr"><span class="gl">A6</span><div class="gb o" style="width:11%;margin-left:66%"></div></div>
+<div class="gr"><span class="gl">A7</span><div class="gb" style="width:22%;margin-left:77%"></div></div>
+<div class="gr"><span class="gl">Buffer</span><div class="gb f" style="width:18%;margin-left:82%"></div></div>
+</div>
+<div class="note">2026-11-03 to 2026-11-17 &middot; 2 h/day, 5 days/week &middot; 9 workdays + 2 days buffer. Blue = critical path. A8 data refresh is a 2027-01-15 milestone.</div></div>
+</body>
+</html>

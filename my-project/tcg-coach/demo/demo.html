@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TCG Coach — Design Demo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#0d1117;color:#c9d1d9;font-size:14px;min-height:100vh}
+.banner{background:#d29922;color:#0d1117;text-align:center;padding:6px;font-weight:700;font-size:12px}
+.shell{display:flex;height:calc(100vh - 28px)}
+.side{width:180px;background:#161b22;border-right:1px solid #30363d;flex-shrink:0;display:flex;flex-direction:column}
+.logo{padding:12px 14px;font-weight:700;border-bottom:1px solid #30363d;color:#c9d1d9}
+.logo span{color:#3b82f6}
+nav{padding:6px}
+.ni{padding:7px 10px;border-radius:6px;cursor:pointer;color:#8b949e;font-size:13px;margin-bottom:2px;border:1px solid transparent}
+.ni:hover{background:#21262d;color:#c9d1d9}
+.ni.on{background:#0d419d33;border-color:#3b82f6;color:#3b82f6}
+.main{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px}
+h2{font-size:17px;font-weight:600}
+.b{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.bg{background:#22c55e22;color:#22c55e;border:1px solid #22c55e44}
+.by{background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44}
+.br{background:#ef444422;color:#ef4444;border:1px solid #ef444444}
+.bb{background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644}
+.tw{width:100%;border-collapse:collapse;font-size:12.5px}
+.tw th{background:#1c2230;color:#8b949e;padding:7px 10px;text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.3px;border-bottom:1px solid #30363d}
+.tw td{padding:8px 10px;border-bottom:1px solid #21262d;vertical-align:middle}
+.tw tr:last-child td{border-bottom:none}
+.box{background:#161b22;border:1px solid #30363d;border-radius:8px;overflow:hidden}
+.bh{padding:8px 12px;border-bottom:1px solid #30363d;font-size:11px;color:#8b949e;text-transform:uppercase;letter-spacing:.4px}
+.row{display:flex;gap:8px;align-items:center;margin-bottom:5px}
+.btn{padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;border:1px solid}
+.bp{background:#3b82f6;color:#fff;border-color:#3b82f6}
+.bq{background:transparent;color:#8b949e;border-color:#30363d}
+.mo{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:14px;max-width:460px}
+.ml{font-size:11px;color:#8b949e;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
+.mv{font-size:13px;color:#c9d1d9}
+.mn{background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px 10px;font-size:12px;color:#8b949e;line-height:1.5;margin:10px 0 0}
+.ib{background:#3b82f622;border:1px solid #3b82f644;border-radius:6px;padding:8px 10px;font-size:12px;color:#79c0ff;line-height:1.5;margin-top:8px}
+.pre{background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:10px;font-family:'Courier New',monospace;font-size:11px;color:#c9d1d9;line-height:1.5;white-space:pre;overflow-x:auto}
+.toast{background:#22c55e22;border:1px solid #22c55e44;color:#22c55e;padding:7px 12px;border-radius:6px;font-size:12px;display:inline-block}
+.mono{font-family:'Courier New',monospace;font-size:12px;color:#8b949e}
+.nb{display:flex;gap:8px;align-items:center;margin-top:auto;padding-top:14px;border-top:1px solid #21262d}
+.sc{color:#8b949e;font-size:12px}
+.dt{color:#22c55e;font-size:12px}
+.mup{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px;margin-top:10px}
+.mk{color:#8b949e;min-width:70px;font-size:11px;text-transform:uppercase;letter-spacing:.3px}
+.u{background:#0d419d33;border:1px solid #3b82f644;border-radius:8px;padding:8px 12px}
+.ag{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:10px 12px}
+.who{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;color:#3b82f6}
+.who.l{color:#f59e0b}
+.cmd{font-family:'Courier New',monospace;font-size:12px;color:#22c55e;margin:6px 0 4px}
+</style>
+</head>
+<body>
+<div class="banner">DEMO — sample data only. Not the real system. No real cards, matches or credentials.</div>
+<div class="shell">
+<div class="side">
+  <div class="logo">TCG <span>Coach</span></div>
+  <nav id="nav"></nav>
+</div>
+<div class="main" id="main"></div>
+</div>
+<script>
+var NAV=["Agent Routing","Card Search","Card Analysis","Deck Analysis","Meta","Practice Log","Event Plan","KB Rebuild","R-Coverage"];
+function U(t){return '<div class="u"><div class="who">User</div>'+t+'</div>';}
+function A(n,t,l){return '<div class="ag"><div class="who'+(l?' l':'')+'">'+n+'</div>'+t+'</div>';}
+function P(t){return '<div class="pre" style="margin-top:6px">'+t+'</div>';}
+var STEPS=[
+{nav:0,reqs:["R8","R12"],html:function(){return '<h2>Agent routing</h2>'+
+U('Get me ready for Store Championship 2026-11-21')+
+A('TCG Lead','Routes: <span class="b bb">Deck Analyst</span> <span class="b bb">Meta Coach</span> <span class="b bb">Practice Coach</span>, then merges the findings.<div class="mn">Fair play (R12): advice covers deck choice, play skill and tournament rules only. No help with marked cards, stacking, collusion, bribery or angle-shooting.</div>',true)+
+'<div class="mn">Everything runs in the Claude Code chat. No browser, no server, no HTTP API.</div>';}},
+{nav:1,reqs:["R1","R14"],html:function(){return '<h2>Card search</h2>'+
+U('find Blue blockers under cost 3')+
+A('Deck Analyst','<div class="cmd">$ python tools/search.py --color Blue --keyword Blocker --max_cost 3</div>'+
+'<span class="b by">&#9888; LOW CONFIDENCE &mdash; 6 lists (R14)</span>'+
+'<div class="box" style="margin-top:6px"><div class="bh">Played in the meta &middot; TopDecks HQ + Egman &middot; since 2026-09-25</div>'+
+'<table class="tw"><tr><th>No.</th><th>Name</th><th>Meta%</th><th>Analysis</th><th>Ban</th></tr>'+
+'<tr><td class="mono">GD05-002</td><td>Strike Freedom</td><td>67%</td><td><span class="b bg">fresh</span></td><td>&mdash;</td></tr>'+
+'<tr><td class="mono">GD06-012</td><td>Nu Gundam</td><td>50%</td><td><span class="b bg">fresh</span></td><td>&mdash;</td></tr>'+
+'<tr><td class="mono">GD03-018</td><td>Z\'Gok Blocker</td><td>33%</td><td>none</td><td>&mdash;</td></tr></table></div>'+
+'<div class="box" style="margin-top:6px"><div class="bh">Other matches</div><table class="tw"><tr><td class="mono">GD01-040</td><td>Guncannon Blocker</td><td>&mdash;</td></tr>'+
+'<tr><td class="mono" style="color:#ef4444">GD01-020</td><td style="color:#ef4444">RX-78-2 Gundam</td><td><span class="b br">BANNED</span></td></tr></table></div>');}},
+{nav:2,reqs:["R2","R11"],html:function(){return '<h2>Card analysis</h2>'+
+U('analyse GD05-002')+
+A('Deck Analyst','<span class="b bg">fresh</span> <span class="mono">analysed 2026-10-20</span>'+
+P('Role:       Aggressive midrange pivot; board pressure at Level 3\nStrengths:  High AP for cost; Blocker absorbs key attacks\nConditions: Needs Kira Yamato pilot for link bonus\nRating:     4 / 5   Copies: 3-4')+
+'<div class="mn">R11: effect text is read live by fetch_card.py only to check freshness. It is never stored or shown here.</div>'+
+'<div class="ib">If the cache is stale or absent, Deck Analyst runs the analysis workflow with the local LLM and asks "yes" before saving.</div>');}},
+{nav:3,reqs:["R3","R4","R9"],html:function(){return '<h2>Deck analysis</h2>'+
+U('check and give stats for bw-sf-anti-meta')+
+A('Deck Analyst','<div class="cmd">$ python tools/deck_check.py decks/bw-sf-anti-meta.txt</div><span class="b bg">&bull; LEGAL</span> <span class="mono">rules 1.10.0 &middot; ban list 2026-09-25 (R3)</span>'+
+'<div class="cmd">$ python tools/deck_stats.py decks/bw-sf-anti-meta.txt</div>'+
+P('Lv curve   Lv1 4 | Lv2 18 | Lv3 16 | Lv4 10 | Lv5 2\nColors     Blue 28 | White 22\n\nOpening odds (hypergeometric, deck_stats.py)\n group               copies  P(open 5)  P(+redraw)\n GD05-002+GD05-081      8      0.563      0.808\n ST04-001               4      0.341      0.560')+
+'<div class="cmd">$ python tools/deck_optimize.py decks/bw-sf-anti-meta.txt</div>'+
+'<table class="tw"><tr><th>Out</th><th>In</th><th>&Delta; Score</th></tr><tr><td class="mono">ST01-001 x2</td><td class="mono">GD06-005 x2</td><td style="color:#22c55e">+0.041</td></tr></table>'+
+'<div class="mn">STOP (R13): no deck file changes until you say "yes".</div>');}},
+{nav:4,reqs:["R5","R6","R14"],html:function(){return '<h2>Meta and matchup</h2>'+
+U('how do I play vs Blue Freedom')+
+A('Meta Coach','<div class="cmd">$ python tools/meta_table.py</div><span class="mono">Source: TopDecks HQ + Egman &middot; since 2026-09-25</span> <span class="b by">&#9888; LOW CONFIDENCE &mdash; 12 lists</span>'+
+'<table class="tw" style="margin-top:6px"><tr><th>Archetype</th><th>Share</th><th>Lists</th><th>Latest</th><th>Flags</th></tr>'+
+'<tr><td>Blue Freedom</td><td>42%</td><td>5</td><td>2026-10-20</td><td>&mdash;</td></tr>'+
+'<tr><td>White Strike-Freedom</td><td>33%</td><td>4</td><td>2026-10-18</td><td>&mdash;</td></tr>'+
+'<tr><td>Red Aerial Amuro</td><td>8%</td><td>1</td><td>2026-10-10</td><td><span class="b by">STALE</span></td></tr></table>'+
+'<div class="mup"><div style="font-weight:700;margin-bottom:6px">Matchup: bw-sf-anti-meta vs Blue Freedom (local LLM, think=True)</div>'+
+'<div class="row"><span class="mk">Role</span><span>Aggressor &mdash; White disruption slows their Level 3 chain</span></div>'+
+'<div class="row"><span class="mk">Their key</span><span class="mono">GD05-002, ST04-001, GD05-091</span></div>'+
+'<div class="row"><span class="mk">Keep/Ship</span><span>Keep any Lv2 + 1 resource; ship all cost-4+ opening</span></div></div>');}},
+{nav:5,reqs:["R7"],html:function(){return '<h2>Practice log</h2>'+
+U('how am I doing')+
+A('Practice Coach','<div class="cmd">$ python tools/log_stats.py</div>'+
+P('Overall win rate: - (0 games)\nUnder 10 games per matchup: "too few to conclude"')+
+'<div class="mn">Log a game by telling the agent the result. It shows a Before/After of logs/match-log.csv and waits for "yes" (R13).</div>');}},
+{nav:6,reqs:["R8","R13"],html:function(){return '<h2>Event plan &mdash; write gate</h2>'+
+U('plan for Store Championship 2026-11-21')+
+A('TCG Lead','<div class="cmd">$ python tools/make_plan.py --event "Store Championship" --date 2026-11-21 --deck decks/bw-sf-anti-meta.txt --tier local</div>'+
+P('# Prep plan: Store Championship\nDate: 2026-11-21  Deck: bw-sf-anti-meta  Tier: local\n\n## Week 1\n- Session 1: goal: ____  games: __ logged: [ ]\n\n## Event day checklist\n[ ] Deck is LEGAL per current ban list')+
+'<div class="mo" style="margin-top:8px;border-color:#f59e0b"><div class="ml">Before</div><div class="mv" style="color:#8b949e">plans/store-championship.md &mdash; does not exist</div>'+
+'<div class="ml" style="margin-top:6px">After</div><div class="mv">plans/store-championship.md &mdash; created</div>'+
+'<div class="mn">STOP: Type "yes" to save, anything else to cancel (R13).</div></div>',true)+
+U('yes')+
+'<div class="toast">&#10003; Plan saved: plans/store-championship.md (R13)</div>';}},
+{nav:7,reqs:["R10","R11"],html:function(){return '<h2>Knowledge base rebuild</h2>'+
+U('rebuild the knowledge base')+
+A('TCG Lead','<div class="cmd">$ python tools/rebuild_all.py</div>'+
+P('refresh_cards ... ok\nmark_stale ... 3 analyses marked stale\nbuild_db ... ok\nrag_index ... ok\nverify_cards ... ok\nexit 0')+
+'<div class="ib">R11: card effect text is read live by fetch_card.py only. It is never stored in cards.json or card_analysis.jsonl.</div>',true);}},
+{nav:8,reqs:[],html:function(){
+var rows=[["R1","Card search with meta ranking","Yes","Step 2"],["R2","Card analysis cache","Yes","Step 3"],["R3","Deck legality","Yes","Step 4"],["R4","Deck statistics and odds","Yes","Step 4"],["R5","Meta archetype table","Yes","Step 5"],["R6","Matchup plan (local LLM)","Yes","Step 5"],["R7","Practice stats","Yes","Step 6"],["R8","Event plan preview","Yes","Step 7"],["R9","Optimizer swaps","Partial","Step 4: shown; no live calc"],["R10","KB rebuild","Yes","Step 8"],["R11","No effect text","Yes","Steps 3 and 8"],["R12","Fair-play note","Yes","Step 1"],["R13","Before/After + yes gate","Yes","Step 7"],["R14","STALE / LOW CONFIDENCE","Yes","Steps 2 and 5"]];
+return '<h2>R-Coverage</h2><div class="box"><table class="tw"><tr><th>R</th><th>Requirement</th><th>In demo?</th><th>Where</th></tr>'+
+rows.map(function(r){var c=r[2]==="Yes"?"#22c55e":"#f59e0b";return '<tr><td class="mono">'+r[0]+'</td><td>'+r[1]+'</td><td style="color:'+c+'">'+r[2]+'</td><td style="font-size:12px;color:#8b949e">'+r[3]+'</td></tr>';}).join('')+'</table></div>';}}
+];
+
+var cur=0;
+function renderNav(){
+  var n=document.getElementById("nav");n.innerHTML="";
+  NAV.forEach(function(label,i){
+    var d=document.createElement("div");d.className="ni"+(STEPS[cur].nav===i?" on":"");
+    d.textContent=label;
+    d.onclick=function(){var si=STEPS.findIndex(function(s){return s.nav===i;});if(si>=0){cur=si;render();}};
+    n.appendChild(d);
+  });
+}
+function render(){
+  var s=STEPS[cur];
+  var badges=s.reqs.length?'<div style="margin-bottom:10px"><span style="font-size:11px;color:#8b949e;margin-right:6px">Requirements shown:</span>'+s.reqs.map(function(r){return'<span class="b bb" style="margin-right:3px">'+r+'</span>';}).join("")+'</div>':"";
+  var nav='<div class="nb">'+
+    '<button class="btn bq" onclick="go(-1)" '+(cur===0?"disabled":"")+'style="font-size:12px">&#8592; Back</button>'+
+    '<button class="btn bp" onclick="go(1)" '+(cur===STEPS.length-1?"disabled":"")+'style="font-size:12px">Next &#8594;</button>'+
+    '<span class="sc">Step '+(cur+1)+' of '+STEPS.length+'</span>'+
+    (cur===STEPS.length-1?'<span class="dt">Tour complete</span>':'')+
+    '</div>';
+  document.getElementById("main").innerHTML=badges+s.html()+nav;
+  renderNav();
+}
+function go(d){cur=Math.max(0,Math.min(STEPS.length-1,cur+d));render();}
+render();
+</script>
+</body>
+</html>

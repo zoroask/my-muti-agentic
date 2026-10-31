@@ -63,9 +63,9 @@ Every command prints `KEY=value` lines, with long text wrapped in `<<<` /
                               ^                                       |
                               +---------------- FAIL, max 3 passes ----+
 
-`pipeline` — mirrors the Pipeline Planner orchestration behind `/focus-project`:
+`pipeline` — mirrors the Web App Lead orchestration behind `/focus-project`:
 
-    Pipeline Planner -> Frontend Coder + Backend Coder -> Pipeline Reviewer
+    Web App Lead -> Frontend Coder + Backend Coder -> Web App Reviewer
                                   ^         (parallel)             |
                                   +------- FAIL, max 3 passes -----+
                                                                    |
@@ -86,7 +86,7 @@ the pass cap is reached (`EXHAUSTED`).
 
     python -m agent_runtime audit
 
-Runs eight deterministic checks over every file, runs the test suite, and writes
+Runs nine deterministic checks over every file, runs the test suite, and writes
 a self-contained `audit-report.html`:
 
 | Check | Catches |
@@ -99,15 +99,17 @@ a self-contained `audit-report.html`:
 | Python syntax | anything that will not parse |
 | Doc links | relative markdown links pointing at deleted files |
 | Git hygiene | `.env`, databases, logs or PDFs tracked in git |
+| Memory budget | Claude Code memory drifting from the CLAUDE.md § Memory budget: index over 40 lines, entries over 12 lines or missing `Summary`/`Why`/`Ref`, `details/` files over 60 lines, untagged profile lines, index/file mismatches, secret-shaped values (read-only; reported by file name only) |
 
-Severity follows `.claude/skills/repo-security-audit.md`: `[H]` breaks
+Severity follows `.claude/skills/repo-security-audit/SKILL.md`: `[H]` breaks
 operation, leaks data or silently misbehaves; `[M]` noticeable gap; `[L]`
 cosmetic. Secret files are reported **by name only** — their contents are never
 read.
 
 Flags: `--html PATH`, `--findings PATH` (merge a subagent's report),
 `--include-references` (audit the vendored `references/` tree too),
-`--no-tests`, `--strict` (exit 1 on any `[H]`).
+`--no-tests`, `--memory-dir PATH` (memory folder to check; default
+`~/.claude/projects/<project-slug>/memory`), `--strict` (exit 1 on any `[H]`).
 
 `/full-audit-and-testing` wraps this: Python does the checks above, then
 `PA Right-Hand Audit & Testing` adds the judgement half, and both land in one
@@ -127,6 +129,6 @@ report.
 
     python -m unittest discover -s tests -t .
 
-113 tests, no network, no API key, nothing to pay for. `test_chains.py` checks
+129 tests, no network, no API key, nothing to pay for. `test_chains.py` checks
 every agent named by a chain still exists in `.claude/agents/`, which is what
 catches a renamed persona before a run does.

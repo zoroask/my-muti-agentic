@@ -1,0 +1,32 @@
+# name: BW Strike Freedom - Stardust (GD06)
+# Built 2026-10-27 for a local BO1 Swiss on 2026-10-31; ban list 2026-09-25, rules 1.10.0.
+# Base: decks/bw-sf-anti-meta.txt. Meta: 153 tournament lists 2026-10-01..10-18, all pre-GD06 - GD06 card value is untested.
+# GD06 adds: Altron (Lv3 Blocker, AP+3 vs Lv5+ enemies), Albion (Lv2 base, T2 play + small bounce),
+#   Hoping for Peace (rest any enemy Unit), 1 Infinite Justice (deploy bounce of any active Unit; needs 3 Units in trash).
+# Swaps: -2 GD01-073 / +2 GD06-064, -2 ST01-014 / +2 GD06-120, -3 GD02-129 / +2 GD06-122 +1 GD06-002.
+# Flex vs heavy aggro: -1 GD01-100 / +1 GD06-104 Steady Support.
+# Note: GD05-015 + GD01-008 is a banned pair - never add GD01-008.
+# Optimizer prefers -1 Infinite Justice / +1 Kira's Strike Rouge (goldfish ignores IJ's bounce); kept IJ as the big-Unit answer.
+# Live text read 2026-10-27 with fetch_card.py.
+
+# Main
+4 GD05-002 Strike Freedom Gundam
+4 GD05-081 Kira Yamato
+4 ST04-010 Kira Yamato
+3 ST01-010 Amuro Ray
+4 ST04-001 Aile Strike Gundam
+1 GD06-002 Infinite Justice Gundam
+2 GD06-064 Altron Gundam (EW)
+3 GD04-068 Silver Bullet
+4 GD01-086 Gundam Lfrith
+4 GD02-079 Rick Dias
+3 GD05-010 Kira's Strike Rouge
+2 GD05-015 M1 Astray Shrike
+2 ST01-001 Gundam
+4 GD01-118 Overflowing Affection
+2 GD01-100 A Show of Resolve
+2 GD06-120 Hoping for Peace
+2 GD06-122 Albion
+
+# Resource
+10 R-001

@@ -1,0 +1,13 @@
+{
+  "name": "zoroask-my-muti-agentic",
+  "owner": {
+    "name": "zoroask"
+  },
+  "plugins": [
+    {
+      "name": "data-analysis-and-quality-plugin",
+      "source": "./plugins/data-analysis-and-quality-plugin",
+      "description": "Multi-agent library with agents, skills, commands and safety hooks, packaged from this repo's .claude/ folder."
+    }
+  ]
+}

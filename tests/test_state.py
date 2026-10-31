@@ -161,22 +161,22 @@ class PipelineChainTests(unittest.TestCase):
         self.run = state.start(self.chain, "todo app", self.runs_dir)
 
     def test_parallel_step_waits_for_both_coders(self):
-        self.run.record(self.chain, "Pipeline Planner", '{"project_name": "todo"}')
+        self.run.record(self.chain, "Web App Lead", '{"project_name": "todo"}')
         self.assertEqual(self.run.step_index, 1)
 
-        self.run.record(self.chain, "Pipeline Frontend Coder", "=== FILE === app.jsx")
+        self.run.record(self.chain, "Web App Frontend Coder", "=== FILE === app.jsx")
         self.assertEqual(self.run.step_index, 1, "should still be on the coder step")
-        self.assertEqual(self.run.pending_agents(self.chain), ["Pipeline Backend Coder"])
+        self.assertEqual(self.run.pending_agents(self.chain), ["Web App Backend Coder"])
 
-        self.run.record(self.chain, "Pipeline Backend Coder", "=== FILE === main.py")
+        self.run.record(self.chain, "Web App Backend Coder", "=== FILE === main.py")
         self.assertEqual(self.run.step_index, 2)
-        self.assertEqual(self.run.pending_agents(self.chain), ["Pipeline Reviewer"])
+        self.assertEqual(self.run.pending_agents(self.chain), ["Web App Reviewer"])
 
     def test_passing_review_opens_the_write_gate_rather_than_finishing(self):
-        self.run.record(self.chain, "Pipeline Planner", '{"project_name": "todo"}')
-        self.run.record(self.chain, "Pipeline Frontend Coder", "files")
-        self.run.record(self.chain, "Pipeline Backend Coder", "files")
-        self.run.record(self.chain, "Pipeline Reviewer", '{"status": "PASS"}')
+        self.run.record(self.chain, "Web App Lead", '{"project_name": "todo"}')
+        self.run.record(self.chain, "Web App Frontend Coder", "files")
+        self.run.record(self.chain, "Web App Backend Coder", "files")
+        self.run.record(self.chain, "Web App Reviewer", '{"status": "PASS"}')
 
         self.assertEqual(self.run.status, AWAITING_APPROVAL)
         self.assertTrue(self.run.gate_is_final)
