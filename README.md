@@ -1,29 +1,120 @@
 # Multi-Agent App Builder
 
-A Claude Code configuration library for designing, prototyping, and reviewing multi-agent system architectures — used entirely inside Claude Code sessions. There is no standalone application to install or run.
+Claude Code configuration library for designing, prototyping and reviewing multi-agent systems — subagent personas, procedural skills, slash commands and safety hooks, plus a stdlib-only Python sequencer (`agent_runtime/`) that enforces agent order, pass caps and approval gates in code. Everything runs inside a Claude Code session; nothing calls an LLM API directly.
 
-## What's here
+## 📖 Manual
 
-### `.claude/agents/` — Subagent personas
-AI personas with a defined role, project knowledge, and behavioral rules. Each runs as a Claude Code subagent with its own context window:
-- Web App cluster (`pipeline-planner-main-agent`, `pipeline-frontend-coder-sub-agent`, `pipeline-backend-coder-sub-agent`, `pipeline-reviewer-sub-agent`) — builds new web apps (React + FastAPI) in `my-project/<subproject>/`; Web App Lead drives the pipeline, calling the other three as sub-agents
-- Audit & Testing Core (`pa-right-hand-audit-testing-main-agent`) — main agent for audits and internal/external security testing; delegates sub-project reviews to Automation Reviewer and Web App Reviewer
-- Automation cluster (`python-automation-lead-main-agent`, `automation-*-sub-agent`) — Python automation split by area: APIs, scraping, scheduled jobs, desktop/GUI, files/Excel, plus a read-only Automation Reviewer with a fix loop
-- Security Learning cluster (`security-lead-main-agent`, `security-*-sub-agent`) — defensive-security and reverse-engineering learning agents behind a single Security Lead front door: RE tutor, CTF study buddy, YARA rule writer, malware report reader, code vulnerability reviewer, dependency/supply-chain checker, secrets scanner; authorization-gated and defensive-only (see the `security-learning-standards` skill)
-- Game cluster (`game-lead-main-agent`, `game-*-sub-agent`) — Godot 4 top-down pixel-art games, built one milestone at a time: systems, world/tilemap, pixel art, UI, plus a read-only Game Reviewer with a fix loop
-- DQA cluster (`dqa-data-qa-main-agent`, `dqa-data-quality-sub-agent`) — Data-QA-Agent routes to the Data Quality sub-agent for Bank of Thailand data quality work: validation rule design/review, data file checks and anomaly root-cause tracing, all numbers computed with code (see the `bot-data-quality` skill)
-- Design Lead (`design-lead-sub-agent`) — requirement audit, UI spec and design package via `/project-design`; read-only
-- REA Lead (`rea-lead-main-agent`) — drives the REA MCP server to analyse how existing software is built
-- General-purpose personas — architect advisor, bug fixer, code mentor, project manager, workflow monitor, base-agent, and the retired monitor
+- [Stack](#stack)
+- [Project Structure](#project-structure)
+- [Setup](#setup)
+- [Running](#running)
+- [Plugin](#plugin)
+- [Multi-Agent System](#multi-agent-system)
+- [System Reference](#-system-reference)
+- [Tests](#tests)
 
-Invoke one by name via the Agent/Task tool, or by asking Claude Code directly (e.g. "use the Bug Fixer agent").
+## Stack
 
-### `.claude/skills/` — Procedures
-27 skills in `.claude/skills/<name>/SKILL.md`; run `/list-skills` for the full list with triggers.
+- **Agents / skills / commands** — Markdown with YAML frontmatter under `.claude/`
+- **Runtime & audit** — Python stdlib (`agent_runtime/`), no third-party deps
+- **Hooks** — Python (`path_guard.py`, `env_guard.py`, `syntax_check.py`) + PowerShell notifier
+- **MCP** — `rea` (`npx rea-agents@6.7.0`) and `local-llm` (`ollama_mcp.py`, needs `mcp[cli]<2`, `httpx`)
 
-Invoke by referencing them in conversation, e.g. "use the debug-agent skill".
+## Project Structure
 
-### `.claude/commands/` — Slash commands
+```
+my-muti-agentic/
+├── .claude/              # agents/, skills/, commands/, hooks/, settings.json
+├── .claude-plugin/       # marketplace.json — installs the plugin from GitHub
+├── agent_runtime/        # stdlib sequencer + audit (python -m agent_runtime)
+├── plugins/              # data-analysis-and-quality-plugin (packaged .claude/)
+├── my-project/           # subprojects: job-auto-apply, tcg-coach,
+│                         #   token-usage-monitor, web-show-pre-order-date
+├── tests/                # unittest suite for runtime, audit and hooks
+├── tools/build_site.py   # builds site/index.html (Multi-Agent Library Overview)
+├── docs/                 # agent-workflow.md, archive/ (retired pipeline history)
+├── ollama_mcp.py         # local-llm MCP server
+├── .mcp.json             # registers the rea MCP server
+├── AI Agent Diagram.html # agent hierarchy diagram
+└── CLAUDE.md             # project rules, hooks, commands, memory budget
+```
+
+## Setup
+
+1. Install [Claude Code](https://claude.com/claude-code) and Python 3.
+2. Optional, for `local-llm`: `pip install -r requirements.txt`
+3. Optional, for `rea`: Node.js (`npx` is run by `.mcp.json`).
+
+### `local-llm` environment variables
+
+| Variable | Used for |
+|---|---|
+| `LLM_BACKEND` | `ollama` or `openai` |
+| `LLM_BASE_URL` | Default `http://localhost:11434` or `http://localhost:8000/v1` |
+| `LLM_DEFAULT_MODEL` | Model used when a call names none |
+| `LLM_API_KEY` | Key for an OpenAI-compatible server |
+| `LLM_TIMEOUT` | Request timeout |
+| `LLM_ALLOWED_ROOT` | Folder `summarize_file_locally` may read (default: project root) |
+
+## Running
+
+Open the folder in Claude Code, then:
+```
+/list-agents          # see every persona
+/list-skills          # see every skill and its triggers
+/run-agents           # drive a chain through agent_runtime
+python -m agent_runtime audit   # library audit from a terminal
+```
+
+## Plugin
+
+The library is also packaged as an installable plugin:
+```
+/plugin marketplace add zoroask/my-muti-agentic
+/plugin install data-analysis-and-quality-plugin@zoroask-my-muti-agentic
+```
+See [`plugins/data-analysis-and-quality-plugin/README.md`](./plugins/data-analysis-and-quality-plugin/README.md) for contents and exclusions.
+
+## Multi-Agent System
+
+Work routes through main agents (cores) to their sub-agents; every change stops at an approval gate. See [`CLAUDE.md`](./CLAUDE.md) for rules and [`docs/agent-workflow.md`](./docs/agent-workflow.md) for authoring personas.
+
+**Diagrams:**
+- `AI Agent Diagram.html` — agent hierarchy and lanes
+- `site/index.html` — Multi-Agent Library Overview, generated by `tools/build_site.py`
+
+## 🤖 System Reference
+
+Everything below is custom to this project. Icons mark function: 👑 main agent, 🛑 blocking gate, 🔄 sync, 🔍 read-only review.
+
+### CLAUDE.md Customizations
+
+- 🌐 **English-only** — replies, comments, commits and docs in English; Thai only as skill triggers.
+- 🔒 **Project boundary** — no file access outside the project without explicit permission (enforced by `path_guard.py`).
+- 🛑 **Response format gate** — every reply opens Summary → Workflow → Action plan → Before/After → STOP; nothing executes before an explicit "yes".
+- 🔐 **Never commit `.env`** — only `.env.example` is allowed (enforced by `env_guard.py`).
+- 🧠 **Memory budget** — indexed memory with line limits, checked by the audit.
+
+### 🤖 Agents (`.claude/agents/*.md`)
+
+- 👑 **Architect Advisor** — library structure and design decisions; calls Bug Fixer, Code Mentor, Workflow Monitor.
+- 👑 **Project Manager** — owns `my-project/`; routes builds to Automation, Web App or Game Lead.
+- 👑 **PA Right-Hand Audit & Testing** — library audit and security testing; verdict step of `/audit-chain`.
+- 🌐 **Web App cluster** — Web App Lead → Frontend Coder + Backend Coder → 🔍 Reviewer (React + FastAPI).
+- 🐍 **Automation cluster** — Python Automation Lead → API, Scraping, Scheduled Jobs, Desktop, Files & Excel coders → 🔍 Automation Reviewer.
+- 🎮 **Game cluster** — Game Lead → Systems, World & Tilemap, Pixel Art, UI coders → 🔍 Game Reviewer (Godot 4).
+- 🛡️ **Security Learning cluster** — Security Lead → RE Tutor, CTF Study Buddy, YARA Writer, Malware Report Reader, 🔍 Code Vulnerability Reviewer, Dependency Checker, Secrets Scanner; defensive-only.
+- 📊 **DQA cluster** — Data-QA-Agent → Data Quality (BOT validation rules, file checks, anomaly root-cause).
+- 📐 **Design Lead** — requirement audit, UI spec, design package; read-only.
+- 🔬 **REA Lead** — drives the `rea` MCP server to analyse how software is built.
+- 🧰 **Support** — Bug Fixer, Code Mentor, Workflow Monitor, base-agent (shared contract); Monitor is retired.
+
+### 🛠️ Skills (`.claude/skills/<name>/SKILL.md`)
+
+27 skills; run `/list-skills` for triggers. Always-on: ⚡ **token-optimization**, 🚨 **rescue-tokens**. Process: 🧭 **core-process** (10-stage path). Cluster standards: **python-automation-standards**, **godot-game-standards**, **security-learning-standards**, **bot-data-quality**. Design: **project-design-steps**, **requirement-audit**, **ui-design-selection**, **project-schedule**.
+
+### ⚡ Commands (`.claude/commands/*.md`)
+
 | Command | Purpose |
 |---|---|
 | `/upsert-agent` | Add a new agent or update an existing one |
@@ -32,42 +123,34 @@ Invoke by referencing them in conversation, e.g. "use the debug-agent skill".
 | `/list-agents` | Show all agent definitions |
 | `/list-skills` | Show all available skills with usage |
 | `/list-my-command` | List every slash command with its purpose, and flag table drift |
-| `/update-detail-project` | Sync README.md, API/MCP/path details, scripts and site/index.html with the real project, approval-gated |
+| `/update-detail-project` | 🔄 Sync README.md, API/MCP/path details, scripts and site/index.html with the real project, approval-gated |
 | `/agent-report` | Full audit of all agents |
 | `/review-agents` | Review all agents for quality and consistency |
-| `/audit-chain` | Delegate a task through Architect Advisor → Bug Fixer → PA Right-Hand Audit & Testing, looping on failure |
-| `/focus-project` | Web App cluster: run Web App Lead → Coder → Reviewer scoped to a chosen my-project/ subproject, with a required approval gate before writing any file |
-| `/tcg` | TCG Coach cluster: Gundam Card Game prep (card search, deck review, meta, practice, event plan) via TCG Lead in my-project/tcg-coach, write-gated |
-| `/project-design` | Design Lead: requirement audit → system type → UI spec → design, diagrams, schedule and offline demo for a my-project/ idea; writes DESIGN.md + demo only after approval |
-| `/run-agents` | Drive a chain through `agent_runtime/`, which enforces agent order, the 3-pass cap and approval gates in code |
-| `/full-audit-and-testing` | Audit and test every file in the project and write `audit-report.html` |
+| `/audit-chain` | Architect Advisor → Bug Fixer → PA Right-Hand Audit & Testing, looping on failure |
+| `/focus-project` | Web App Lead → Coder → Reviewer for a my-project/ subproject, approval-gated |
+| `/tcg` | TCG Coach cluster: Gundam Card Game prep via TCG Lead in my-project/tcg-coach, write-gated |
+| `/project-design` | Design Lead: requirement audit → system type → UI spec → design, schedule, offline demo |
+| `/run-agents` | Drive a chain through `agent_runtime/` (order, 3-pass cap, gates in code) |
+| `/full-audit-and-testing` | Audit and test every file and write `audit-report.html` |
 | `/commit-push-github` | Commit and push to GitHub, gated on the audit and test suite |
 
-### `.claude/hooks/` — Safety hooks
-- `path_guard.py` (PreToolUse: Write/Edit/Read/NotebookEdit/Glob/Grep/Bash/PowerShell) — blocks file access outside this project directory
-- `env_guard.py` (PreToolUse: Bash/PowerShell) — blocks git commands that would force-add, commit, or push a `.env`-style file
-- `syntax_check.py` (PostToolUse: Write/Edit) — checks Python syntax on any `.py` file written or edited
-- `notify_done.ps1` (Stop, in `settings.local.json`) — finish notification; launches `notify_popup.ps1` → `focus_session.ps1`
+### 🪝 Hooks (`.claude/settings.json` + `.claude/hooks/`)
 
-## MCP servers and APIs
-| Server | Source | Tools / notes |
+- 🔒 **PreToolUse** (Write/Edit/Read/NotebookEdit/Glob/Grep/Bash/PowerShell) → `path_guard.py` — blocks paths outside the project root and memory root (`PATH_GUARD_ROOT`, `PATH_GUARD_MEMORY` override for tests).
+- 🔐 **PreToolUse** (Bash/PowerShell) → `env_guard.py` — blocks force-add, commit or push of `.env`-style files; fails closed.
+- 🐍 **PostToolUse** (Write/Edit) → `syntax_check.py` — Python syntax check on every `.py` write.
+- 🔔 **Stop** (`settings.local.json`) → `notify_done.ps1` → `notify_popup.ps1` → `focus_session.ps1` — finish notification.
+
+### 🔌 MCP servers
+
+| Server | Source | Tools |
 |---|---|---|
-| `rea` | `.mcp.json` → `npx -y rea-agents@6.7.0 mcp` | Reverse-engineering analysis tools |
-| `local-llm` | `ollama_mcp.py` (not registered in `.mcp.json`) | `list_local_models`, `ask_local_llm`, `summarize_file_locally` |
+| `rea` | `.mcp.json` → `npx -y rea-agents@6.7.0 mcp` | Reverse-engineering analysis |
+| `local-llm` | `ollama_mcp.py` (not in `.mcp.json`) | `list_local_models`, `ask_local_llm`, `summarize_file_locally` |
 
-`ollama_mcp.py` env vars: `LLM_BACKEND` (ollama|openai), `LLM_BASE_URL` (default `http://localhost:11434` or `http://localhost:8000/v1`), `LLM_DEFAULT_MODEL`, `LLM_API_KEY`, `LLM_TIMEOUT`, `LLM_ALLOWED_ROOT` (folder `summarize_file_locally` may read; default is the project root).
+## Tests
 
-## Key paths
-- `agent_runtime/` — stdlib sequencer and audit: `python -m agent_runtime audit`
-- `tools/build_site.py` → `site/index.html` (Multi-Agent Library Overview)
-- `my-project/` — subprojects: `job-auto-apply`, `tcg-coach`, `token-usage-monitor`, `web-show-pre-order-date`
-- `path_guard.py` allows only the project root and the memory root (`PATH_GUARD_ROOT`, `PATH_GUARD_MEMORY` override for tests)
-
-## Usage
-Open this project in Claude Code, then:
-- Invoke an agent persona by name to get its role-specific behavior in a subagent
-- Reference a skill by name to have Claude follow its procedure inline
-- Run a slash command (e.g. `/list-agents`) to manage agent and skill definitions
-
-## Governance
-Every response in this project follows the format defined in `CLAUDE.md`: Summary → Workflow → Action plan → Before/After → STOP for explicit approval before any change is executed.
+```bash
+python -m unittest discover -s tests -t .
+python -m agent_runtime audit --strict
+```
