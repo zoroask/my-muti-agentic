@@ -69,9 +69,10 @@ The `name:` frontmatter field does not change with this convention — it's stil
 
 | Hook | Trigger | Action |
 |---|---|---|
-| `PreToolUse` (Write/Edit/Read) | Before any file is read, written, or edited | Runs `path_guard.py` — blocks access outside `D:\my-muti-agentic\` |
-| `PreToolUse` (Bash) | Before any Bash command runs | Runs `env_guard.py` — blocks git commands that would force-add, commit, or push a `.env`-style file |
+| `PreToolUse` (Write/Edit/Read/NotebookEdit/Glob/Grep/Bash/PowerShell) | Before any file is read, written, edited, searched, or a shell command runs | Runs `path_guard.py` — blocks access outside `D:\my-muti-agentic\` |
+| `PreToolUse` (Bash/PowerShell) | Before any Bash or PowerShell command runs | Runs `env_guard.py` — blocks git commands that would force-add, commit, or push a `.env`-style file |
 | `PostToolUse` (Write/Edit) | After any `.py` file is written or edited | Runs `syntax_check.py` to catch Python syntax errors |
+| `Stop` (in `settings.local.json`) | When a response finishes | Runs `notify_done.ps1` — finish notification; launches `notify_popup.ps1` → `focus_session.ps1` |
 
 Hook scripts: `.claude/hooks/path_guard.py`, `.claude/hooks/env_guard.py`, `.claude/hooks/syntax_check.py`
 Hook config: `.claude/settings.json`

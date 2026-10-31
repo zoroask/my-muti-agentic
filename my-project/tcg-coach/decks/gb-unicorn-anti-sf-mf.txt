@@ -1,0 +1,33 @@
+# name: GB Unicorn - anti-SF/MF
+# Built 2026-10-23 against 153 tournament lists (2026-10-01 to 10-18), ban list 2026-09-25.
+# Shell: BG SF-Unicorn 1st, JT Game Store MY 2026-10-07 (TCG TopDecks HQ).
+# v2 2026-10-23 after 10 practice games (3-7, not logged): curve too high, no early answers to PR / PB / GP aggro.
+#   Lower curve (avg cost 2.68, 10 cost-6 cards), +rested-unit removal (Guntank, Signs of a Revolution), +Kira's Strike Rouge.
+#   No Underground Desert Base (not owned): Archangel (protects Orb units on opp. turn) + Reineforce Jr. (token with Zoloat).
+# Plan vs aggro: block with 4-HP Orb units, then Guntank / Signs on their rested attackers; Unicorns + SF close later.
+# v3 2026-10-23 (user edit + review): 4 SF, 4 ST14-007; GD03-010 + Banagher (8/7) and GD01-002 + GD01-088 (7/6) are the one-fight SF killers.
+# Plan vs SF/MF: Banagher ST14-012 lets a Lv5+ unit attack an active 5-AP SF/MF. ST14-006 + Banagher is only 5 AP: not enough for SF (6 HP).
+# Any Lv5 "Unicorn Mode" unit (ST14-007) can be destroyed to play GD01-002 for free.
+# Mutual Attraction recovers only Lv5+ pilots (GD01-088 Banagher, GD05-081 Kira), not ST14-012 (Lv4).
+# Unverified: GD04-016/GD05-005/GD05-002 text not read live (fetch_card.py SSL error); v3 untested.
+
+# Main
+3 GD01-008 Guntank
+4 GD04-016 Zoloat (League Militaire)
+4 GD05-010 Kira's Strike Rouge
+4 GD05-005 Strike Rouge (Ootori)
+4 ST14-007 Full Armor Unicorn Gundam (Unicorn Mode)
+2 GD01-002 Unicorn Gundam (Destroy Mode)
+1 GD03-010 Full Armor Unicorn Gundam (Destroy Mode)
+3 ST14-006 Full Armor Unicorn Gundam (Destroy Mode)
+4 GD05-002 Strike Freedom Gundam
+4 ST14-012 Banagher Links
+3 GD01-088 Banagher Links
+4 GD05-081 Kira Yamato
+4 GD05-106 Mutual Attraction
+2 GD01-104 Signs of a Revolution
+2 GD05-123 Archangel
+2 GD04-121 Reineforce Jr.
+
+# Resource
+10 R-001

@@ -86,7 +86,7 @@ class CategoriseTests(unittest.TestCase):
     def test_known_categories(self):
         cases = {
             ".claude/agents/bug-fixer.md": "Agent personas",
-            ".claude/skills/diagnose.md": "Skills",
+            ".claude/skills/diagnose/SKILL.md": "Skills",
             ".claude/commands/audit-chain.md": "Commands",
             ".claude/hooks/path_guard.py": "Hooks",
             ".claude/settings.json": "Claude config",
@@ -130,13 +130,23 @@ class FakeProjectTests(unittest.TestCase):
 
     def test_skill_index_drift_both_directions(self):
         write(self.root / ".claude/skills/README.md", "| `listed.md` | x | y |\n| `ghost.md` | x | y |")
-        write(self.root / ".claude/skills/listed.md", "# Listed")
-        write(self.root / ".claude/skills/orphan.md", "# Orphan")
+        write(self.root / ".claude/skills/listed/SKILL.md", "# Listed")
+        write(self.root / ".claude/skills/orphan/SKILL.md", "# Orphan")
 
         check = audit.check_skill_table(self.root)
         messages = [finding.message for finding in check.findings]
         self.assertTrue(any("does not exist" in message for message in messages))
         self.assertTrue(any("not listed in README" in message for message in messages))
+        self.assertTrue(all("flat skill file" not in message for message in messages))
+
+    def test_flat_skill_file_is_reported(self):
+        write(self.root / ".claude/skills/README.md", "| `listed.md` | x | y |")
+        write(self.root / ".claude/skills/listed.md", "# Listed")
+
+        check = audit.check_skill_table(self.root)
+        messages = [finding.message for finding in check.findings]
+        self.assertTrue(any("flat skill file" in message for message in messages))
+        self.assertTrue(any("does not exist" in message for message in messages))
 
     def test_command_index_drift(self):
         write(self.root / "CLAUDE.md", "| `/documented` | does a thing |")
@@ -287,6 +297,144 @@ class ReportTests(unittest.TestCase):
             self.assertIn("Audit Report", written.read_text(encoding="utf-8"))
 
 
+GOOD_ENTRY = """---
+name: {name}
+description: a decision
+metadata: {{type: project, updated: 2026-10-24}}
+---
+
+Summary: decided a thing.
+Why: because.
+Ref: commit abc123
+"""
+
+GOOD_PROFILE = """---
+name: user-profile
+metadata: {type: user}
+---
+
+## Communication
+- Replies in English (confirmed 2026-09-24)
+"""
+
+
+class MemoryBudgetTests(unittest.TestCase):
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.memory = Path(self._tmp.name) / "memory"
+        self.addCleanup(self._tmp.cleanup)
+
+    def make_memory(self, entries=("alpha",), index=None, profile=GOOD_PROFILE):
+        if index is None:
+            index = "Project: test\n\n" + "".join(
+                f"[project] {name} — a decision #tag → {name}.md\n" for name in entries
+            )
+            if profile is not None:
+                index += "- [user] user-profile — profile #user → user-profile.md\n"
+        write(self.memory / "MEMORY.md", index)
+        for name in entries:
+            write(self.memory / f"{name}.md", GOOD_ENTRY.format(name=name))
+        if profile is not None:
+            write(self.memory / "user-profile.md", profile)
+
+    def messages(self):
+        return [f.message for f in audit.check_memory_budget(self.memory).findings]
+
+    def test_missing_folder_passes(self):
+        check = audit.check_memory_budget(self.memory)
+        self.assertTrue(check.passed)
+        self.assertEqual(check.detail, "no memory folder")
+
+    def test_clean_memory_passes_with_or_without_leading_dash(self):
+        self.make_memory(entries=("alpha", "beta"))
+        check = audit.check_memory_budget(self.memory)
+        self.assertTrue(check.passed, [f.message for f in check.findings])
+        self.assertIn("3 entries, 3 indexed", check.detail)
+
+    def test_index_over_budget(self):
+        self.make_memory()
+        index = (self.memory / "MEMORY.md").read_text(encoding="utf-8")
+        write(self.memory / "MEMORY.md", index + "\n" * 45)
+        findings = audit.check_memory_budget(self.memory).findings
+        self.assertTrue(any(f.severity == "M" and "40-line budget" in f.message for f in findings))
+
+    def test_index_points_to_missing_file(self):
+        self.make_memory()
+        (self.memory / "alpha.md").unlink()
+        self.assertTrue(any("missing file 'alpha.md'" in m for m in self.messages()))
+
+    def test_entry_not_in_index(self):
+        self.make_memory()
+        write(self.memory / "stray.md", GOOD_ENTRY.format(name="stray"))
+        findings = audit.check_memory_budget(self.memory).findings
+        self.assertTrue(any(f.location == "stray.md" and "not listed" in f.message for f in findings))
+
+    def test_entry_over_budget(self):
+        self.make_memory()
+        long_body = GOOD_ENTRY.format(name="alpha") + "".join(f"- point {i}\n" for i in range(12))
+        write(self.memory / "alpha.md", long_body)
+        self.assertTrue(any("12-line budget" in m for m in self.messages()))
+
+    def test_entry_missing_required_lines(self):
+        self.make_memory()
+        write(self.memory / "alpha.md", "---\nname: alpha\n---\n\nSummary: only this.\n")
+        self.assertTrue(any("missing required line(s): Why, Ref" in m for m in self.messages()))
+
+    def test_details_file_over_budget(self):
+        self.make_memory()
+        write(self.memory / "details" / "alpha.md", "line\n" * 61)
+        findings = audit.check_memory_budget(self.memory).findings
+        self.assertTrue(any(f.location == "details/alpha.md" for f in findings))
+
+    def test_details_folder_is_not_an_unindexed_entry(self):
+        self.make_memory()
+        write(self.memory / "details" / "alpha.md", "## History\n")
+        self.assertTrue(audit.check_memory_budget(self.memory).passed)
+
+    def test_profile_line_without_date_tag(self):
+        self.make_memory(profile=GOOD_PROFILE + "- Likes short replies\n")
+        self.assertTrue(any("1 profile line(s) without" in m for m in self.messages()))
+
+    def test_profile_over_budget(self):
+        lines = "".join(f"- point {i} (confirmed 2026-10-24)\n" for i in range(41))
+        self.make_memory(profile=GOOD_PROFILE + lines)
+        self.assertTrue(any("40-line budget" in m for m in self.messages()))
+
+    def test_secret_is_reported_by_name_only(self):
+        self.make_memory()
+        token = "123456789:" + "A" * 35
+        write(self.memory / "details" / "alpha.md", f"token was {token}\n")
+        findings = [f for f in audit.check_memory_budget(self.memory).findings if f.severity == "H"]
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0].location, "details/alpha.md")
+        self.assertNotIn(token, findings[0].message)
+
+    def test_memory_slug_matches_claude_code(self):
+        # Fixed strings, so the result does not depend on the OS or on links.
+        self.assertEqual(audit.memory_slug(r"D:\my-muti-agentic"), "D--my-muti-agentic")
+        self.assertEqual(audit.memory_slug("/home/me/my_proj"), "-home-me-my-proj")
+
+    def test_default_memory_dir_is_under_claude_projects(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = audit.default_memory_dir(Path(directory))
+            self.assertEqual(path.name, "memory")
+            self.assertEqual(path.parent.parent, Path.home() / ".claude" / "projects")
+            self.assertRegex(path.parent.name, r"^[A-Za-z0-9-]+$")
+
+    def test_cli_accepts_memory_dir(self):
+        self.make_memory()
+        with tempfile.TemporaryDirectory() as directory:
+            buffer = io.StringIO()
+            with contextlib.redirect_stdout(buffer):
+                code = cli.main([
+                    "audit", "--no-tests",
+                    "--memory-dir", str(self.memory),
+                    "--html", str(Path(directory) / "report.html"),
+                ])
+            self.assertEqual(code, 0)
+            self.assertIn("CHECK=Memory budget|pass|", buffer.getvalue())
+
+
 class RealProjectAuditTests(unittest.TestCase):
     """The audit must run over this repo without crashing.
 
@@ -304,7 +452,7 @@ class RealProjectAuditTests(unittest.TestCase):
         self.assertGreater(self.result.file_count, 20)
 
     def test_every_check_ran(self):
-        self.assertEqual(len(self.result.checks), 8)
+        self.assertEqual(len(self.result.checks), 9)
         for check in self.result.checks:
             self.assertTrue(check.detail, check.name)
 

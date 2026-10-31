@@ -4,4 +4,13 @@ __pycache__/
 *.pyc
 runs/
 audit-report.html
+site/
 .claude/hooks/.last-window
+# cloned external tools, not part of this library
+_external/
+
+# token-usage-monitor build and local data
+my-project/token-usage-monitor/backend/.venv/
+my-project/token-usage-monitor/backend/dist/
+my-project/token-usage-monitor/frontend/node_modules/
+my-project/token-usage-monitor/data/

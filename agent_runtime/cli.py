@@ -177,6 +177,7 @@ def cmd_audit(args: argparse.Namespace) -> int:
     result = audit.run_audit(
         include_references=args.include_references,
         with_tests=not args.no_tests,
+        memory_dir=Path(args.memory_dir) if args.memory_dir else None,
     )
     if args.findings:
         text = Path(args.findings).read_text(encoding="utf-8-sig")
@@ -283,6 +284,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="also audit references/ (vendored third-party skills)",
     )
     auditor.add_argument("--no-tests", action="store_true", help="skip running the test suite")
+    auditor.add_argument(
+        "--memory-dir",
+        help="memory folder to check (default: ~/.claude/projects/<project-slug>/memory)",
+    )
     auditor.add_argument(
         "--strict", action="store_true", help="exit 1 when there are High findings"
     )

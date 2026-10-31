@@ -15,7 +15,7 @@ cannot. Both end up in one report.
    - `FINDING=[H|M|L] <location> | <check> | <message>` — machine findings
    - `REPORT=<path>`, `RESULT=OK|ATTENTION`
 3. Invoke **PA Right-Hand Audit & Testing** for the judgement half. Tell it to
-   follow `.claude/skills/repo-security-audit.md` and to cover: persona and
+   follow `.claude/skills/repo-security-audit/SKILL.md` and to cover: persona and
    skill quality, contradictions between docs and behaviour, hook correctness,
    the Python in `agent_runtime/` and `.claude/hooks/`, and the
    `my-project/` subprojects. Give it the `CHECK=` and `FINDING=` lines so it

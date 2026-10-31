@@ -1,0 +1,13 @@
+# Example decklist format — replace with your own and rename the file.
+# One card per line: "<count> <card no> [optional name]". Lines starting with # are comments or section headers.
+# Egman deckbuilder exports work too if they list card numbers.
+# name: Example (format demo only - not a tuned deck)
+
+# Main
+4 GD01-118
+4 ST04-001
+4 ST04-010
+# ... 50 cards in total, max 4 per card number, 1-2 colors
+
+# Resource
+10 R-001

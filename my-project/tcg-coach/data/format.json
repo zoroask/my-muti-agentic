@@ -1,0 +1,51 @@
+{
+  "game": "Gundam Card Game",
+  "format": "Standard (official / sanctioned tournaments)",
+  "deck": {
+    "main_size": 50,
+    "resource_size": 10,
+    "max_copies": 4,
+    "resource_copy_limit": null,
+    "max_colors": 2,
+    "starting_hand": 5,
+    "redraw": "optional, once, whole hand (player one decides first)",
+    "shields": 6,
+    "hand_limit_end_of_turn": 10,
+    "battle_area_max_units": 6,
+    "resource_area_max": 15,
+    "ex_resource_max": 5,
+    "player_two_start": "1 EX Resource token",
+    "both_start": "1 EX Base token (0 AP / 3 HP)",
+    "sideboard": "not defined in the Comprehensive Rules; check the BO3 Match Rules page before an event"
+  },
+  "rules_source": {
+    "document": "Comprehensive Rules",
+    "version": "1.10.0",
+    "date": "2026-10-16",
+    "url": "https://www.gundam-gcg.com/en/pdf/comprehensiverules_en.pdf",
+    "refs": {"main_size": "6-1-1", "resource_size": "6-1-1", "max_copies": "6-1-1-3", "resource_copy_limit": "6-1-1-5",
+             "max_colors": "6-1-1-2", "starting_hand": "6-2-1-5", "redraw": "6-2-1-6", "shields": "6-2-2",
+             "ex_base": "6-2-3", "player_two_start": "6-2-4", "hand_limit": "7-6-5-1", "battle_area_max": "4-5-4",
+             "resource_area_max": "4-4-2"}
+  },
+  "banlist": {
+    "source_url": "https://www.gundam-gcg.com/en/news/01_279.html",
+    "dated": "2026-09-25",
+    "checked_on": "2026-10-18",
+    "banned": ["GD01-020"],
+    "restricted": {"ST02-016": 2},
+    "banned_pairs": [["ST01-010", "ST05-010"], ["GD01-008", "GD05-015"]],
+    "vanilla_rule": {
+      "description": "Any two different Units that are Lv.2, cost 1, 2 AP, 2 HP with no effects form a banned pair; at most four copies of one such card.",
+      "type": "UNIT", "lv": 2, "cost": 1, "ap": 2, "hp": 2, "no_effect": true,
+      "max_distinct": 1, "max_total": 4,
+      "listed_on_source": ["GD01-035", "GD01-060", "GD01-085", "GD02-013", "GD02-080", "GD03-032", "GD03-063", "GD04-078",
+                           "GD05-014", "GD05-027", "GD05-042", "GD05-062", "GD05-077", "ST01-005", "ST04-008", "ST05-004",
+                           "ST05-009", "ST06-004", "ST09-005", "ST10-005", "ST11-008", "ST12-010"]
+    }
+  },
+  "latest_set": {"code": "GD06", "name": "Stardust Trails", "release": "2026-10-16"},
+  "stale_before": "2026-09-25",
+  "stale_rule": "Meta data dated before the latest ban list (2026-09-25) is flagged STALE. Results from before the GD06 release (2026-10-16) do not include GD06 cards; say so when relevant.",
+  "event": {"name": null, "date": null, "tier": null, "rounds": null, "decklist_deadline": null}
+}

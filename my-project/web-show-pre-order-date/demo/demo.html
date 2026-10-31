@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DEMO — Bandai Gundam Pre-Orders</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d2e;
+      --surface2: #232840;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --accent: #3b82f6;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --radius: 8px;
+      --shadow: 0 2px 8px rgba(0,0,0,0.4);
+      --font: system-ui, -apple-system, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 16px; min-height: 100vh; }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+    /* Demo chrome */
+    .demo-banner {
+      background: #1a1200;
+      border-bottom: 2px solid var(--warning);
+      color: var(--warning);
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+    .demo-frame { max-width: 960px; margin: 0 auto; padding: 16px; }
+
+    /* Slide system */
+    .slide { display: none; }
+    .slide.active { display: block; }
+
+    /* App header */
+    .app-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 20px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      flex-wrap: wrap; gap: 10px;
+    }
+    .app-title { font-size: 20px; font-weight: 700; }
+    .app-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .header-btns { display: flex; gap: 8px; }
+
+    /* Buttons */
+    .btn {
+      padding: 8px 16px; border-radius: var(--radius); border: none;
+      cursor: pointer; font-family: var(--font); font-size: 14px; font-weight: 600;
+      transition: opacity 0.15s, transform 0.1s;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn:hover:not(:disabled) { opacity: 0.85; }
+    .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+    .btn-ghost { background: transparent; border: 1px solid var(--surface2); color: var(--muted); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Note box */
+    .note-box {
+      background: #1a2035; border: 1px dashed var(--muted);
+      border-radius: var(--radius); padding: 10px 14px;
+      font-size: 13px; color: var(--muted); margin-bottom: 16px;
+    }
+    .note-box strong { color: var(--text); }
+
+    /* Card grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 16px; margin-bottom: 8px;
+    }
+    .item-card {
+      background: var(--surface); border-radius: var(--radius);
+      padding: 16px; box-shadow: var(--shadow);
+      display: flex; flex-direction: column; gap: 8px;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .item-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.5); }
+    .item-icon {
+      width: 44px; height: 44px; background: var(--surface2);
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    .item-name { font-weight: 600; font-size: 14px; line-height: 1.35; }
+    .item-price { color: var(--accent); font-weight: 700; font-size: 17px; }
+    .item-row { font-size: 13px; color: var(--muted); }
+    .item-row span { color: var(--text); font-weight: 500; }
+    .btn-order {
+      margin-top: auto; padding: 8px 12px;
+      background: var(--accent); color: #fff;
+      border: none; border-radius: var(--radius);
+      cursor: not-allowed; font-size: 14px; font-weight: 600;
+      opacity: 0.65; display: flex; align-items: center; justify-content: center; gap: 4px;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center; padding: 64px 24px;
+      background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+    }
+    .empty-icon { font-size: 52px; margin-bottom: 16px; }
+    .empty-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .empty-hint { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px; z-index: 10;
+    }
+    .modal {
+      background: var(--surface); border-radius: var(--radius);
+      padding: 24px; width: 100%; max-width: 430px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.65);
+    }
+    .modal-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px;
+    }
+    .modal-title { font-size: 18px; font-weight: 700; }
+    .modal-close {
+      background: none; border: none; color: var(--muted);
+      font-size: 22px; cursor: pointer; line-height: 1;
+      padding: 4px 8px; border-radius: 4px;
+      transition: color 0.15s;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-close:focus-visible { outline: 2px solid var(--accent); }
+
+    /* Form */
+    .form-group { margin-bottom: 14px; }
+    .form-label { display: block; font-size: 13px; color: var(--muted); font-weight: 500; margin-bottom: 4px; }
+    .form-input {
+      width: 100%; padding: 8px 12px;
+      background: var(--bg); border: 1px solid #2d3452;
+      border-radius: var(--radius); color: var(--text);
+      font-family: var(--font); font-size: 14px;
+      transition: border-color 0.15s;
+    }
+    .form-input:focus { outline: none; border-color: var(--accent); }
+    .form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 80px; right: 20px;
+      padding: 12px 18px; border-radius: var(--radius);
+      font-size: 14px; font-weight: 600; color: #fff;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      display: none; z-index: 20; align-items: center; gap: 8px;
+    }
+    .toast.show { display: flex; }
+    .toast-success { background: var(--success); }
+
+    /* R-coverage panel */
+    .r-panel {
+      background: var(--surface); border-radius: var(--radius);
+      padding: 14px 18px; margin-top: 16px; font-size: 13px;
+    }
+    .r-panel-title { font-weight: 600; margin-bottom: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px; }
+    .r-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 6px; }
+    .r-badge {
+      padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .r-ok { background: #14532d; color: var(--success); }
+    .r-no { background: #3b1818; color: var(--danger); }
+    .r-text { color: var(--text); line-height: 1.4; }
+    .r-note { color: var(--muted); font-size: 12px; }
+
+    /* Demo nav */
+    .demo-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 0 4px; border-top: 1px solid var(--surface2); margin-top: 20px;
+    }
+    .slide-label { color: var(--muted); font-size: 13px; }
+    .nav-btns { display: flex; gap: 8px; }
+  </style>
+</head>
+<body>
+
+<div class="demo-banner" role="banner">
+  DEMO &mdash; Sample data only. Not the real system. No server. No real orders.
+</div>
+
+<div class="demo-frame">
+
+  <!-- Slide 1: ItemGrid with items (happy path) — R1, R2, R3 -->
+  <div class="slide active" id="slide-1" role="main" aria-label="Slide 1: Main view with items">
+
+    <div class="app-header">
+      <div>
+        <div class="app-title">Bandai Gundam Pre-Orders</div>
+        <div class="app-sub">Last scraped: 2026-10-28 04:00 JST &mdash; 23:00 local (mock data)</div>
+      </div>
+      <div class="header-btns">
+        <button class="btn btn-outline" disabled aria-label="Refresh disabled — requires FastAPI backend (R4 not in demo)">
+          &#8635; Refresh
+        </button>
+        <button class="btn btn-primary" onclick="goTo(3)" aria-label="Add item manually (R5)">
+          + Add Item
+        </button>
+      </div>
+    </div>
+
+    <div class="note-box" role="note">
+      <strong>R4 note:</strong> The Refresh button triggers the scraper (POST /api/scrape) and requires the FastAPI backend. It is disabled in this static demo. Click <strong>+ Add Item</strong> to see the manual entry form (R5).
+    </div>
+
+    <div class="card-grid" role="list" aria-label="Pre-order items">
+
+      <div class="item-card" role="listitem">
+        <div class="item-icon" aria-hidden="true">&#129381;</div>
+        <div class="item-name">MG 1/100 MSZ-006 Zeta Gundam Ver.2.0 (Mock)</div>
+        <div class="item-price">&#165;8,800</div>
+        <div class="item-row">Date: <span>Nov 1, 2026</span></div>
+        <div class="item-row">Open: <span>11:00 PM (local)</span></div>
+        <button class="btn-order" disabled aria-label="Order link disabled in demo — would open p-bandai.jp in new tab (R3)">
+          Order &#8594;
+        </button>
+      </div>
+
+      <div class="item-card" role="listitem">
+        <div class="item-icon" aria-hidden="true">&#129381;</div>
+        <div class="item-name">PG 1/60 RX-93 Nu Gundam (Mock)</div>
+        <div class="item-price">&#165;38,500</div>
+        <div class="item-row">Date: <span>Nov 5, 2026</span></div>
+        <div class="item-row">Open: <span>11:00 PM (local)</span></div>
+        <button class="btn-order" disabled aria-label="Order link disabled in demo">
+          Order &#8594;
+        </button>
+      </div>
+
+      <div class="item-card" role="listitem">
+        <div class="item-icon" aria-hidden="true">&#129381;</div>
+        <div class="item-name">RG 1/144 MSN-06S Sinanju (Mock)</div>
+        <div class="item-price">&#165;5,280</div>
+        <div class="item-row">Date: <span>Nov 10, 2026</span></div>
+        <div class="item-row">Open: <span>2:00 AM (local)</span></div>
+        <button class="btn-order" disabled aria-label="Order link disabled in demo">
+          Order &#8594;
+        </button>
+      </div>
+
+    </div>
+
+    <div class="r-panel" aria-label="R-number coverage for this slide">
+      <div class="r-panel-title">Requirements shown on this slide</div>
+      <div class="r-row"><span class="r-badge r-ok">R1</span><div><div class="r-text">Item cards visible</div></div></div>
+      <div class="r-row"><span class="r-badge r-ok">R2</span><div><div class="r-text">Price, open date, open time (local) on each card</div></div></div>
+      <div class="r-row"><span class="r-badge r-ok">R3</span><div><div class="r-text">Order buttons present (disabled; would open p-bandai.jp in new tab)</div></div></div>
+      <div class="r-row"><span class="r-badge r-no">R4</span><div><div class="r-text">Not in demo</div><div class="r-note">Requires FastAPI backend and p-bandai.jp network access</div></div></div>
+      <div class="r-row"><span class="r-badge r-ok">R5</span><div><div class="r-text">Add Item button visible &mdash; see slide 3</div></div></div>
+    </div>
+
+    <div class="demo-nav">
+      <span class="slide-label">Slide 1 of 3 &mdash; Main view (R1 R2 R3)</span>
+      <div class="nav-btns">
+        <button class="btn btn-ghost" disabled aria-label="No previous slide">&#8592; Prev</button>
+        <button class="btn btn-primary" onclick="goTo(2)" aria-label="Go to slide 2: empty state">Next &#8594;</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Slide 2: Empty state — R1 empty path -->
+  <div class="slide" id="slide-2" role="main" aria-label="Slide 2: Empty state">
+
+    <div class="app-header">
+      <div>
+        <div class="app-title">Bandai Gundam Pre-Orders</div>
+        <div class="app-sub">Not yet loaded</div>
+      </div>
+      <div class="header-btns">
+        <button class="btn btn-outline" disabled aria-label="Refresh disabled">&#8635; Refresh</button>
+        <button class="btn btn-primary" onclick="goTo(3)" aria-label="Add item manually">+ Add Item</button>
+      </div>
+    </div>
+
+    <div class="empty-state" role="status" aria-live="polite">
+      <div class="empty-icon" aria-hidden="true">&#128274;</div>
+      <div class="empty-title">No pre-orders yet.</div>
+      <div class="empty-hint">
+        Click <strong>&#8635; Refresh</strong> to scrape p-bandai.jp (requires backend, R4),<br>
+        or click <strong>+ Add Item</strong> to enter one manually (R5).
+      </div>
+    </div>
+
+    <div class="r-panel" aria-label="R-number coverage for this slide">
+      <div class="r-panel-title">Requirements shown on this slide</div>
+      <div class="r-row"><span class="r-badge r-ok">R1</span><div><div class="r-text">Empty state shown when no items are in the database</div></div></div>
+    </div>
+
+    <div class="demo-nav">
+      <span class="slide-label">Slide 2 of 3 &mdash; Empty state (R1 empty path)</span>
+      <div class="nav-btns">
+        <button class="btn btn-ghost" onclick="goTo(1)" aria-label="Go to slide 1">&#8592; Prev</button>
+        <button class="btn btn-primary" onclick="goTo(3)" aria-label="Go to slide 3: entry form">Next &#8594;</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Slide 3: EntryForm modal — R5 -->
+  <div class="slide" id="slide-3" role="main" aria-label="Slide 3: Manual entry form">
+
+    <div class="app-header">
+      <div class="app-title">Bandai Gundam Pre-Orders</div>
+      <div class="header-btns">
+        <button class="btn btn-outline" disabled>&#8635; Refresh</button>
+        <button class="btn btn-primary">+ Add Item</button>
+      </div>
+    </div>
+
+    <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal">
+        <div class="modal-head">
+          <div class="modal-title" id="modal-title">Add Pre-Order Item</div>
+          <button class="modal-close" onclick="goTo(1)" aria-label="Close form">&#215;</button>
+        </div>
+        <form onsubmit="event.preventDefault(); showSaveToast();">
+          <div class="form-group">
+            <label class="form-label" for="f-name">Product name</label>
+            <input class="form-input" id="f-name" type="text" value="HG 1/144 Aerial Rebuild (Mock)" aria-required="true">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f-price">Price</label>
+            <input class="form-input" id="f-price" type="text" value="&#165;2,200">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f-date">Open date</label>
+            <input class="form-input" id="f-date" type="date" value="2026-11-15">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f-time">Open time (JST) &mdash; will convert to your local timezone</label>
+            <input class="form-input" id="f-time" type="time" value="16:00">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f-link">Link to p-bandai.jp item page</label>
+            <input class="form-input" id="f-link" type="text" value="p-bandai.jp/item/mock-12345" aria-describedby="f-link-note">
+            <div id="f-link-note" style="font-size:12px;color:var(--muted);margin-top:3px;">Demo: not a real URL. Real form uses a full web link.</div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-ghost" onclick="goTo(1)">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="r-panel" aria-label="R-number coverage for this slide" style="position:relative;z-index:15;">
+      <div class="r-panel-title">Requirements shown on this slide</div>
+      <div class="r-row"><span class="r-badge r-ok">R5</span><div><div class="r-text">Manual entry form with all fields; Save triggers POST /api/items in the real app</div></div></div>
+    </div>
+
+    <div class="demo-nav" style="position:relative;z-index:15;">
+      <span class="slide-label">Slide 3 of 3 &mdash; Manual entry form (R5)</span>
+      <div class="nav-btns">
+        <button class="btn btn-ghost" onclick="goTo(2)" aria-label="Go to slide 2">&#8592; Prev</button>
+        <button class="btn btn-primary" disabled aria-label="Last slide">Next &#8594;</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div id="toast" class="toast toast-success" role="alert" aria-live="polite">
+  &#10003; Item saved (demo only &mdash; no server)
+</div>
+
+<script>
+  function goTo(n) {
+    document.querySelectorAll('.slide').forEach(function(s) {
+      s.classList.remove('active');
+    });
+    var el = document.getElementById('slide-' + n);
+    if (el) { el.classList.add('active'); window.scrollTo(0, 0); }
+  }
+  function showSaveToast() {
+    var t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(function() {
+      t.classList.remove('show');
+      goTo(1);
+    }, 2000);
+  }
+</script>
+</body>
+</html>

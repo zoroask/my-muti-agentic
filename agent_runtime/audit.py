@@ -4,7 +4,7 @@ Every check here is deterministic and free — no model, no network. The parts
 that need judgement are left to the `PA Right-Hand Audit & Testing` subagent,
 whose findings are merged in by `report.py`.
 
-Severities match the scale already used by `.claude/skills/repo-security-audit.md`:
+Severities match the scale already used by `.claude/skills/repo-security-audit/SKILL.md`:
 [H] breaks operation, leaks data or silently misbehaves; [M] noticeable gap;
 [L] cosmetic.
 """
@@ -45,6 +45,27 @@ HOOK_SCRIPT_SUFFIXES = (".py", ".ps1", ".sh")
 # A hook script invoked by something other than a settings file — an OS protocol
 # handler, say — declares it with this marker so it is not reported as dead.
 EXTERNAL_MARKER = "hook-wiring: external"
+
+# Memory budget — keep in step with CLAUDE.md § Memory, the single source.
+MEMORY_LIMITS = {
+    "index_lines": 40,     # MEMORY.md
+    "entry_lines": 12,     # non-blank body lines of one entry
+    "details_lines": 60,   # details/<name>.md
+    "profile_lines": 40,   # user-profile.md
+}
+MEMORY_REQUIRED_FIELDS = ("Summary", "Why", "Ref")
+MEMORY_PROFILE = "user-profile.md"
+MEMORY_INDEX_TARGET = re.compile(r"→\s*([\w.\-]+\.md)\s*$")
+MEMORY_PROFILE_TAG = re.compile(r"\((confirmed|corrected) \d{4}-\d{2}-\d{2}\)\s*$")
+# Shapes of real credentials. Matches are reported by file name only.
+MEMORY_SECRET = re.compile(
+    r"(sk-[A-Za-z0-9_\-]{20,}"
+    r"|gh[pousr]_[A-Za-z0-9]{30,}"
+    r"|AKIA[0-9A-Z]{16}"
+    r"|xox[abprs]-[A-Za-z0-9\-]{10,}"
+    r"|-----BEGIN [A-Z ]*PRIVATE KEY-----"
+    r"|\b\d{8,10}:[A-Za-z0-9_\-]{35}\b)"  # Telegram bot token
+)
 
 
 @dataclass(frozen=True)
@@ -234,15 +255,21 @@ def check_skill_table(root: Path) -> Check:
         ])
 
     listed = _table_entries(readme.read_text(encoding="utf-8-sig"), r"`([\w.-]+\.md)`")
-    on_disk = {path.name for path in directory.glob("*.md") if path.name != "README.md"}
+    # Claude Code only discovers <name>/SKILL.md; a README row `<name>.md` names that folder.
+    on_disk = {f"{path.parent.name}.md" for path in directory.glob("*/SKILL.md")}
+    flat = sorted(path.name for path in directory.glob("*.md") if path.name != "README.md")
 
     findings = [
         Finding("H", "skills", f".claude/skills/README.md", f"index lists {name!r}, which does not exist")
         for name in sorted(listed - on_disk)
     ]
     findings += [
-        Finding("M", "skills", f".claude/skills/{name}", "skill file is not listed in README.md, so it has no trigger")
+        Finding("M", "skills", f".claude/skills/{name[:-3]}/SKILL.md", "skill file is not listed in README.md, so it has no trigger")
         for name in sorted(on_disk - listed)
+    ]
+    findings += [
+        Finding("M", "skills", f".claude/skills/{name}", "flat skill file; Claude Code only discovers <name>/SKILL.md")
+        for name in flat
     ]
     return Check("Skill index", f"{len(on_disk)} skills, {len(listed)} indexed", findings)
 
@@ -451,6 +478,134 @@ def _is_ignored(root: Path, relative: str) -> bool:
     return result.returncode == 0
 
 
+def default_memory_dir(root: Path) -> Path:
+    """Where Claude Code keeps this project's memory.
+
+    Claude Code names the folder after the project path with every character
+    that is not a letter or digit replaced by `-`: `D:\\my-muti-agentic`
+    becomes `D--my-muti-agentic`.
+    """
+    return Path.home() / ".claude" / "projects" / memory_slug(str(root.resolve())) / "memory"
+
+
+def memory_slug(project_path: str) -> str:
+    """Claude Code's folder name for a project path: non-alphanumerics become `-`."""
+    return re.sub(r"[^A-Za-z0-9]", "-", project_path)
+
+
+def _split_frontmatter(text: str) -> tuple[str, str]:
+    """(frontmatter, body). A file without frontmatter is all body."""
+    lines = text.splitlines()
+    if lines and lines[0].strip() == "---":
+        for index in range(1, len(lines)):
+            if lines[index].strip() == "---":
+                return "\n".join(lines[1:index]), "\n".join(lines[index + 1 :])
+    return "", text
+
+
+def check_memory_budget(memory_dir: Path) -> Check:
+    """Memory must stay within the CLAUDE.md § Memory budget.
+
+    Read-only. Secret-shaped strings are reported by file name only, never by
+    value. A missing memory folder passes: there is nothing to keep small.
+    """
+    if not memory_dir.is_dir():
+        return Check("Memory budget", "no memory folder", [])
+
+    limits = MEMORY_LIMITS
+    findings: list[Finding] = []
+    index = memory_dir / "MEMORY.md"
+    entries = sorted(
+        path for path in memory_dir.glob("*.md") if path.name != "MEMORY.md"
+    )
+    details = sorted((memory_dir / "details").glob("*.md"))
+
+    def read(path: Path) -> str:
+        return path.read_text(encoding="utf-8-sig", errors="replace")
+
+    def where(path: Path) -> str:
+        return path.relative_to(memory_dir).as_posix()
+
+    # Index: size, and agreement with the files on disk.
+    indexed: set[str] = set()
+    if not index.exists():
+        findings.append(Finding("M", "memory", "MEMORY.md", "memory index is missing"))
+    else:
+        index_lines = read(index).splitlines()
+        if len(index_lines) > limits["index_lines"]:
+            findings.append(Finding(
+                "M", "memory", "MEMORY.md",
+                f"{len(index_lines)} lines, over the {limits['index_lines']}-line budget",
+            ))
+        for line in index_lines:
+            match = MEMORY_INDEX_TARGET.search(line)
+            if match:  # with or without a leading "- "
+                indexed.add(match.group(1))
+        on_disk = {path.name for path in entries}
+        findings += [
+            Finding("M", "memory", "MEMORY.md", f"index points to missing file {name!r}")
+            for name in sorted(indexed - on_disk)
+        ]
+        findings += [
+            Finding("M", "memory", name, "entry file is not listed in MEMORY.md")
+            for name in sorted(on_disk - indexed)
+        ]
+
+    # Entries: size and required lines. The profile has its own rule.
+    for path in entries:
+        _, body = _split_frontmatter(read(path))
+        lines = [line for line in body.splitlines() if line.strip()]
+        if path.name == MEMORY_PROFILE:
+            if len(lines) > limits["profile_lines"]:
+                findings.append(Finding(
+                    "L", "memory", path.name,
+                    f"{len(lines)} lines, over the {limits['profile_lines']}-line budget",
+                ))
+            untagged = sum(
+                1 for line in lines
+                if line.lstrip().startswith(("- ", "* "))
+                and not MEMORY_PROFILE_TAG.search(line)
+            )
+            if untagged:
+                findings.append(Finding(
+                    "L", "memory", path.name,
+                    f"{untagged} profile line(s) without a (confirmed|corrected YYYY-MM-DD) tag",
+                ))
+            continue
+        if len(lines) > limits["entry_lines"]:
+            findings.append(Finding(
+                "L", "memory", path.name,
+                f"{len(lines)} lines, over the {limits['entry_lines']}-line budget",
+            ))
+        missing = [
+            field_name for field_name in MEMORY_REQUIRED_FIELDS
+            if not any(line.lstrip().startswith(f"{field_name}:") for line in lines)
+        ]
+        if missing:
+            findings.append(Finding(
+                "L", "memory", path.name, f"missing required line(s): {', '.join(missing)}"
+            ))
+
+    for path in details:
+        count = len(read(path).splitlines())
+        if count > limits["details_lines"]:
+            findings.append(Finding(
+                "L", "memory", where(path),
+                f"{count} lines, over the {limits['details_lines']}-line budget",
+            ))
+
+    # Secrets: every file, reported by name only.
+    for path in sorted(memory_dir.rglob("*.md")):
+        if MEMORY_SECRET.search(read(path)):
+            findings.append(Finding(
+                "H", "memory", where(path),
+                "secret-like value found; move it to .env and point to it instead",
+            ))
+
+    detail = f"{len(entries)} entries, {len(indexed)} indexed, {len(details)} details file(s)"
+    return Check("Memory budget", detail, findings)
+
+
 def run_tests(root: Path) -> TestOutcome:
     """Run the project's own unittest suite and summarise it."""
     try:
@@ -517,9 +672,11 @@ def run_audit(
     root: Path | None = None,
     include_references: bool = False,
     with_tests: bool = True,
+    memory_dir: Path | None = None,
 ) -> AuditResult:
     """Run every deterministic check over the project."""
     root = root or registry.project_root()
+    memory_dir = memory_dir or default_memory_dir(root)
     inventory = take_inventory(root, include_references)
     checks = [
         check_personas(root),
@@ -530,6 +687,7 @@ def run_audit(
         check_python_syntax(root, inventory),
         check_doc_links(root, inventory),
         check_tracked_hygiene(root),
+        check_memory_budget(memory_dir),
     ]
     tests = run_tests(root) if with_tests else TestOutcome(skipped=True, detail="skipped by --no-tests")
     return AuditResult(

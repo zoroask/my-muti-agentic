@@ -253,8 +253,8 @@ python job_auto_apply.py config_junior.json
   "notifications": {
     "telegram": {
       "enabled": true,
-      "telegram_token": "123456789:ABCdefGHIjklmnoPQRstuvWXYZ",
-      "telegram_chat_id": "987654321"
+      "telegram_token": "YOUR_BOT_TOKEN",
+      "telegram_chat_id": "YOUR_CHAT_ID"
     }
   }
 }
