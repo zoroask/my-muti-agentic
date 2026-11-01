@@ -30,8 +30,8 @@ my-muti-agentic/
 ├── plugins/              # data-analysis-and-quality-plugin (packaged .claude/)
 ├── my-project/           # subprojects: job-auto-apply, tcg-coach,
 │                         #   token-usage-monitor, web-show-pre-order-date
-├── tests/                # unittest suite for runtime, audit and hooks
-├── tools/build_site.py   # builds site/index.html (Multi-Agent Library Overview)
+├── tests/                # unittest suite for runtime, audit, hooks and plugin sync
+├── tools/                # build_site.py (site/index.html), sync_plugin.py (plugin drift check)
 ├── docs/                 # agent-workflow.md, archive/ (retired pipeline history)
 ├── ollama_mcp.py         # local-llm MCP server
 ├── .mcp.json             # registers the rea MCP server
@@ -74,6 +74,8 @@ The library is also packaged as an installable plugin:
 /plugin install data-analysis-and-quality-plugin@zoroask-my-muti-agentic
 ```
 See [`plugins/data-analysis-and-quality-plugin/README.md`](./plugins/data-analysis-and-quality-plugin/README.md) for contents and exclusions.
+
+After editing `.claude/`, run `python tools/sync_plugin.py` (`--write` applies safe updates, `--diff` shows hand-edited files to fix), then bump the plugin version.
 
 TCG Coach (Gundam Card Game prep) has its own marketplace:
 ```
