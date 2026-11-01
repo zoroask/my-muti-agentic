@@ -85,7 +85,6 @@ The agents and skills are also packaged as an installable plugin:
 /plugin marketplace add zoroask/tcg-coach
 /plugin install tcg-coach@zoroask-tcg-coach
 ```
-It is also listed in the `zoroask/my-muti-agentic` marketplace: `/plugin install tcg-coach@zoroask-my-muti-agentic`.
 
 The plugin carries agents and skills only. They run `tools/` and read `knowledge/`, so open Claude Code inside a clone of this repo that has been through `install.bat`.
 

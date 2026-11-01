@@ -75,9 +75,10 @@ The library is also packaged as an installable plugin:
 ```
 See [`plugins/data-analysis-and-quality-plugin/README.md`](./plugins/data-analysis-and-quality-plugin/README.md) for contents and exclusions.
 
-TCG Coach (Gundam Card Game prep) is in the same marketplace:
+TCG Coach (Gundam Card Game prep) has its own marketplace:
 ```
-/plugin install tcg-coach@zoroask-my-muti-agentic
+/plugin marketplace add zoroask/tcg-coach
+/plugin install tcg-coach@zoroask-tcg-coach
 ```
 Its tools and card data need a clone of [zoroask/tcg-coach](https://github.com/zoroask/tcg-coach) with `install.bat` run; see its README.
 
