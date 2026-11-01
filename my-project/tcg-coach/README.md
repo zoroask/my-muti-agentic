@@ -30,11 +30,9 @@ Two ways to use these agents and skills:
    `/plugin marketplace add zoroask/tcg-coach`, then `/plugin install tcg-coach@zoroask-tcg-coach`.
    Open Claude Code inside a clone of this repo, or the tools and knowledge base will be missing.
 
-Your personal files are not in the repo (`decks/` and `logs/` are git-ignored). Create them yourself:
-```
-mkdir decks logs
-echo date,event,my_deck,opp_deck,game,went_first,result,notes> logs\match-log.csv
-```
+Card details (`cards.json`, `cards.csv`, `cards/by-set/`) and personal files (`decks/`, `logs/`, your prep plans) are not in the repo.
+On first run `install.bat` downloads card data from the official site (about 25-45 min, throttled),
+builds `knowledge/gundam-gcg/tcg.db` with `tools/rebuild_all.py`, and creates `decks\` and `logs\match-log.csv`.
 Then save each deck as `decks/<name>.txt` (format under "Your files" below).
 
 Python 3.10+ (stdlib only) is enough for every tool. Card names, card numbers and game terms belong to their rights holders; this is an unofficial fan tool.

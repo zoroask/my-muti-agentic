@@ -11,3 +11,10 @@ logs/
 .env
 .env.*
 !.env.example
+# card details: downloaded by install.bat, never pushed
+knowledge/**/cards/cards.json
+knowledge/**/cards/cards.csv
+knowledge/**/cards/by-set/
+# personal prep plans
+plans/*.md
+!plans/README.md
