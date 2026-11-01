@@ -3,6 +3,7 @@
   "owner": {
     "name": "zoroask"
   },
+  "description": "TCG Coach: Gundam Card Game tournament prep agents and skills for Claude Code.",
   "plugins": [
     {
       "name": "tcg-coach",
