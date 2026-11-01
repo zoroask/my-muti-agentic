@@ -14,7 +14,7 @@
 | R3 | Deck legality — given a .txt decklist, check main size (50), resource size (10), copies (max 4), at most 2 colors, ban list (banned, restricted, banned pairs, vanilla rule); return LEGAL or list all problems with rule references. | Functional | Must | deck_check.py exits 0 on a valid deck; an illegal deck prints problems each with code and message; Deck Analyst shows the output in chat. | OK |
 | R4 | Deck statistics — given a .txt decklist, compute color breakdown, type breakdown, Lv curve, cost curve, link coverage and hypergeometric opening odds (with optional redraw). | Functional | Must | deck_stats.py returns all fields; Deck Analyst presents them in chat as a table and summary. | OK |
 | R5 | Meta collection and archetype table — collect tournament decklists from approved sources; compute card usage shares and archetype groups; flag STALE and LOW CONFIDENCE (fewer than 20 lists); never store player names. | Functional | Must | meta_table.py returns archetypes with share, date range and flags; collect_meta.py + rebuild_all.py refresh; no player names in any file; Meta Coach shows flags in chat. | OK |
-| R6 | Matchup and sideboard plan — Meta Coach builds a per-matchup plan (role, key cards, keep/ship) from meta records and local-LLM judgment. | Functional | Must | Output includes role, key cards, keep/ship and side-in/out; every claim cites script data; judgment goes to mcp__local-llm__ask_local_llm; if the tool is missing, Meta Coach says so and stops. | OK |
+| R6 | Matchup and sideboard plan — Meta Coach builds a per-matchup plan (role, key cards, keep/ship) from meta records and local-LLM judgment. | Functional | Must | Output includes role, key cards, keep/ship and side-in/out; every claim cites script data; judgment goes to mcp__local-llm__ask_local_llm; if the tool is missing, Claude judges instead and the answer says so. | OK |
 | R7 | Practice log statistics — given logs/match-log.csv, compute win rates per matchup, going first/second, G1 vs post-side, and classify misplays from notes; list unclassified notes. | Functional | Must | log_stats.py returns all aggregates; under 10 games per matchup is labeled "too few to conclude"; Practice Coach groups unclassified notes in chat via local-LLM judgment. | OK |
 | R8 | Event prep plan — given event name, date, deck and tier, generate a dated week-by-week schedule and event-day checklist; write to plans/ only after the user says "yes". | Functional | Must | TCG Lead runs make_plan.py for a preview; shows plan markdown and a Before/After in chat; writes plans/<slug>.md only after "yes" (R13). | OK |
 | R9 | Deck optimization — score and rank flex-slot swaps for consistency improvement; show delta-score and sensitivity; each swap reviewed by Deck Analyst before it is presented. | Functional | Should | deck_optimize.py returns ranked swaps with delta_score; Deck Analyst shows a swap table with reasoning; the user must say "yes" before any deck file change (R13). | OK |
@@ -151,7 +151,7 @@ Demo: demo/demo.html simulates agent chat flows as a guided tour; it is not the 
 
 ### LLM processes (local LLM)
 
-All judgment goes to `mcp__local-llm__ask_local_llm` with think=True and a file excerpt. If the tool is missing or errors, the agent says so and stops.
+All judgment goes to `mcp__local-llm__ask_local_llm` with think=True and a file excerpt. If the tool is missing or errors, the agent (Claude) judges from the same excerpt and labels the answer.
 
 | Process | Agent | Judgment | R |
 |---|---|---|---|

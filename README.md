@@ -75,6 +75,12 @@ The library is also packaged as an installable plugin:
 ```
 See [`plugins/data-analysis-and-quality-plugin/README.md`](./plugins/data-analysis-and-quality-plugin/README.md) for contents and exclusions.
 
+TCG Coach (Gundam Card Game prep) is in the same marketplace:
+```
+/plugin install tcg-coach@zoroask-my-muti-agentic
+```
+Its tools and card data need a clone of [zoroask/tcg-coach](https://github.com/zoroask/tcg-coach) with `install.bat` run; see its README.
+
 ## Multi-Agent System
 
 Work routes through main agents (cores) to their sub-agents; every change stops at an approval gate. See [`CLAUDE.md`](./CLAUDE.md) for rules and [`docs/agent-workflow.md`](./docs/agent-workflow.md) for authoring personas.

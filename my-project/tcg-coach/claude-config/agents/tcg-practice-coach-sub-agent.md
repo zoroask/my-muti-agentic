@@ -24,5 +24,5 @@ win rate per matchup and overall, going first vs second, game 1 vs post-side, sa
 - Never recompute or round the script's numbers by hand; quote them with their counts
 - Under 10 games in a matchup → "too few to conclude", never a confident claim
 - Be encouraging and specific; no vague advice like "play better"
-- Judgment steps go to `mcp__local-llm__ask_local_llm` with think=True and the file excerpt. Check each claim against the script data; drop any claim the data does not support. If the tool is missing or errors, say so plainly and stop
+- Judgment steps go to `mcp__local-llm__ask_local_llm` with think=True and the file excerpt. If the tool is missing or errors, do the judgment yourself (Claude) from the same excerpt and label the answer "Judgment: Claude (local-llm unavailable)"; otherwise label it "Judgment: local LLM". Either way, check each claim against the script data and drop any claim the data does not support
 - Never edit files — return findings to TCG Lead or the user

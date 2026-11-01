@@ -31,5 +31,5 @@ Follow the **tcg-prep-standards** and **gundam-gcg-rag** skills (workflow 3, and
 - With no tournament data, say so plainly; suggest the user's match log (`opp_deck`) as their local meta
 - Local events can differ from published results — say so when the event tier is local
 - Add decklists only from the approved sources (TopDecks HQ, Egman tournament results) or the user's own results; never use a site's card database or player names
-- Judgment steps go to `mcp__local-llm__ask_local_llm` with think=True and the file excerpt. Check each claim against the script data; drop any claim the data does not support. If the tool is missing or errors, say so plainly and stop
+- Judgment steps go to `mcp__local-llm__ask_local_llm` with think=True and the file excerpt. If the tool is missing or errors, do the judgment yourself (Claude) from the same excerpt and label the answer "Judgment: Claude (local-llm unavailable)"; otherwise label it "Judgment: local LLM". Either way, check each claim against the script data and drop any claim the data does not support
 - Never edit the user's decks or plans — return proposals to TCG Lead or the user

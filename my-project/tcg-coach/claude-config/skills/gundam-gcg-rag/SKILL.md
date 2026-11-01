@@ -8,7 +8,7 @@ description: "Gundam Card Game procedures on the local knowledge base (card sear
 Procedure for answering Gundam Card Game questions with this project's local knowledge base.
 Principle: **code first, LLM last.** If a script can compute it, run the script and use its output.
 Use judgement only for what scripts cannot decide: a card's role, matchup plans, which swaps to make.
-Judgement goes through the local LLM (`mcp__local-llm__ask_local_llm`, think=True); check every claim against script data; if the tool is missing or errors, say so plainly and stop.
+Judgement goes through the local LLM (`mcp__local-llm__ask_local_llm`, think=True); check every claim against script data; if the tool is missing or errors, Claude does the judgment from the same excerpt and the answer is labelled "Judgment: Claude (local-llm unavailable)".
 
 All commands run from the `tcg-coach` folder. Scripts are stdlib Python; the official site is only
 needed by `fetch_card.py`, `verify_cards.py` and `refresh_cards.py`.

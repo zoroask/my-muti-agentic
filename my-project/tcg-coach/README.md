@@ -21,7 +21,7 @@ Unofficial fan tool. Card names, card numbers and game terms belong to their rig
 - **Agents / skills** — Markdown with YAML frontmatter under `claude-config/`, installed into `.claude/`
 - **Tools** — Python 3.10+ stdlib only (`tools/`), no third-party deps
 - **Card database** — SQLite + FTS5 (`knowledge/gundam-gcg/tcg.db`), generated, never committed
-- **Judgement LLM** — `local-llm` MCP server (`mcp__local-llm__ask_local_llm`), see [Setup](#setup)
+- **Judgement LLM** — `local-llm` MCP server if registered, otherwise Claude (the session model)
 
 ## Project Structure
 
@@ -57,7 +57,7 @@ tcg-coach/
    - downloads card data from the official site (about 25-45 min, throttled) — card details are never stored in the repo;
    - builds `knowledge/gundam-gcg/tcg.db` with `tools/rebuild_all.py`;
    - creates `decks\` and `logs\match-log.csv`.
-3. Register the `local-llm` MCP server. The agents send judgement steps to `mcp__local-llm__ask_local_llm`; without it they say so and stop. The server is `ollama_mcp.py` from [zoroask/my-muti-agentic](https://github.com/zoroask/my-muti-agentic) (needs `mcp[cli]<2`, `httpx` and a local Ollama or OpenAI-compatible server).
+3. Optional: register the `local-llm` MCP server. The agents send judgement steps to `mcp__local-llm__ask_local_llm`; without it Claude does the judgement and each answer says which model judged. The server is `ollama_mcp.py` from [zoroask/my-muti-agentic](https://github.com/zoroask/my-muti-agentic) (needs `mcp[cli]<2`, `httpx` and a local Ollama or OpenAI-compatible server).
 
 Run `install.bat` again after any change in `claude-config\`.
 
@@ -171,7 +171,7 @@ Triggers: "prepare for a TCG tournament", "review my deck", "tcg meta", "matchup
 
 | Server | Source | Tools |
 |---|---|---|
-| `local-llm` | `ollama_mcp.py` from zoroask/my-muti-agentic | `ask_local_llm` (judgement steps, think=True) |
+| `local-llm` | `ollama_mcp.py` from zoroask/my-muti-agentic | `ask_local_llm` (judgement steps, think=True; optional, Claude is the fallback) |
 
 ### Your files
 
