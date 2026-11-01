@@ -14,7 +14,30 @@ Skills: `tcg-prep-standards` (shared rules), `gundam-gcg-rag` (the four workflow
 
 ## Install / update
 Double-click `install.bat` after any change in `claude-config\` (it copies agents and skills into `.claude\`). Then open Claude Code in this folder:
-`cd D:\my-muti-agentic\my-project\tcg-coach` → `claude` → *"TCG Lead: get me ready for <event> on <date> with decks/<deck>.txt"*.
+`cd tcg-coach` → `claude` → *"TCG Lead: get me ready for <event> on <date> with decks/<deck>.txt"*.
+
+## Share / install
+Two ways to use these agents and skills:
+
+1. **Clone the repo (full use, recommended)** — the skills run the scripts in `tools/` and read `knowledge/`, so they need the repo on disk.
+   ```
+   git clone https://github.com/zoroask/tcg-coach
+   cd tcg-coach
+   install.bat
+   claude
+   ```
+2. **Claude Code plugin (agents and skills only)** — in Claude Code run
+   `/plugin marketplace add zoroask/tcg-coach`, then `/plugin install tcg-coach@zoroask-tcg-coach`.
+   Open Claude Code inside a clone of this repo, or the tools and knowledge base will be missing.
+
+Your personal files are not in the repo (`decks/` and `logs/` are git-ignored). Create them yourself:
+```
+mkdir decks logs
+echo date,event,my_deck,opp_deck,game,went_first,result,notes> logs\match-log.csv
+```
+Then save each deck as `decks/<name>.txt` (format under "Your files" below).
+
+Python 3.10+ (stdlib only) is enough for every tool. Card names, card numbers and game terms belong to their rights holders; this is an unofficial fan tool.
 
 ## Knowledge base (`knowledge/gundam-gcg/`)
 | Path | Contents |

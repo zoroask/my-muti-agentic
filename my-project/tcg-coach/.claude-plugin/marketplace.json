@@ -1,0 +1,13 @@
+{
+  "name": "zoroask-tcg-coach",
+  "owner": {
+    "name": "zoroask"
+  },
+  "plugins": [
+    {
+      "name": "tcg-coach",
+      "source": "./claude-config",
+      "description": "TCG Coach agents and skills for Gundam Card Game tournament prep."
+    }
+  ]
+}

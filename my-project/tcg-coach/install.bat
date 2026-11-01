@@ -1,6 +1,6 @@
 @echo off
 REM Copies the TCG Coach agents and skill into this project's .claude folder.
-REM Run once from D:\my-muti-agentic\my-project\tcg-coach (double-click works).
+REM Run once from the repo root (double-click works).
 cd /d "%~dp0"
 if not exist ".claude\agents" mkdir ".claude\agents"
 if not exist ".claude\skills" mkdir ".claude\skills"

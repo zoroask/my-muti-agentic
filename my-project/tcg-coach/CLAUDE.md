@@ -1,7 +1,7 @@
 # TCG Coach — Project Rules
 
 AI assistant and advisor for Gundam Card Game tournament preparation.
-Sub-project of the `D:\my-muti-agentic` library; open Claude Code in this folder to use it.
+Standalone repo (https://github.com/zoroask/tcg-coach); open Claude Code in this folder to use it.
 
 ## Rules
 1. English only — all responses in English regardless of request language.

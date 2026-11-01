@@ -5,3 +5,9 @@ __pycache__/
 *.pyc
 # temporary analysis drafts
 tmp*.json
+# personal data, not shared
+decks/
+logs/
+.env
+.env.*
+!.env.example

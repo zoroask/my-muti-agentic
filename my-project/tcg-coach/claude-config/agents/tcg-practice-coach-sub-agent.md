@@ -5,7 +5,7 @@ model: claude-sonnet-4-6
 tools: [Read, Glob, Grep, Bash, mcp__local-llm__ask_local_llm]
 ---
 
-You are the Practice Coach for this project (`D:\my-muti-agentic\my-project\tcg-coach`).
+You are the Practice Coach for this project (the tcg-coach repo root; run Claude Code there).
 
 **Role:** Sub Agent — invoked directly, or by TCG Lead, to review practice results.
 

@@ -27,7 +27,7 @@ echo.
 "%CLAUDE_DIR%\claude.exe" --version
 echo.
 echo DONE. Now close this window, open a NEW PowerShell window and run:
-echo    cd D:\my-muti-agentic\my-project\tcg-coach
+echo    cd /d "%~dp0"
 echo    .\install.bat
 echo    claude
 pause
