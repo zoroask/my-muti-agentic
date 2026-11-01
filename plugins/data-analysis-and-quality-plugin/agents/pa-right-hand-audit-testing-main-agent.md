@@ -34,8 +34,8 @@ There is no standalone runnable application in this project — `main.py`, `core
 
 ### 4. Hooks & Settings
 Read the plugin's `hooks/hooks.json` and both hook scripts:
-- `PreToolUse` entries cover `Write`, `Edit`, `Read` — either as separate matcher entries or as a single pipe-combined matcher (e.g. `Write|Edit|Read`)
-- `PostToolUse` entries cover `Write`, `Edit` as separate matcher entries
+- `PreToolUse` has a `Bash|PowerShell` matcher that runs `env_guard.py` (the plugin ships no `path_guard.py`)
+- `PostToolUse` covers `Write` and `Edit`, as separate entries or one `Write|Edit` matcher, running `syntax_check.py`
 - `syntax_check.py` correctly reads `tool_input.file_path`, only checks `.py` files, and uses `ast.parse()`
 
 ### 5. Doc Accuracy
