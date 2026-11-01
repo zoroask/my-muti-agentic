@@ -1,6 +1,6 @@
 {
   "name": "data-analysis-and-quality-plugin",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Multi-agent library: architecture, audit, automation, web app, game, design, security-learning and BOT data-quality agents, with their skills, commands and safety hooks.",
   "author": {
     "name": "zoroask"
