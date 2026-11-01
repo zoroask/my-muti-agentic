@@ -1,6 +1,6 @@
 {
   "name": "tcg-coach",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Gundam Card Game tournament prep: TCG Lead, Deck Analyst, Meta & Matchup Coach and Practice Coach agents with their skills. Needs a clone of the repo for tools/ and knowledge/.",
   "author": {
     "name": "zoroask"
